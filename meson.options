@@ -1,0 +1,1 @@
+option('nightly', type: 'boolean', value: false)

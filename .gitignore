@@ -1,0 +1,10 @@
+/target
+/build
+/repo
+/app
+/src/tests/.tmp
+.flatpak-builder
+
+.DS_Store
+.cache
+.zed

@@ -1,0 +1,34 @@
+[package]
+name = "Bobby"
+version = "49.0.0"
+repository = "https://www.github.com/hbons/Bobby"
+homepage = "https://www.github.com/hbons/Bobby" # TODO: https://planetpeanut.studio/bobby
+authors = ["Hylke Bons <hello@planetpeanut.studio>"]
+license = "GNU General Public License v3 or later"
+readme = "README.md"
+edition = "2021"
+
+[package.metadata.flatpak]
+id = "studio.planetpeanut.Bobby"
+
+[dependencies]
+# From the Recommended Crate Directory – https://blessed.rs
+chrono = "0.4.42"
+rusqlite = { version = "0.37.0", features = ["bundled"] }
+
+# From the GNOME Project – https://gnome.org
+gio = "0.21.5"
+gtk4 = { version = "0.10.3", features = ["gnome_49"] }
+libadwaita = { version = "0.8.1", features = ["v1_5"] }
+
+[[bin]]
+name = "bobby"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = "z"
+lto = true
+debug = false
+codegen-units = 1
+panic = "abort"
+strip = true

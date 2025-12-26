@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component type="desktop-application">
+    <name>Bobby</name>
+    <summary>Browse SQLite files</summary>
+    <id>studio.planetpeanut.Bobby</id>
+    <project_group>Planet Peanut Studio</project_group>
+    <project_license>GPL-3.0-or-later</project_license>
+
+    <developer id="studio.planetpeanut">
+        <name>Hylke Bons</name>
+        <email>hello_AT_planetpeanut.studio</email>
+        <url type="homepage">https://planetpeanut.studio</url>
+    </developer>
+
+    <!-- TODO: Update URL to project -->
+    <url type="homepage">https://www.github.com/hbons</url>
+
+    <!-- TODO: Uncommment
+    <url type="bugtracker">https://www.github.com/hbons/Bobby/issues</url>
+    -->
+    <url type="donation">https://github.com/sponsors/hbons</url>
+
+    <categories>
+        <category>Utility</category>
+    </categories>
+
+    <keywords>
+        <keyword>sql</keyword>
+        <keyword>sqlite</keyword>
+        <keyword>sqlite3</keyword>
+        <keyword>query</keyword>
+        <keyword>database</keyword>
+        <keyword>db</keyword>
+        <keyword>table</keyword>
+        <keyword>row</keyword>
+        <keyword>column</keyword>
+        <keyword>inspect</keyword>
+    </keywords>
+
+    <!-- <screenshots>
+        <screenshot type="default">
+            <image type="source" width="1200" height="675">
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-1.png
+                ./screenshot-1.png
+            </image>
+            <caption>Browse SQLite files</caption>
+        </screenshot>
+    </screenshots> -->
+
+    <description>
+        <p>
+            Bobby lets you open SQLite database files (.db, .sqlite) and browse the tables inside.
+            Handy for app development or inspecting downloaded databases.
+        </p>
+        <p>
+            Don't forget to sanitize your database inputs!
+        </p>
+    </description>
+
+    <releases>
+        <release version="49.0.0" date="2025-12-25" urgency="medium">
+            <description>
+                <ul>
+                    <li>First release!</li>
+                    <li>Designed for GNOME</li>
+                    <li>Written in Rust</li>
+                </ul>
+           </description>
+        </release>
+    </releases>
+
+    <!-- <branding>
+        <color type="primary" scheme_preference="light">#6DD2F3</color>
+        <color type="primary" scheme_preference="dark">#00455B</color>
+    </branding> -->
+
+    <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
+    <provides>
+        <binary>bobby</binary>
+    </provides>
+
+    <content_rating type="oars-1.1">
+        <content_attribute id="money-purchasing">mild</content_attribute>
+    </content_rating>
+
+    <metadata_license>CC0-1.0</metadata_license>
+    <update_contact>hello_AT_planetpeanut.studio</update_contact>
+</component>
