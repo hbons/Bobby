@@ -87,12 +87,10 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let db = Database::from_file(path)?;
     let tables = db.tables()?;
 
-    let table;
-    if let Some(table_name) = table_name {
-        table = table_name.parse::<Table>()?;
-    } else {
-        table = tables.first().ok_or("Missing table")?.clone();
-    }
+    let table = match table_name {
+        Some(name) => name.parse::<Table>()?,
+        None => tables.first().cloned().ok_or("Missing table")?,
+    };
 
     let title = &path.file_name()
         .ok_or("err")?

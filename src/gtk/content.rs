@@ -51,7 +51,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     let cells = row.cells();
                     let text = cells.get(i)
                         .map(String::as_str)
-                        .unwrap_or("");
+                        .unwrap_or_default();
 
                     if let Some(label) = list_item.child().and_downcast::<Label>() {
                         // Reset state
