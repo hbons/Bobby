@@ -5,8 +5,8 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use std::error::Error;
 use std::cell::RefCell;
+use std::error::Error;
 
 use gtk4::glib;
 use gtk4::glib::subclass::prelude::*;

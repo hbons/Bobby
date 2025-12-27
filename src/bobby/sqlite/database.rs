@@ -5,8 +5,8 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use std::path::{ Path, PathBuf };
 use std::error::Error;
+use std::path::{ Path, PathBuf };
 
 use rusqlite::Connection;
 

@@ -19,11 +19,6 @@ impl Table {
     pub fn name(&self) -> &str {
         &self.0
     }
-
-
-    pub fn row_count() -> Result<u64, Box<dyn Error>> {
-        todo!()
-    }
 }
 
 
@@ -62,5 +57,11 @@ impl Database {
         }
 
         Ok(tables)
+    }
+
+
+    pub fn row_count(&self, table: &Table) -> Result<i64, Box<dyn Error>> {
+        let sql = format!("SELECT COUNT(*) FROM {}", table.name());
+        Ok(self.connection.query_row(&sql, [], |row| row.get(0))?)
     }
 }
