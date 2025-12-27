@@ -93,8 +93,8 @@ pub fn app_runs_as_root() -> bool {
     }
 }
 
-
 pub fn app_runs_in_terminal() -> bool {
+    // Propagated even in Flatpak
     env::var("TERM").is_ok()
 }
 

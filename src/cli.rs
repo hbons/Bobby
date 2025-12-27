@@ -6,54 +6,29 @@
 
 
 use std::error::Error;
+use std::process::exit;
+
 use crate::app::{ app_version, App };
 
 
 impl App {
-    pub async fn cli_parse_args(&mut self, args: &Vec<String>) -> Result<(), Box<dyn Error>> {
-        self.cli_require_args(1, args)?;
-        let file = args.get(1).ok_or("Missing <file>")?;
-
-        match file.as_str() {
-            "--help" => self.cli_option_help(),
-            "--version" => println!("{}", app_version()),
-            "--env" => println!("{:#?}", self),
-            path => {
-                self.cli_command_open(path)?;
-            }
+    pub fn cli_parse_args(&mut self, args: &Vec<String>) -> Result<(), Box<dyn Error>> {
+        match args.iter().nth(1).map(|s| s.as_str()) {
+            Some("--help")    => self.cli_option_help(),
+            Some("--version") => println!("{}", app_version()),
+            Some("--env")     => println!("{:#?}", self),
+            None | Some(_)    => { return Ok(()); },
         }
 
-        Ok(())
+        exit(0);
     }
 
+
     pub fn cli_option_help(&self) {
-        println!("Usage: bobby <file>");
+        println!("Usage: bobby <file> [table]");
         println!();
         println!("Options:");
         println!("    --help, --version, --env");
         println!();
-    }
-}
-
-
-impl App {
-    pub fn cli_command_open(&self, path: &str) -> Result<(), Box<dyn Error>> {
-        let contents = std::fs::read_to_string(path)?;
-        println!("{}", contents);
-
-        Ok(())
-    }
-}
-
-
-impl App {
-    /// Checks if the minimum amount of args have been passed
-    pub(crate) fn cli_require_args(&self, count: usize, args: &[String]) -> Result<(), Box<dyn Error>> {
-        if args.len() - 1 < count {
-            self.cli_option_help();
-            return Err(format!("Command requires {count} arguments").into());
-        }
-
-        Ok(())
     }
 }

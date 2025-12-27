@@ -23,13 +23,11 @@ pub mod bobby;
 // mod tests;
 
 
-// use std::env::args;
+use std::env::args;
 use std::error::Error;
-// use std::path::Path;
-// use std::process::exit;
 
 use crate::app::app_version;
-use crate::app::{ App, app_runs_as_root, /* app_runs_in_terminal */ };
+use crate::app::{ App, app_runs_as_root, app_runs_in_terminal };
 use crate::gui::Gui;
 
 
@@ -40,15 +38,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         log::error_and_exit("Cannot run as root")
     }
 
-    // if app_runs_in_terminal() {
-    //     let mut app = App::default();
-    //     let args = args().collect();
+    if app_runs_in_terminal() {
+        let mut app = App::default();
+        let args = args().collect();
 
-    //     match app.cli_parse_args(&args).await {
-    //         Ok(_)  => exit(0),
-    //         Err(e) => log::error_and_exit(&e.to_string())
-    //     };
-    // }
+        if let Err(e) = app.cli_parse_args(&args) {
+            log::error_and_exit(&e.to_string());
+        };
+    }
 
     let app = App::default();
     app.gui_run()?;

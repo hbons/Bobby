@@ -51,7 +51,7 @@ fn handle_file(
         .ok_or("Not a libadwaita::Application")?;
 
     parent.close();
-    let window = window_new(application, path.as_path())?;
+    let window = window_new(application, path.as_path(), None)?;
     window.present();
 
     Ok(())

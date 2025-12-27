@@ -83,10 +83,16 @@ fn button_open_new(window: &ApplicationWindow) -> Button {
 }
 
 
-pub fn window_new(application: &Application, path: &Path) -> Result<ApplicationWindow, Box<dyn Error>> {
+pub fn window_new(application: &Application, path: &Path, table_name: Option<String>) -> Result<ApplicationWindow, Box<dyn Error>> {
     let db = Database::from_file(path)?;
     let tables = db.tables()?;
-    let table = tables.first().ok_or("Missing table")?;
+
+    let table;
+    if let Some(table_name) = table_name {
+        table = table_name.parse::<Table>()?;
+    } else {
+        table = tables.first().ok_or("Missing table")?.clone();
+    }
 
     let title = &path.file_name()
         .ok_or("err")?
@@ -101,6 +107,8 @@ pub fn window_new(application: &Application, path: &Path) -> Result<ApplicationW
         .build();
 
     let switcher = table_switcher_new(&tables);
+    switcher.set_label(table.name());
+
     let main_menu = main_menu_new(application);
 
     let header = HeaderBar::new();
@@ -108,8 +116,8 @@ pub fn window_new(application: &Application, path: &Path) -> Result<ApplicationW
     header.pack_end(&main_menu);
 
     let content = content_new(
-        &db.columns(table)?,
-        &db.rows(table)?
+        &db.columns(&table)?,
+        &db.rows(&table)?
     );
 
     let action = SimpleAction::new_stateful(

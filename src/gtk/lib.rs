@@ -5,6 +5,7 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use std::env;
 use std::error::Error;
 
 use gio::ApplicationFlags;
@@ -41,7 +42,6 @@ impl Gui for App {
             }
         });
 
-        // Opening a file
         application.connect_open(move |application, files, _| {
             if let Some(path) = files.first().and_then(|f| f.path()) {
                 for window in application.windows() {
@@ -60,7 +60,8 @@ impl Gui for App {
                     }
                 }
 
-                let result = window_new(application, &path);
+                let table_name = env::args().nth(2);
+                let result = window_new(application, &path, table_name);
 
                 if let Ok(window) = result {
                     window.present();
