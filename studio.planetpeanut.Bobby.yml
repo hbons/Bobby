@@ -27,10 +27,7 @@ metadata:
 modules:
   - name: bobby
     sources:
-      - type: dir
-        path: "."
-  #   sources:
-  #     - type: git
-  #       url: https://github.com/hbons/Bobby
-  #       branch: main
+      - type: git
+        url: https://github.com/hbons/Bobby
+        branch: main
     buildsystem: meson
