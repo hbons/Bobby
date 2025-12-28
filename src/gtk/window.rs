@@ -9,13 +9,14 @@ use std::error::Error;
 use std::path::Path;
 
 use gio::SimpleAction;
-use gtk4::{ScrolledWindow, prelude::*};
+use gtk4::prelude::*;
 use gtk4::glib::Variant;
 use gtk4::{
     Align,
     Button,
     CenterBox,
     Orientation,
+    ScrolledWindow,
 };
 
 use libadwaita::prelude::*;
