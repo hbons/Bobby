@@ -9,8 +9,6 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
-  build-args:
-    - --share=network
   env:
     RUST_BACKTRACE: 1
 
@@ -30,4 +28,8 @@ modules:
       - type: git
         url: https://github.com/hbons/Bobby
         branch: main
+      - cargo-sources.yml
     buildsystem: meson
+    build-options:
+      env:
+        CARGO_NET_OFFLINE: true
