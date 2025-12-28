@@ -15,9 +15,8 @@ jobs:
         variant:
           - arch: x86_64
             runner: ubuntu-24.04
-          # TODO: Enable when public
-          # - arch: aarch64
-          #   runner: ubuntu-24.04-arm
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
     - uses: actions/checkout@v4
