@@ -2,11 +2,11 @@ name: Flatpak
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   flatpak:
-    name: "Flatpak"
+    name: Flatpak
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
       options: --privileged
