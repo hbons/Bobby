@@ -9,12 +9,14 @@ use std::error::Error;
 use std::path::{ Path, PathBuf };
 
 use rusqlite::Connection;
+use super::cache::Cache;
 
 
 #[derive(Debug)]
 pub struct Database {
     pub path: PathBuf,
     pub connection: Connection,
+    pub cache: Option<Cache>,
 }
 
 
@@ -26,6 +28,7 @@ impl Database {
             Database {
                 path: path.to_path_buf(),
                 connection,
+                cache: None,
             }
         )
     }

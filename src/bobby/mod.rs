@@ -7,6 +7,7 @@
 
 pub mod sqlite {
     pub mod affinity;
+    pub mod cache;
     pub mod column;
     pub mod database;
     pub mod row;
