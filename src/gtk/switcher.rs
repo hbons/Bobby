@@ -28,6 +28,7 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     }
 
     menu.append_section(Some("Tables"), &section);
+    // menu.append_section(Some("Views"), &section); // TODO
 
     if let Some(first_table) = tables.first() {
         button.set_label(first_table.name());

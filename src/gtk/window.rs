@@ -127,18 +127,20 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
         &db.rows(&table)?
     );
 
-    let action = SimpleAction::new_stateful(
+
+    let table_action = SimpleAction::new_stateful(
         "table",
         Some(&String::static_variant_type()),
         &Variant::from(table.name()),
     );
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
-    let layout_handle = layout.clone();
     let window_handle = window.clone();
     let switcher_handle = switcher.clone();
+    let layout_handle = layout.clone();
 
-    action.connect_change_state(move |action, value| {
+    // TODO: Move to actions.rs
+    table_action.connect_change_state(move |action, value| {
         if let Some(value_str) = value.and_then(|v| v.str()) {
             action.set_state(&Variant::from(value_str));
             switcher_handle.set_label(value_str);
@@ -161,7 +163,61 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     layout.append(&content);
 
     window.set_content(Some(&layout));
-    window.add_action(&action);
+
+
+    let window_handle = window.clone();
+    let copy_val_action = gio::SimpleAction::new("copy-val", Some(VariantTy::STRING));
+
+    // TODO: Move to actions.rs
+    copy_val_action.connect_activate(move |_, row_col_index| {
+        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
+            if let Some((row_index, col_index)) = row_col_index
+                .and_then(|v| v.str())
+                .and_then(|s| s.split_once(':'))
+            {
+                let row_index = row_index.parse::<usize>().unwrap_or_default();
+                let col_index = col_index.parse::<usize>().unwrap_or_default();
+
+                if let Some(row) = get_row(column_view, row_index) {
+                    let cells = row.cells();
+
+                    if let Some(cell_text) = cells.get(col_index) {
+                        _ = copy_to_clipboard(cell_text);
+                    }
+                }
+            }
+        }
+    });
+
+
+    let window_handle = window.clone();
+    let copy_row_action = SimpleAction::new("copy-row", Some(VariantTy::STRING));
+
+    // TODO: Move to actions.rs
+    copy_row_action.connect_activate(move |_, row_index| {
+        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
+            if let Some(row) = row_index
+                .and_then(|v| v.str())
+                .and_then(|s| s.parse::<usize>().ok())
+                .and_then(|i| get_row(column_view, i))
+            {
+                let cells = row.cells();
+
+                let row_text = cells
+                    .iter()
+                    .map(|s| s.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" | ");
+
+                _ = copy_to_clipboard(&row_text);
+            }
+        }
+    });
+
+
+    window.add_action(&copy_val_action);
+    window.add_action(&copy_row_action);
+    window.add_action(&table_action);
 
     // SAFETY: Window outlives the database
     unsafe {
@@ -169,6 +225,15 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     }
 
     Ok(window)
+}
+
+
+fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
+    let display = Display::default().ok_or("Missing Display")?;
+    let clipboard = display.clipboard();
+    clipboard.set_text(s); // TODO: Confirm with libadwaita::ToastOverlay
+
+    Ok(())
 }
 
 
@@ -192,4 +257,34 @@ fn window_change_content(window: &ApplicationWindow, table: &Table)
     // TODO: Swap the content here. Need to get the layout box somehow...
 
     Ok(content)
+}
+
+
+fn find_column_view(root: &Widget) -> Option<ColumnView> {
+    if let Ok(column_view) = root.clone().downcast::<ColumnView>() {
+        return Some(column_view);
+    }
+
+    let mut child = root.first_child();
+
+    while let Some(widget) = child {
+        if let Some(found) = find_column_view(&widget) {
+            return Some(found);
+        }
+
+        child = widget.next_sibling();
+    }
+
+    None
+}
+
+
+fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
+    let model = column_view.model()?;
+    let selection = model.downcast_ref::<SingleSelection>()?;
+    let item = selection
+        .item(position as u32)
+        .and_then(|o| o.downcast::<Row>().ok())?;
+
+    item.downcast::<Row>().ok()
 }

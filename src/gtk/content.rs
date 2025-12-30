@@ -53,6 +53,9 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
             }
         });
 
+
+        let column_handle = column.clone();
+
         // TODO: Move out
         factory.connect_bind(move |_, obj| {
             if let Some(list_item) = obj.downcast_ref::<ListItem>() {
@@ -63,23 +66,39 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         .unwrap_or_default();
 
                     if let Some(label) = list_item.child().and_downcast::<Label>() {
-                        // Reset state
+                        // Reset state first to avoid rendering issues
                         label.set_sensitive(true);
-                        label.set_tooltip_text(None);
-                        // label.set_css_classes(&[]); // See below
 
                         // New state
                         label.set_text(text);
-                        label.set_tooltip_text(Some(text));
-                        label.set_sensitive(text != "NULL");
 
-                        if affinity == Affinity::BLOB {
-                            label.set_sensitive(false);
+                        let list_item_handle = list_item.clone();
+
+                        let gesture = GestureClick::new();
+                        gesture.set_button(BUTTON_SECONDARY);
+                        gesture.connect_pressed(move |gesture, _, x, y| {
+                            if let Some(widget) = gesture.widget() {
+                                if let Some(_picked) = widget.pick(x, y, PickFlags::DEFAULT) {
+                                    let position = list_item_handle.position();
+
+                                    let col = i;
+                                    let row = position as usize;
+                                    context_menu_open(gesture, col, row, x, y);
+                                }
+                            }
+                        });
+
+                        if let Some(cell) = label.parent() {
+                            cell.add_controller(gesture);
+                            cell.set_sensitive(text != "NULL");
+                            cell.set_sensitive(affinity != Affinity::BLOB);
+
+                            if column_handle.primary_key {
+                                cell.set_tooltip_text(Some(&format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}")));
+                            } else {
+                                cell.set_tooltip_text(Some(&format!("{affinity:?}  {text}")));
+                            }
                         }
-
-                        // if affinity != Affinity::TEXT { // TODO: Decide on this
-                        //     label.set_css_classes(&["monospace"]);
-                        // }
                     }
                 }
             }
@@ -130,13 +149,36 @@ fn setup_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
 
     let label = Label::builder()
         .ellipsize(EllipsizeMode::End)
-        .hexpand(true)
-        .vexpand(true)
-        .xalign(0.0)
+        .halign(Align::Start)
         .margin_start(4)
-        // .margin_top(2)
         .build();
 
     list_item.set_child(Some(&label));
+
     Ok(())
+}
+
+
+fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize, x: f64, y: f64) {
+    if let Some(widget) = gesture.widget() {
+        let menu = Menu::new();
+
+        menu.append(
+            Some("Copy"),
+            Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
+        );
+
+        menu.append(Some("Copy Row"),
+            Some(&format!("win.copy-row::{}", row_index))
+        );
+
+        let popover = PopoverMenu::builder()
+            .has_arrow(false)
+            .menu_model(&menu)
+            .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
+            .build();
+
+        popover.set_parent(&widget);
+        popover.popup();
+    }
 }
