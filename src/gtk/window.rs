@@ -207,7 +207,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                     .iter()
                     .map(|s| s.as_str())
                     .collect::<Vec<_>>()
-                    .join(" | ");
+                    .join("\t");
 
                 _ = copy_to_clipboard(&row_text);
             }
