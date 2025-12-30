@@ -14,6 +14,7 @@ build-options:
     - --share=network
   env:
     RUST_BACKTRACE: "1"
+    # CARGO_NET_OFFLINE: true
 
 finish-args:
   - --socket=wayland
@@ -32,9 +33,5 @@ modules:
         url: https://github.com/hbons/Bobby
         branch: main
       - cargo-sources.yml
-      # - type: file
-        # path: cargo-sources.yml
+
     buildsystem: meson
-    # build-options:
-    #   env:
-    #     CARGO_NET_OFFLINE: true

@@ -21,6 +21,8 @@ pub struct Database {
 
 
 impl Database {
+    /// Database files to test on can be found at:
+    /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
     pub fn from_file(path: &Path) -> Result<Self, Box<dyn Error>> {
         let connection = Connection::open(path)?;
 

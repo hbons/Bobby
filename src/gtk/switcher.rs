@@ -30,8 +30,8 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     menu.append_section(Some(&format!("Tables – {}", tables.len())), &section);
     // menu.append_section(Some("Views"), &section); // TODO
 
-    if let Some(first_table) = tables.first() {
-        button.set_label(first_table.name());
+    if let Some(table) = tables.first() {
+        button.set_label(table.name());
     }
 
     button.set_menu_model(Some(&menu));
