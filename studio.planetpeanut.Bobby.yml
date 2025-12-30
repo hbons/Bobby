@@ -1,16 +1,19 @@
 app-id: studio.planetpeanut.Bobby
 branch: stable
 command: bobby
-runtime: org.gnome.Platform
-runtime-version: 49
 
+runtime: org.gnome.Platform
+runtime-version: "49"
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
+
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
+  build-args:
+    - --share=network
   env:
-    RUST_BACKTRACE: 1
+    RUST_BACKTRACE: "1"
 
 finish-args:
   - --socket=wayland
@@ -29,7 +32,9 @@ modules:
         url: https://github.com/hbons/Bobby
         branch: main
       - cargo-sources.yml
+      # - type: file
+        # path: cargo-sources.yml
     buildsystem: meson
-    build-options:
-      env:
-        CARGO_NET_OFFLINE: true
+    # build-options:
+    #   env:
+    #     CARGO_NET_OFFLINE: true
