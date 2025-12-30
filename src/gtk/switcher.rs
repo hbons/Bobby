@@ -27,7 +27,7 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
         );
     }
 
-    menu.append_section(Some("Tables"), &section);
+    menu.append_section(Some(&format!("Tables – {}", tables.len())), &section);
     // menu.append_section(Some("Views"), &section); // TODO
 
     if let Some(first_table) = tables.first() {
@@ -35,6 +35,6 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     }
 
     button.set_menu_model(Some(&menu));
-    button.set_tooltip_text(Some("Tables"));
+    button.set_tooltip_text(Some(&"Select Table"));
     button
 }
