@@ -31,6 +31,8 @@ impl Gui for App {
             .flags(ApplicationFlags::HANDLES_OPEN)
             .build();
 
+        application.set_accels_for_action("app.preferences", &["<Control>comma"]);
+
         application.connect_activate(|application| {
             if let Some(window) = application.active_window() {
                 window.present();

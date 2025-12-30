@@ -11,9 +11,20 @@ use gtk4::gio::{ Menu, SimpleAction };
 use libadwaita::Application;
 
 use super::about::show_about_dialog;
+use super::preferences::show_preferences_dialog;
 
 
 pub fn main_menu_new(application: &Application) -> MenuButton {
+    let preferences_action = SimpleAction::new("preferences", None);
+    let application_handle = application.clone();
+
+    preferences_action.connect_activate(move |_, _| {
+        if let Some(active_window) = application_handle.active_window() {
+            show_preferences_dialog(&active_window);
+        }
+    });
+
+
     let about_action = SimpleAction::new("about", None);
     let application_handle = application.clone();
 
@@ -23,9 +34,11 @@ pub fn main_menu_new(application: &Application) -> MenuButton {
         }
     });
 
+    application.add_action(&preferences_action);
     application.add_action(&about_action);
 
     let menu = Menu::new();
+    menu.append(Some("Preferences"), Some("app.preferences"));
     menu.append(Some("About Bobby"), Some("app.about"));
 
     let button = MenuButton::new();

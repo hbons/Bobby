@@ -22,3 +22,8 @@ install_data(
   'studio.planetpeanut.Bobby-mime.xml',
   install_dir: join_paths(get_option('datadir'), 'mime', 'packages')
 )
+
+install_data(
+    'studio.planetpeanut.Bobby.gschema.xml',
+    install_dir: join_paths(get_option('prefix'), 'share', 'glib-2.0', 'schemas')
+)

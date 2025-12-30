@@ -175,6 +175,11 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
             Some(&format!("win.copy-row::{}", row_index))
         );
 
+        // TODO
+        // menu.append(Some("Copy Rows"),
+        //     Some(&format!("win.copy-rows::{}", row_index))
+        // );
+
         let popover = PopoverMenu::builder()
             .has_arrow(false)
             .menu_model(&menu)

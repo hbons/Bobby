@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="studio.planetpeanut.Bobby" path="/studio/planetpeanut/Bobby/">
+
+    <key name="clipboard-separator" type="s">
+      <default>'tabs'</default>
+    </key>
+
+    <key name="binary-data-preview" type="s">
+      <default>'size-bytes'</default>
+    </key>
+
+    <key name="row-numbers" type="b">
+      <default>false</default>
+    </key>
+
+    <key name="monospace-font" type="b">
+      <default>false</default>
+      <summary>Use a monospace font</summary>
+    </key>
+  </schema>
+</schemalist>
