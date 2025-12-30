@@ -29,6 +29,10 @@ use gtk4::pango::EllipsizeMode;
 use crate::bobby::prelude::*;
 
 
+// U+25C7 "White Diamond"
+const SYMBOL_PRIMARY_KEY: &str = "◇";
+
+
 pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
     let store = ListStore::new::<Row>();
 
@@ -98,7 +102,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
         if column.primary_key {
             view_column.set_title(
-                Some(&format!("{} ◇", &column.name))
+                Some(&format!("{} {}", &column.name, SYMBOL_PRIMARY_KEY))
             );
         }
 
