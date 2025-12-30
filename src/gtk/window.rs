@@ -97,6 +97,10 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
         None => tables.first().cloned().ok_or("Missing table")?,
     };
 
+    if !tables.contains(&table) {
+        return Err("Table does not exist".into());
+    }
+
     let title = &path.file_name()
         .ok_or("err")?
         .to_string_lossy()
