@@ -13,7 +13,7 @@ use crate::app::{ app_version, App };
 
 impl App {
     pub fn cli_parse_args(&mut self, args: &Vec<String>) -> Result<(), Box<dyn Error>> {
-        match args.iter().nth(1).map(|s| s.as_str()) {
+        match args.get(1).map(|s| s.as_str()) {
             Some("--help")    => self.cli_option_help(),
             Some("--version") => println!("{}", app_version()),
             Some("--env")     => println!("{:#?}", self),

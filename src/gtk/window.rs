@@ -8,16 +8,20 @@
 use std::error::Error;
 use std::path::Path;
 
-use gio::SimpleAction;
 use gtk4::prelude::*;
-use gtk4::glib::Variant;
 use gtk4::{
     Align,
     Button,
     CenterBox,
+    ColumnView,
     Orientation,
     ScrolledWindow,
+    SingleSelection,
+    Widget,
 };
+use gtk4::gdk::Display;
+use gtk4::gio::SimpleAction;
+use gtk4::glib::{ Variant, VariantTy };
 
 use libadwaita::prelude::*;
 use libadwaita::{

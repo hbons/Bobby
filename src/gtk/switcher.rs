@@ -5,8 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use gio::Menu;
 use gtk4::prelude::*;
+use gtk4::gio::Menu;
 use gtk4::MenuButton;
 
 use crate::bobby::prelude::*;

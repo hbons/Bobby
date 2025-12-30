@@ -7,19 +7,24 @@
 
 use std::error::Error;
 
-use gio::ListStore;
 use gtk4::prelude::*;
 use gtk4::{
-    glib::Object,
-    pango::EllipsizeMode,
+    Align,
     ColumnView,
     ColumnViewColumn,
+    GestureClick,
     Label,
     ListItem,
+    PickFlags,
+    PopoverMenu,
     ScrolledWindow,
     SignalListItemFactory,
     SingleSelection,
 };
+use gtk4::gdk::{ BUTTON_SECONDARY, Rectangle };
+use gtk4::gio::{ ListStore, Menu };
+use gtk4::glib::Object;
+use gtk4::pango::EllipsizeMode;
 
 use crate::bobby::prelude::*;
 

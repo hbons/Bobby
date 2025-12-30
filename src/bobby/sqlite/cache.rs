@@ -11,8 +11,8 @@ use super::database::Database;
 use super::row::Row;
 
 
-const CACHE_SIZE: usize = 256;
-const CACHE_PAGE_SIZE: usize = 64;
+const _CACHE_SIZE: usize = 256;
+const _CACHE_PAGE_SIZE: usize = 64;
 
 #[derive(Debug)]
 pub struct Cache {

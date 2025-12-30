@@ -5,10 +5,10 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use gio::{ Cancellable, File, ListStore };
-use gtk4::glib::Error;
 use gtk4::prelude::*;
 use gtk4::{ FileDialog, FileFilter };
+use gtk4::gio::{ Cancellable, File, ListStore };
+use gtk4::glib::Error;
 use libadwaita::ApplicationWindow;
 
 use super::window::window_new;

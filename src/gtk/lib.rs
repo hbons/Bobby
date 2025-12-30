@@ -8,8 +8,8 @@
 use std::env;
 use std::error::Error;
 
-use gio::ApplicationFlags;
 use gtk4::prelude::*;
+use gtk4::gio::ApplicationFlags;
 use libadwaita::Application;
 
 use crate::app::App;

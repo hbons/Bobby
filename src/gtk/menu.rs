@@ -5,9 +5,9 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use gio::{ Menu, SimpleAction };
 use gtk4::prelude::*;
 use gtk4::MenuButton;
+use gtk4::gio::{ Menu, SimpleAction };
 use libadwaita::Application;
 
 use super::about::show_about_dialog;

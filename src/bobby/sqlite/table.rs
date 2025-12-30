@@ -11,7 +11,7 @@ use std::str;
 use super::database::Database;
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Table(String);
 
 

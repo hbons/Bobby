@@ -88,3 +88,12 @@ impl Database {
         )
     }
 }
+
+
+fn hex_preview(blob: &[u8], length: usize) -> String {
+    blob.iter()
+        .take(length)
+        .map(|b| format!("{:02X}", b))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
