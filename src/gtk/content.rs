@@ -72,8 +72,13 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         // New state
                         label.set_text(text);
 
+                        if text == "NULL" || affinity == Affinity::BLOB {
+                            label.set_sensitive(false);
+                        }
+
                         let list_item_handle = list_item.clone();
 
+                        // TODO: Check performance impact of this
                         let gesture = GestureClick::new();
                         gesture.set_button(BUTTON_SECONDARY);
                         gesture.connect_pressed(move |gesture, _, x, y| {
@@ -90,8 +95,6 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
                         if let Some(cell) = label.parent() {
                             cell.add_controller(gesture);
-                            cell.set_sensitive(text != "NULL");
-                            cell.set_sensitive(affinity != Affinity::BLOB);
 
                             if column_handle.primary_key {
                                 cell.set_tooltip_text(Some(&format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}")));
