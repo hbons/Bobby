@@ -20,7 +20,7 @@ pub fn main_menu_new(application: &Application) -> MenuButton {
 
     preferences_action.connect_activate(move |_, _| {
         if let Some(active_window) = application_handle.active_window() {
-            show_preferences_dialog(&active_window);
+            show_preferences_dialog(&active_window, None);
         }
     });
 
@@ -34,11 +34,13 @@ pub fn main_menu_new(application: &Application) -> MenuButton {
         }
     });
 
+
     application.add_action(&preferences_action);
     application.add_action(&about_action);
 
     let menu = Menu::new();
     menu.append(Some("Preferences"), Some("app.preferences"));
+    // menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
     menu.append(Some("About Bobby"), Some("app.about"));
 
     let button = MenuButton::new();

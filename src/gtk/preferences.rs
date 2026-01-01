@@ -7,102 +7,100 @@
 
 // use gtk4::gio::Settings;
 use gtk4::{ StringList, Window };
-use libadwaita::ComboRow;
-use libadwaita::prelude::AdwDialogExt;
-use libadwaita::prelude::PreferencesDialogExt;
-use libadwaita::prelude::PreferencesGroupExt;
-use libadwaita::prelude::PreferencesPageExt;
+use libadwaita::prelude::*;
 use libadwaita::{
+    ComboRow,
     PreferencesDialog,
     PreferencesGroup,
     PreferencesPage,
     SwitchRow,
 };
 
-
-pub fn show_preferences_dialog(parent: &Window) {
-    let preferences = PreferencesDialog::builder()
-        .build();
+// use super::sponsors::*;
 
 
+pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) {
     // let _settings = Settings::new("studio.planetpeanut.Bobby");
 
-
-    let row1 = SwitchRow::builder()
-        .title("Row Numbers")
-        .build();
-
-
-    let row3 = SwitchRow::builder()
-        .title("Monospace Font")
-        .build();
-
-
-
-    let group = PreferencesGroup::builder()
-        // .title("Display Options")
-        .build();
-
-    let model = StringList::new(&[
-        "Newest First",
-        "Oldest First",
-    ]);
-
-    let row2 = ComboRow::builder()
-        .title("Row Order")
-        .model(&model)
-        .build();
-
-
-
-    let model = StringList::new(&[
-        "Tabs",
-        "Spaces",
-        "Commas",
-        "Markdown",
-    ]);
-
-    let row4 = ComboRow::builder()
-        .model(&model)
-        .title("Column Separator")
-        .subtitle("Used when copying rows to the clipboard")
-        .build();
-
-
-
-    let model = StringList::new(&[
-        "Size in Bytes",
-        "Hex Values",
-    ]);
-
-
-    let row5 = ComboRow::builder()
-        .model(&model)
-        .title("Binary Preview")
-        .subtitle("How columns with binary data are displayed")
-        .build();
-
     let page = PreferencesPage::builder()
-        .title("General")
-        .icon_name("emblem-system-symbolic")
+        .title("Preferences")
+        .icon_name("org.gnome.Settings-system-symbolic")
         .build();
 
-    // let page2 = PreferencesPage::builder()
-    //     .title("Sponsor")
-    //     .icon_name("emote-love-symbolic")
-    //     .build();
+
+    let group_rows_columns = PreferencesGroup::builder()
+        .title("Rows &amp; Columns")
+        .build();
+
+    group_rows_columns.add(&row_numbers());
+    group_rows_columns.add(&row_order());
+    group_rows_columns.add(&row_separator());
 
 
-    group.add(&row1);
-    group.add(&row2);
-    group.add(&row4);
-    group.add(&row3);
-    group.add(&row5);
+    let group_display = PreferencesGroup::builder()
+        .title("Display")
+        .build();
 
-    page.add(&group);
+    group_display.add(&row_monospace());
+    group_display.add(&row_binary());
 
+
+    page.add(&group_rows_columns);
+    page.add(&group_display);
+
+
+    let preferences = PreferencesDialog::new();
     preferences.add(&page);
-    // preferences.add(&page2);
+    // preferences.add(&sponsors_page());
 
     preferences.present(Some(parent));
+}
+
+
+
+fn row_numbers() -> SwitchRow {
+    SwitchRow::builder()
+        .title("Row Numbers")
+        .build()
+}
+
+fn row_order() -> ComboRow {
+    ComboRow::builder()
+        .title("Row Order")
+        .model(&StringList::new(&[
+            "Newest First",
+            "Oldest First",
+        ]))
+        .build()
+}
+
+fn row_separator() -> ComboRow {
+    ComboRow::builder()
+        .title("Column Separator")
+        .subtitle("Used when copying rows to the clipboard")
+        .model(&StringList::new(&[
+            "Tabs",
+            "Spaces",
+            "Commas",
+            "Markdown",
+        ]))
+        .build()
+}
+
+
+fn row_monospace() -> SwitchRow {
+    SwitchRow::builder()
+        .title("Monospace Font")
+        .build()
+}
+
+fn row_binary() -> ComboRow {
+    ComboRow::builder()
+        .title("Binary Preview")
+        .subtitle("How to display columns with binary data")
+        .model(&StringList::new(&[
+            "Size in Bytes",
+            "Hex Values",
+        ]))
+        .build()
 }
