@@ -41,8 +41,8 @@ use super::switcher::table_switcher_new;
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
         .application(application)
-        .default_height(360)
-        .default_width(540)
+        .default_width(640)
+        .default_height(480)
         .resizable(false)
         .title("Bobby")
         .build();
@@ -114,8 +114,8 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let window = ApplicationWindow::builder()
         .application(application)
         .title(title)
-        .default_width(720)
-        .default_height(480)
+        .default_width(960)
+        .default_height(640)
         .build();
 
     let switcher = table_switcher_new(&tables);

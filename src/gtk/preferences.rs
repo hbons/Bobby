@@ -20,7 +20,10 @@ use libadwaita::{
 
 
 pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) {
-    // let _settings = Settings::new("studio.planetpeanut.Bobby");
+    // let settings = Settings::new("studio.planetpeanut.Bobby");
+
+    // let show_row_numbers: bool = settings.boolean("row-numbers");
+    // println!("Row numbers enabled: {}", show_row_numbers);
 
     let page = PreferencesPage::builder()
         .title("Preferences")
@@ -32,7 +35,7 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
         .title("Rows &amp; Columns")
         .build();
 
-    group_rows_columns.add(&row_numbers());
+    group_rows_columns.add(&row_numbers(/*&settings*/));
     group_rows_columns.add(&row_order());
     group_rows_columns.add(&row_separator());
 
@@ -58,10 +61,18 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
 
 
 
-fn row_numbers() -> SwitchRow {
-    SwitchRow::builder()
+fn row_numbers(/*settings: &Settings*/) -> SwitchRow {
+    let switch = SwitchRow::builder()
         .title("Row Numbers")
-        .build()
+        .build();
+
+    // _ = settings.bind(
+    //     "row-numbers",
+    //     &switch,
+    //     "active"
+    // );
+
+    switch
 }
 
 fn row_order() -> ComboRow {

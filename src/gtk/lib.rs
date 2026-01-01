@@ -21,6 +21,9 @@ use super::window::{
     window_new,
 };
 
+use super::preferences::show_preferences_dialog;
+use super::about::show_about_dialog;
+
 
 impl Gui for App {
     // Docs: https://docs.gtk.org/gtk4/
@@ -33,6 +36,55 @@ impl Gui for App {
 
         application.set_accels_for_action("app.preferences", &["<Control>comma"]);
 
+
+
+        application.connect_startup(|application| {
+            let preferences_action = gio::SimpleAction::new("preferences", None);
+            let application_handle = application.clone();
+
+            preferences_action.connect_activate(move |_, _| {
+                if let Some(active_window) = application_handle.active_window() {
+                    show_preferences_dialog(&active_window, None);
+                }
+
+                println!("TEST");
+            });
+
+
+            let about_action = gio::SimpleAction::new("about", None);
+            let application_handle = application.clone();
+
+            about_action.connect_activate(move |_, _| {
+                if let Some(active_window) = application_handle.active_window() {
+                    show_about_dialog(&active_window);
+                }
+            });
+
+
+            let action = gio::SimpleAction::new("sponsors", None);
+            let application_handle = application.clone();
+
+            action.connect_activate(move |_, _| {
+                if let Some(active_window) = application_handle.active_window() {
+                    show_about_dialog(&active_window);
+                }
+            });
+
+
+            application.add_action(&preferences_action);
+            application.add_action(&action);
+            application.add_action(&about_action);
+
+
+            let menu = gio::Menu::new();
+            menu.append(Some("Preferences"), Some("app.preferences"));
+            menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
+            menu.append(Some("About Bobby"), Some("app.about"));
+
+            unsafe { application.set_data("menu", menu); }
+            println!("REGISTERED ACTIONS");
+        });
+
         application.connect_activate(|application| {
             if let Some(window) = application.active_window() {
                 window.present();
@@ -42,6 +94,7 @@ impl Gui for App {
                     window.present();
                 }
             }
+            println!("ACTIVATED");
         });
 
         application.connect_open(move |application, files, _| {
@@ -69,6 +122,8 @@ impl Gui for App {
                     window.present();
                 }
             }
+            println!("OPEN");
+
         });
 
         application.run();
