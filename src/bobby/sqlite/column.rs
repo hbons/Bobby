@@ -13,7 +13,7 @@ use super::database::Database;
 use super::table::Table;
 
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Column {
     pub id: u64,
     pub name: String,
