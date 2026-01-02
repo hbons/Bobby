@@ -86,7 +86,7 @@ impl Database {
                     ValueRef::Integer(i) => i.to_string(),
                     ValueRef::Real(f)    => f.to_string(),
                     ValueRef::Text(t)    => String::from_utf8_lossy(t).into(),
-                    ValueRef::Blob(b)    => format!("{}: {} …", b.len(), hex_preview(b, 8)),
+                    ValueRef::Blob(b)    => format!("{}: {}", b.len(), hex_preview(b, N_PREVIEW_LEN)),
                 };
 
                 values.push(value);
@@ -102,9 +102,9 @@ impl Database {
     }
 }
 
-
 pub fn hex_preview(blob: &[u8], length: usize) -> String {
-    blob.iter()
+    blob
+        .iter()
         .take(length)
         .map(|b| format!("{:02X}", b))
         .collect::<Vec<_>>()
