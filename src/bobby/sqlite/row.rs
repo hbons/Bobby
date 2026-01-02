@@ -12,10 +12,12 @@ use gtk4::glib;
 use gtk4::glib::subclass::prelude::*;
 use rusqlite::types::ValueRef;
 
+use super::column::ColumnSeparator;
 use super::database::Database;
 use super::table::Table;
 
 
+// TODO: Use glib::BoxedAnyObject<Row>
 mod imp {
     #[allow(clippy::wildcard_imports)]
     use super::*;
@@ -96,4 +98,16 @@ pub fn hex_preview(blob: &[u8], length: usize) -> String {
         .map(|b| format!("{:02X}", b))
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+
+impl Row {
+    pub fn to_string(&self, separator: ColumnSeparator) -> String {
+        match separator {
+            ColumnSeparator::Tabs     => self.cells().join("\t"),
+            ColumnSeparator::Spaces   => self.cells().join(" "),
+            ColumnSeparator::Commas   => self.cells().join(","),
+            ColumnSeparator::Markdown => format!("| {} |", self.cells().join(" | ")),
+        }
+    }
 }

@@ -6,6 +6,7 @@
 
 
 use std::error::Error;
+use std::str;
 
 use super::affinity::Affinity;
 use super::database::Database;
@@ -47,5 +48,29 @@ impl Database {
         })?;
 
         Ok(iter.collect::<Result<Vec<_>, _>>()?)
+    }
+}
+
+
+#[derive(Debug, Default)]
+pub enum ColumnSeparator {
+    #[default]
+    Tabs,
+    Spaces,
+    Commas,
+    Markdown
+}
+
+impl str::FromStr for ColumnSeparator {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tabs"   | "\t" => Ok(Self::Tabs),
+            "spaces" | " "  => Ok(Self::Spaces),
+            "commas" | ","  => Ok(Self::Commas),
+            "markdown"      => Ok(Self::Markdown),
+            _ => Err("Invalid column separator".into())
+        }
     }
 }
