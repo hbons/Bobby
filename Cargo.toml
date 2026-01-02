@@ -6,7 +6,7 @@ homepage = "https://www.github.com/hbons/Bobby" # TODO: https://planetpeanut.stu
 authors = ["Hylke Bons <hello@planetpeanut.studio>"]
 license = "GNU General Public License v3 or later"
 readme = "README.md"
-edition = "2021"
+edition = "2024"
 
 [package.metadata.flatpak]
 id = "studio.planetpeanut.Bobby"
