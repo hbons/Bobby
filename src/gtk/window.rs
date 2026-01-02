@@ -129,7 +129,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
 
     let content = content_new(
         &db.columns(&table)?,
-        &db.rows(&table)?
+        &db.rows(&table, None)?
     );
 
 
@@ -261,7 +261,7 @@ fn window_change_content(window: &ApplicationWindow, table: &Table)
 
     let content = content_new(
         &db.columns(table)?,
-        &db.rows(table)?
+        &db.rows(table, None)?
     );
 
     // TODO: Swap the content here. Need to get the layout box somehow...

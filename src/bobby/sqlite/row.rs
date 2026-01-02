@@ -59,12 +59,22 @@ impl Row {
 }
 
 
-impl Database {
-    pub fn rows(&self, table: &Table) -> Result<Vec<Row>, Box<dyn Error>> {
-        let mut sql = self.connection.prepare(
-            &format!("SELECT * FROM {};", table.name())
-        )?;
+const N_PREVIEW_LEN: usize = 16;
 
+impl Database {
+    pub fn rows(&self, table: &Table, row_order: Option<RowOrder>) -> Result<Vec<Row>, Box<dyn Error>> {
+        let sql =
+            if table.has_row_id() == Some(true) {
+                if let Some(order) = row_order {
+                    &format!("SELECT * FROM {} ORDER BY rowid {order};", table.name())
+                } else {
+                    &format!("SELECT * FROM {} ORDER BY rowid DESC;", table.name())
+                }
+            } else {
+                &format!("SELECT * FROM {}", table.name())
+            };
+
+        let mut sql = self.connection.prepare(sql)?;
         let n_columns = sql.column_count();
 
         let iter = sql.query_map([], |row| {
