@@ -12,16 +12,23 @@ use super::database::Database;
 
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct Table(String);
-
+pub struct Table {
+    name: String,
+    has_row_id: Option<bool>,
+}
 
 impl Table {
     pub fn name(&self) -> &str {
-        &self.0
+        &self.name
+    }
+
+    pub fn has_row_id(&self) -> Option<bool> {
+        self.has_row_id
     }
 }
 
 
+// TODO: Replace with TableName(String)
 impl str::FromStr for Table {
     type Err = String;
 
@@ -34,7 +41,7 @@ impl str::FromStr for Table {
             return Err("Table name contains invalid characters".into());
         }
 
-        Ok(Table(s.to_string()))
+        Ok(Table { name: s.to_string(), has_row_id: None, })
     }
 }
 
@@ -42,19 +49,31 @@ impl str::FromStr for Table {
 impl Database {
     pub fn tables(&self) -> Result<Vec<Table>, Box<dyn Error>> {
         let mut sql = self.connection.prepare(
-            "SELECT name
+            "SELECT name,
+               CASE
+                 WHEN type = 'table' AND sql LIKE '%WITHOUT ROWID%' THEN 0
+                 WHEN type = 'table' THEN 1
+                 ELSE NULL
+               END AS has_row_id,
+               type
              FROM sqlite_master
              WHERE type IN ('table', 'view')
                AND name NOT LIKE 'sqlite_%'
              ORDER BY name;"
         )?;
 
-        let iter = sql.query_map([], |row| row.get::<_, String>(0))?;
-        let mut tables = vec![];
+        let tables = sql.query_map([],
+            |row| {
+                let name: String = row.get(0)?;
+                let has_row_id: Option<i64> = row.get(1)?;
+                let _type: String = row.get(2)?;
 
-        for table_name in iter {
-            tables.push(table_name?.parse::<Table>()?);
-        }
+                Ok(Table {
+                    name,
+                    has_row_id: has_row_id.map(|v| v != 0),
+                })
+            })?
+            .collect::<Result<Vec<_>, _>>()?;
 
         Ok(tables)
     }
