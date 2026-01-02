@@ -37,7 +37,6 @@ impl Gui for App {
         application.set_accels_for_action("app.preferences", &["<Control>comma"]);
 
 
-
         application.connect_startup(|application| {
             let preferences_action = gio::SimpleAction::new("preferences", None);
             let application_handle = application.clone();
@@ -46,8 +45,6 @@ impl Gui for App {
                 if let Some(active_window) = application_handle.active_window() {
                     show_preferences_dialog(&active_window, None);
                 }
-
-                println!("TEST");
             });
 
 
@@ -78,12 +75,12 @@ impl Gui for App {
 
             let menu = gio::Menu::new();
             menu.append(Some("Preferences"), Some("app.preferences"));
-            menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
+            // menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
             menu.append(Some("About Bobby"), Some("app.about"));
 
             unsafe { application.set_data("menu", menu); }
-            println!("REGISTERED ACTIONS");
         });
+
 
         application.connect_activate(|application| {
             if let Some(window) = application.active_window() {
@@ -94,8 +91,8 @@ impl Gui for App {
                     window.present();
                 }
             }
-            println!("ACTIVATED");
         });
+
 
         application.connect_open(move |application, files, _| {
             if let Some(path) = files.first().and_then(|f| f.path()) {
@@ -122,9 +119,8 @@ impl Gui for App {
                     window.present();
                 }
             }
-            println!("OPEN");
-
         });
+
 
         application.run();
         Ok(())
