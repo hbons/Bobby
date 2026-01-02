@@ -8,7 +8,7 @@
 use std::error::Error;
 use std::path::{ Path, PathBuf };
 
-use rusqlite::Connection;
+use rusqlite::{ Connection, OpenFlags };
 use super::cache::Cache;
 
 
@@ -20,11 +20,14 @@ pub struct Database {
 }
 
 
+/// Database files to test on can be found at:
+/// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-    /// Database files to test on can be found at:
-    /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
     pub fn from_file(path: &Path) -> Result<Self, Box<dyn Error>> {
-        let connection = Connection::open(path)?;
+        let connection = Connection::open_with_flags(
+            path,
+            OpenFlags::SQLITE_OPEN_READ_ONLY
+        )?;
 
         Ok(
             Database {
