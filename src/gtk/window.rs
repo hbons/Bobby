@@ -92,14 +92,19 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let db = Database::from_file(path)?;
     let tables = db.tables()?;
 
-    let table = match table_name {
-        Some(name) => name.parse::<Table>()?,
-        None => tables.first().cloned().ok_or("Missing table")?,
-    };
-
-    if !tables.contains(&table) {
-        return Err("Table does not exist".into());
-    }
+    let table =
+        if let Some(name) = table_name {
+            tables
+                .iter()
+                .find(|t| t.name() == name)
+                .cloned()
+                .ok_or("Table does not exist")?
+        } else {
+            tables
+                .first()
+                .cloned()
+                .ok_or("Table list empty")?
+        };
 
     let title = &path.file_name()
         .ok_or("err")?
@@ -128,10 +133,16 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     );
 
 
+    let table_index = tables
+        .iter()
+        .position(|t| t.name() == table.name())
+        .ok_or("Table does not exist")?
+        .to_string();
+
     let table_action = SimpleAction::new_stateful(
         "table",
         Some(&String::static_variant_type()),
-        &Variant::from(table.name()),
+        &Variant::from(table_index),
     );
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
@@ -141,21 +152,26 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
 
     // TODO: Move to actions.rs
     table_action.connect_change_state(move |action, value| {
-        if let Some(value_str) = value.and_then(|v| v.str()) {
-            action.set_state(&Variant::from(value_str));
-            switcher_handle.set_label(value_str);
+        if let Some(v) = value {
+            action.set_state(v);
+        }
 
-            if let Ok(table) = value_str.parse::<Table>() {
-                match window_change_content(&window_handle, &table) {
-                    Ok(new_content) => {
-                        if let Some(old_content) = layout_handle.last_child() {
-                            layout_handle.remove(&old_content);
-                            layout_handle.append(&new_content);
-                        }
-                    },
-                    Err(e) => eprintln!("Could not change content: {e}"),
-                };
-            }
+        if let Some(table) = value
+            .and_then(|v| v.str())
+            .and_then(|s| s.parse::<usize>().ok())
+            .and_then(|i| tables.get(i))
+        {
+            switcher_handle.set_label(table.name());
+
+            match window_change_content(&window_handle, table) {
+                Ok(new_content) => {
+                    if let Some(old_content) = layout_handle.last_child() {
+                        layout_handle.remove(&old_content);
+                        layout_handle.append(&new_content);
+                    }
+                },
+                Err(e) => eprintln!("Could not change content: {e}"),
+            };
         }
     });
 
@@ -201,15 +217,9 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 .and_then(|s| s.parse::<usize>().ok())
                 .and_then(|i| get_row(column_view, i))
             {
-                let cells = row.cells();
-
-                let row_text = cells
-                    .iter()
-                    .map(|s| s.as_str())
-                    .collect::<Vec<_>>()
-                    .join("\t");
-
-                _ = copy_to_clipboard(&row_text);
+                _ = copy_to_clipboard(
+                    &row.to_string(ColumnSeparator::default())
+                );
             }
         }
     });

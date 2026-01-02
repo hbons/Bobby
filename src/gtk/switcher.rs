@@ -20,10 +20,10 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
 
     let section = Menu::new();
 
-    for table in tables {
+    for (i, table) in tables.iter().enumerate() {
         section.append(
             Some(table.name()),
-            Some(&format!("win.table::{}", table.name())),
+            Some(&format!("win.table::{}", i)),
         );
     }
 
@@ -35,6 +35,6 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     }
 
     button.set_menu_model(Some(&menu));
-    button.set_tooltip_text(Some(&"Select Table"));
+    button.set_tooltip_text(Some("Select Table"));
     button
 }
