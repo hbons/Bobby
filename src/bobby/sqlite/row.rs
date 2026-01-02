@@ -5,6 +5,7 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
+use std::fmt;
 use std::cell::RefCell;
 use std::error::Error;
 
@@ -109,5 +110,23 @@ impl Row {
             ColumnSeparator::Commas   => self.cells().join(","),
             ColumnSeparator::Markdown => format!("| {} |", self.cells().join(" | ")),
         }
+    }
+}
+
+
+#[derive(Debug, Default)]
+pub enum RowOrder {
+    #[default]
+    Descending,
+    Ascending,
+}
+
+impl fmt::Display for RowOrder {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            RowOrder::Ascending  => "ASC",
+            RowOrder::Descending => "DESC",
+        };
+        write!(f, "{}", s)
     }
 }
