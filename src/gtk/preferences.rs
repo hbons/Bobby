@@ -5,7 +5,7 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-// use gtk4::gio::Settings;
+use gtk4::gio::Settings;
 use gtk4::{ StringList, Window };
 use libadwaita::prelude::*;
 use libadwaita::{
@@ -20,10 +20,10 @@ use libadwaita::{
 
 
 pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) {
-    // let settings = Settings::new("studio.planetpeanut.Bobby");
+    let settings = Settings::new("studio.planetpeanut.Bobby");
 
-    // let show_row_numbers: bool = settings.boolean("row-numbers");
-    // println!("Row numbers enabled: {}", show_row_numbers);
+    let show_row_numbers: bool = settings.boolean("row-numbers");
+    gtk4::glib::g_info!("settings", "Row numbers enabled: {}", show_row_numbers);
 
     let page = PreferencesPage::builder()
         .title("Preferences")
@@ -35,7 +35,21 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
         .title("Rows &amp; Columns")
         .build();
 
-    group_rows_columns.add(&row_numbers(/*&settings*/));
+
+
+    let switch = SwitchRow::builder()
+        .title("Row Numbers")
+        .build();
+
+    let _bind = settings.bind(
+        "row-numbers",
+        &switch,
+        "active"
+    );
+
+    group_rows_columns.add(&switch);
+
+
     group_rows_columns.add(&row_order());
     group_rows_columns.add(&row_separator());
 
@@ -61,19 +75,19 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
 
 
 
-fn row_numbers(/*settings: &Settings*/) -> SwitchRow {
-    let switch = SwitchRow::builder()
-        .title("Row Numbers")
-        .build();
+// fn row_numbers(settings: &Settings) -> SwitchRow {
+//     let switch = SwitchRow::builder()
+//         .title("Row Numbers")
+//         .build();
 
-    // _ = settings.bind(
-    //     "row-numbers",
-    //     &switch,
-    //     "active"
-    // );
+//     _ = settings.bind(
+//         "row-numbers",
+//         &switch,
+//         "active"
+//     );
 
-    switch
-}
+//     switch
+// }
 
 fn row_order() -> ComboRow {
     ComboRow::builder()

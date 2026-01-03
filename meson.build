@@ -10,6 +10,7 @@ configuration = configuration_data()
 configuration.set('APP_ID', 'studio.planetpeanut.Bobby')
 
 gnome = import('gnome')
+dependency('glib-2.0')
 dependency('gtk4')
 dependency('libadwaita-1')
 
@@ -43,8 +44,18 @@ cargo_build = custom_target(
 
 
 gnome.post_install(
+    glib_compile_schemas: true,
     gtk_update_icon_cache: true,
     update_desktop_database: true,
+)
+
+schemas_install_dir = join_paths(get_option('datadir'), 'glib-2.0', 'schemas')
+
+custom_target('compile_schemas',
+  input : files(glob(schemas_dir + 'data/*.gschema.xml')),
+  output : 'gschemas.compiled',  # dummy output for Meson
+  command : ['glib-compile-schemas', schemas_install_dir],
+  build_by_default : true
 )
 
 
