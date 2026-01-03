@@ -8,7 +8,7 @@
 use std::error::Error;
 use std::process::exit;
 
-use crate::app::{ app_version, App };
+use crate::app::{ app_deps, app_version, App };
 
 
 impl App {
@@ -16,6 +16,7 @@ impl App {
         match args.get(1).map(|s| s.as_str()) {
             Some("--help")    => self.cli_option_help(),
             Some("--version") => println!("{}", app_version()),
+            Some("--deps")    => println!("{}", app_deps()),
             Some("--env")     => println!("{:#?}", self),
             None | Some(_)    => { return Ok(()); },
         }
@@ -28,7 +29,7 @@ impl App {
         println!("Usage: bobby <file> [table]");
         println!();
         println!("Options:");
-        println!("    --help, --version, --env");
+        println!("    --help, --version, --deps, --env");
         println!();
     }
 }

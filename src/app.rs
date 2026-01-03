@@ -112,6 +112,11 @@ pub fn app_version() -> String {
 }
 
 
+pub fn app_deps() -> String {
+    format!("SQLite {}", rusqlite::version())
+}
+
+
 pub fn app_is_flatpak() -> bool {
     // Docs: https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-run
     env::var("FLATPAK_ID").is_ok()
