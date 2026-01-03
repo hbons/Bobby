@@ -100,15 +100,15 @@ pub fn app_runs_in_terminal() -> bool {
 
 
 pub fn app_version() -> String {
-    let mut app_str = format!("{} {}",
+    let s = format!("{} {}",
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"));
 
     if app_is_flatpak() {
-        app_str.push_str(" (Flatpak)");
+        format!("{s} (Flatpak)")
+    } else {
+        s.into()
     }
-
-    app_str
 }
 
 
