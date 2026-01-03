@@ -1,22 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="studio.planetpeanut.Bobby" path="/studio/planetpeanut/Bobby/">
+    <schema id="studio.planetpeanut.Bobby" path="/studio/planetpeanut/Bobby/">
+        <!-- Rows & Columns -->
+        <key name="row-numbers" type="b">
+            <default>true</default>
+        </key>
+        <key name="row-order" type="s">
+            <choices>
+                <choice value="newest-first"/>
+                <choice value="oldest-first"/>
+            </choices>
+            <default>'newest-first'</default>
+        </key>
+        <key name="column-separator" type="s">
+            <choices>
+                <choice value="tabs"/>
+                <choice value="spaces"/>
+                <choice value="commas"/>
+                <choice value="markdown"/>
+            </choices>
+            <default>'tabs'</default>
+        </key>
 
-    <!-- <key name="clipboard-separator" type="s">
-      <default>'tabs'</default>
-    </key>
-
-    <key name="binary-data-preview" type="s">
-      <default>'size-bytes'</default>
-    </key> -->
-
-    <key name="row-numbers" type="b">
-      <default>false</default>
-    </key>
-
-    <!-- <key name="monospace-font" type="b">
-      <default>false</default>
-      <summary>Use a monospace font</summary>
-    </key> -->
-  </schema>
+        <!-- Display -->
+        <key name="monospace-font" type="b">
+            <default>false</default>
+        </key>
+        <key name="binary-preview" type="s">
+            <choices>
+                <choice value="size-bytes"/>
+                <choice value="hex-values"/>
+            </choices>
+            <default>'size-bytes'</default>
+        </key>
+    </schema>
 </schemalist>
