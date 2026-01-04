@@ -91,7 +91,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
                     // New state
                     if affinity == Affinity::INTEGER {
-                        label.set_text(&thousands_sep(text));
+                        label.set_text(&format_thousands(text));
                     } else {
                         label.set_text(text);
                     }
@@ -148,7 +148,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     }
 
                     if is_index_column {
-                        tooltip = format!("{a} / {row_count}").into();
+                        tooltip = format!("{row_number} / {row_count}");
                         label.add_css_class("monospace");
                         label.set_ellipsize(EllipsizeMode::Start);
                         label.set_halign(Align::End);
@@ -270,7 +270,7 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
 }
 
 
-fn thousands_sep(s: &str) -> String {
+fn format_thousands(s: &str) -> String {
     let original = s;
 
     let (sign, digits) = s.strip_prefix('-')
