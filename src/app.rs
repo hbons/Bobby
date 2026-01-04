@@ -53,6 +53,11 @@ impl Default for App {
 
         let home_dir = Path::new(&home_dir);
 
+
+        // TODO: GSETTINGS SCHEMA
+        // GSETTINGS_SCHEMA_DIR=./data if not set
+
+
         // XDG
         let mut xdg_config_home   = home_dir.join(".config");      // ~/.var/app/<APP_ID>/config
         let mut xdg_data_home     = home_dir.join(".local/share"); // ~/.var/app/<APP_ID>/data
@@ -107,7 +112,7 @@ pub fn app_version() -> String {
     if app_is_flatpak() {
         format!("{s} (Flatpak)")
     } else {
-        s.into()
+        s
     }
 }
 

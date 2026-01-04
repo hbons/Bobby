@@ -6,8 +6,9 @@
 
 
 use gtk4::prelude::*;
-use gtk4::MenuButton;
-// use gtk4::gio::Menu;
+use gtk4::{ MenuButton, PopoverMenu };
+use gtk4::gio::Menu;
+
 use libadwaita::Application;
 
 
@@ -17,13 +18,14 @@ pub fn main_menu_new(application: &Application) -> MenuButton {
     button.set_tooltip_text(Some("Main Menu"));
 
     let menu = unsafe {
-        application.data::<gio::Menu>("menu")
+        application.data::<Menu>("menu")
             .map(|db| db.as_ref())
-
     };
 
-    let popover_menu = gtk4::PopoverMenu::from_model(Some(menu.unwrap()));
-    button.set_popover(Some(&popover_menu));
+    if let Some(menu) = menu {
+        let popover_menu = PopoverMenu::from_model(Some(menu));
+        button.set_popover(Some(&popover_menu));
+    }
 
     button
 }

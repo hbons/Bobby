@@ -7,8 +7,18 @@
 
 use std::error::Error;
 
+use gio::{
+    ListStore,
+    Menu,
+    Settings
+};
+
 use gtk4::prelude::*;
 use gtk4::{
+    gdk::BUTTON_SECONDARY,
+    gdk::Rectangle,
+    glib::Object,
+    pango::EllipsizeMode,
     Align,
     ColumnView,
     ColumnViewColumn,
@@ -21,16 +31,6 @@ use gtk4::{
     SignalListItemFactory,
     SingleSelection,
 };
-use gtk4::gdk::{
-    BUTTON_SECONDARY,
-    Rectangle
-};
-use gtk4::gio::{
-    ListStore,
-    Menu
-};
-use gtk4::glib::Object;
-use gtk4::pango::EllipsizeMode;
 
 use crate::bobby::prelude::*;
 
@@ -76,8 +76,9 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                let Some(row) = list_item.item().and_downcast::<Row>()
             {
                 let mut cells = row.cells();
-                let a = list_item.position() as usize + 1;
-                cells.insert(0, a.to_string());
+
+                let row_number = (list_item.position() as usize) + 1;
+                cells.insert(0, row_number.to_string());
 
                 let text = cells
                     .get(i)
@@ -98,16 +99,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     let mut tooltip = String::new();
 
                     if affinity == Affinity::BLOB {
-                        let (length, hex_values) = text.split_once(": ").unwrap();
-                        let show_hex_values = true; // TODO: Hook up to preference
-
-                        if show_hex_values {
-                            label.set_text(hex_values);
-                            tooltip = format!("{affinity:?}  16 / {length} BYTES").into();
-                        } else {
-                            label.set_text(&format!("{length} BYTES"));
-                        }
-
+                        let (length, hex_values) = text.split_once(": ").unwrap(); // TODO
                         label.set_sensitive(false);
 
                         let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
@@ -127,11 +119,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     } else if column_handle.primary_key {
                         tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
                     } else {
-                        if column_handle.primary_key {
-                            tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
-                        } else {
-                            tooltip = format!("{affinity:?}  {text}");
-                        }
+                        tooltip = format!("{affinity:?}  {text}");
                     }
 
 
@@ -225,7 +213,6 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
     column_view.set_show_column_separators(true);
     column_view.set_show_row_separators(true);
-    // column_view.add_css_class("monospace"); TODO: Hook up to preference
 
     let scrolled_window = ScrolledWindow::new();
     scrolled_window.set_child(Some(&column_view));
