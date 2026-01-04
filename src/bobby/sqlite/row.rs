@@ -113,12 +113,13 @@ pub fn hex_preview(blob: &[u8], length: usize) -> String {
 
 
 impl Row {
-    pub fn to_string(&self, separator: ColumnSeparator) -> String {
+    pub fn to_string(&self, separator: Option<ColumnSeparator>) -> String {
         match separator {
-            ColumnSeparator::Tabs     => self.cells().join("\t"),
-            ColumnSeparator::Spaces   => self.cells().join(" "),
-            ColumnSeparator::Commas   => self.cells().join(","),
-            ColumnSeparator::Markdown => format!("| {} |", self.cells().join(" | ")),
+            Some(ColumnSeparator::Tabs)     => self.cells().join("\t"),
+            Some(ColumnSeparator::Spaces)   => self.cells().join(" "),
+            Some(ColumnSeparator::Commas)   => self.cells().join(","),
+            Some(ColumnSeparator::Markdown) => format!("| {} |", self.cells().join(" | ")),
+            None => String::new(),
         }
     }
 }
