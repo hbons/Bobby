@@ -49,15 +49,6 @@ gnome.post_install(
     update_desktop_database: true,
 )
 
-schemas_install_dir = join_paths(get_option('datadir'), 'glib-2.0', 'schemas')
-
-custom_target('compile_schemas',
-  input : files(glob(schemas_dir + 'data/*.gschema.xml')),
-  output : 'gschemas.compiled',  # dummy output for Meson
-  command : ['glib-compile-schemas', schemas_install_dir],
-  build_by_default : true
-)
-
 
 summary(
   {
