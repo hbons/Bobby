@@ -109,6 +109,23 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         }
 
                         label.set_sensitive(false);
+
+                        let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+                        // TODO: Bind to change
+                        match settings.string("binary-preview").as_str() {
+                            "size-bytes" => {
+                                label.set_text(&format!("{length} BYTES"));
+                                tooltip = format!("{affinity:?}  {length} BYTES");
+                            },
+                            "hex-values" => {
+                                label.set_text(hex_values);
+                                tooltip = format!("{affinity:?}  16 / {length} BYTES");
+                            },
+                            _ => {},
+                        };
+                    } else if column_handle.primary_key {
+                        tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
                     } else {
                         if column_handle.primary_key {
                             tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
@@ -152,6 +169,14 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         label.set_sensitive(false);
                     }
 
+                    let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+                    // TODO: Bind to change
+                    if settings.boolean("monospace-font") {
+                        label.add_css_class("monospace");
+                        label.set_margin_top(1);
+                    }
+
                     if let Some(cell) = label.parent() {
                         cell.add_controller(gesture);
                         cell.set_tooltip_text(Some(&tooltip));
@@ -175,8 +200,16 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
         }
 
         if is_index_column {
-            view_column.set_fixed_width(64); // Holds numbers up to 100k without ellipsis
-            // view_column.set_visible(false); // TODO: Hook up to preference
+            // Holds numbers up to 100k without ellipsis
+            view_column.set_fixed_width(64);
+
+            // TODO: File GTK rendering bug
+            Settings::new("studio.planetpeanut.Bobby")
+                .bind(
+                    "row-numbers",
+                    &view_column,
+                    "visible"
+                ).build();
         } else {
             view_column.set_fixed_width(
                 match affinity {

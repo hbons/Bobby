@@ -127,9 +127,18 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
+
+    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+    let row_order = match settings.string("row-order").as_str() {
+        "newest-first" => Some(RowOrder::Descending),
+        "oldest-first" => Some(RowOrder::Ascending),
+        _ => None,
+    };
+
     let content = content_new(
         &db.columns(&table)?,
-        &db.rows(&table, None)?
+        &db.rows(&table, row_order)?
     );
 
 
@@ -217,13 +226,17 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 .and_then(|s| s.parse::<usize>().ok())
                 .and_then(|i| get_row(column_view, i))
             {
+                let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+                let separator = settings.string("column-separator");
+                let separator = separator.as_str().parse::<ColumnSeparator>();
+
                 _ = copy_to_clipboard(
-                    &row.to_string(ColumnSeparator::default())
+                    &row.to_string(separator.ok())
                 );
             }
         }
     });
-
 
     window.add_action(&copy_val_action);
     window.add_action(&copy_row_action);
