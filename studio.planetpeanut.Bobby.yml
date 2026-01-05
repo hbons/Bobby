@@ -35,5 +35,4 @@ modules:
         url: https://github.com/hbons/Bobby
         branch: main
       - cargo-sources.yml
-
     buildsystem: meson

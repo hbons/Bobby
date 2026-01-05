@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<component type="desktop-application">
+<component type="desktop">
     <name>Bobby</name>
     <summary>Browse SQLite files</summary>
     <id>studio.planetpeanut.Bobby</id>
@@ -21,19 +21,21 @@
     <url type="donation">https://github.com/sponsors/hbons</url>
 
     <categories>
+        <category>Developer Tools</category>
+        <category>Science</category>
         <category>Utility</category>
     </categories>
 
     <keywords>
         <keyword>sql</keyword>
         <keyword>sqlite</keyword>
-        <keyword>sqlite3</keyword>
         <keyword>query</keyword>
         <keyword>database</keyword>
         <keyword>db</keyword>
         <keyword>table</keyword>
         <keyword>row</keyword>
         <keyword>column</keyword>
+        <keyword>cell</keyword>
         <keyword>inspect</keyword>
     </keywords>
 
