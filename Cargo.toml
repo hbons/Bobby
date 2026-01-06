@@ -4,7 +4,7 @@ version = "49.0.0"
 repository = "https://www.github.com/hbons/Bobby"
 homepage = "https://www.github.com/hbons/Bobby" # TODO: https://planetpeanut.studio/bobby
 authors = ["Hylke Bons <hello@planetpeanut.studio>"]
-license = "GNU General Public License v3 or later"
+license = "GPL-3.0-or-later"
 readme = "README.md"
 edition = "2024"
 
@@ -15,6 +15,7 @@ id = "studio.planetpeanut.Bobby"
 # From the Recommended Crate Directory – https://blessed.rs
 chrono = "0.4.42"
 rusqlite = { version = "0.37.0", features = ["bundled"] }
+
 
 # From the GNOME Project – https://gnome.org
 gio = "0.21.5"
