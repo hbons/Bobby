@@ -213,6 +213,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
     column_view.set_show_column_separators(true);
     column_view.set_show_row_separators(true);
+    column_view.set_reorderable(false);
 
     let scrolled_window = ScrolledWindow::new();
     scrolled_window.set_child(Some(&column_view));
