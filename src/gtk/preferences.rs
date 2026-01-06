@@ -18,8 +18,6 @@ use libadwaita::{
     SwitchRow,
 };
 
-// use super::sponsors::*;
-
 
 pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) {
     let settings = Settings::new("studio.planetpeanut.Bobby");
@@ -54,7 +52,6 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
 
     let preferences = PreferencesDialog::new();
     preferences.add(&page);
-    // preferences.add(&sponsors_page());
 
     preferences.present(Some(parent));
 }

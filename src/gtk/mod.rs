@@ -11,6 +11,5 @@ pub mod file;
 pub mod lib;
 pub mod menu;
 pub mod preferences;
-// pub mod sponsors;
 pub mod switcher;
 pub mod window;

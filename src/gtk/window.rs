@@ -51,6 +51,8 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
     header.pack_end(&main_menu_new(application));
 
     let button = button_open_new(&window);
+
+    // TODO: Allow dragging in files
     let center = CenterBox::new();
     center.set_center_widget(Some(&button));
     center.set_vexpand(true);

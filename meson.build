@@ -9,10 +9,12 @@ command_name = 'bobby'
 configuration = configuration_data()
 configuration.set('APP_ID', 'studio.planetpeanut.Bobby')
 
+
 gnome = import('gnome')
 dependency('glib-2.0')
 dependency('gtk4')
 dependency('libadwaita-1')
+
 
 subdir('data')
 subdir('data/icons')
@@ -25,7 +27,6 @@ cargo_sources = files(
   'Cargo.toml',
   'Cargo.lock',
 )
-
 
 cargo_build = custom_target(
   command_name,
