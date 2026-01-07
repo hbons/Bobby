@@ -123,10 +123,12 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         if let Some(widget) = gesture.widget() {
                             if let Some(_picked) = widget.pick(x, y, PickFlags::DEFAULT) {
                                 let position = list_item_handle.position();
-
-                                let col = i;
                                 let row = position as usize;
-                                context_menu_open(gesture, col, row, x, y);
+
+                                 // Note (hidden) row number column
+                                if let Some(col) = i.checked_sub(1) {
+                                    context_menu_open(gesture, col, row, x, y);
+                                }
                             }
                         }
                     });
