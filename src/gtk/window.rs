@@ -62,8 +62,8 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
         .title("Browse Databases")
         .description("Drag and drop <b>SQLite files</b> here")
         .child(&button_open_new(&window))
-        .vexpand(true)
         .hexpand(true)
+        .vexpand(true)
         .build();
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
