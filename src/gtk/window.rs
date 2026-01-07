@@ -10,7 +10,7 @@ use std::path::Path;
 
 use gio::{ File, SimpleAction };
 
-use gtk4::{Label, prelude::*};
+use gtk4::prelude::*;
 use gtk4::{
     gdk::DragAction,
     gdk::Display,
@@ -18,7 +18,6 @@ use gtk4::{
     glib::VariantTy,
     Align,
     Button,
-    CenterBox,
     ColumnView,
     DropTarget,
     Orientation,
@@ -31,8 +30,8 @@ use libadwaita::prelude::*;
 use libadwaita::{
     Application,
     ApplicationWindow,
-    ButtonContent,
     HeaderBar,
+    StatusPage,
     // Toast,
     // ToastOverlay,
     // ToastPriority,
@@ -49,25 +48,27 @@ use super::switcher::table_switcher_new;
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
         .application(application)
-        .default_width(640)
-        .default_height(480)
-        .resizable(false)
+        .default_width(600)
+        .default_height(500)
         .title("Bobby")
         .build();
 
     let header = HeaderBar::new();
+    header.add_css_class("flat");
     header.pack_end(&main_menu_new(application));
 
-    let button = button_open_new(&window);
-
-    // TODO: Allow dragging in files
-    let center = CenterBox::new();
-    center.set_center_widget(Some(&button));
-    center.set_vexpand(true);
+    let page = StatusPage::builder()
+        .icon_name("studio.planetpeanut.Bobby-symbolic")
+        .title("Browse SQLite Databases")
+        .description("Drag and drop <b>.sqlite</b> files here")
+        .child(&button_open_new(&window))
+        .vexpand(true)
+        .hexpand(true)
+        .build();
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
     layout.append(&header);
-    layout.append(&center);
+    layout.append(&page);
 
     window.set_content(Some(&layout));
     window.add_controller(drop_target_new(&window));
@@ -84,10 +85,11 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
 
     let window_handle = window.clone();
 
+    // TODO: Handle multiple files
     drop_target.connect_drop(move |_, value, _, _| {
         if let Ok(file) = value.get::<File>() {
             if let Some(application) = window_handle.application() {
-                window_handle.close();
+                window_handle.close(); // TODO: Only close the Empty window
                 application.open(&[file], "");
             }
         }
@@ -100,16 +102,11 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
 
 
 fn button_open_new(window: &ApplicationWindow) -> Button {
-    let content = ButtonContent::new();
-    content.set_icon_name("folder-open-symbolic");
-    content.set_label("Open Database");
-
-    let button = Button::new();
-    button.add_css_class("pill");
-    button.add_css_class("suggested-action");
-    button.set_child(Some(&content));
-    button.set_valign(Align::Center);
-    button.set_halign(Align::Center);
+    let button = Button::builder()
+        .label("Open...")
+        .css_classes(["pill", "suggested-action"])
+        .halign(Align::Center)
+        .build();
 
     let window_weak = window.downgrade();
 
@@ -189,6 +186,8 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     );
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
+
+
     let window_handle = window.clone();
     let switcher_handle = switcher.clone();
     let layout_handle = layout.clone();
@@ -223,6 +222,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
 
     window.set_content(Some(&layout));
     window.add_controller(drop_target_new(&window));
+
 
     let window_handle = window.clone();
     let copy_val_action = gio::SimpleAction::new("copy-val", Some(VariantTy::STRING));
@@ -271,6 +271,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
             }
         }
     });
+
 
     window.add_action(&copy_val_action);
     window.add_action(&copy_row_action);
