@@ -47,10 +47,10 @@ use super::switcher::table_switcher_new;
 
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
+        .title("Bobby")
         .application(application)
         .default_width(600)
         .default_height(500)
-        .title("Bobby")
         .build();
 
     let header = HeaderBar::new();
@@ -59,8 +59,8 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
 
     let page = StatusPage::builder()
         .icon_name("studio.planetpeanut.Bobby-symbolic")
-        .title("Browse SQLite Databases")
-        .description("Drag and drop <b>.sqlite</b> files here")
+        .title("Browse Databases")
+        .description("Drag and drop <b>SQLite files</b> here")
         .child(&button_open_new(&window))
         .vexpand(true)
         .hexpand(true)

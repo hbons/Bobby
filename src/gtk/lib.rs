@@ -8,8 +8,14 @@
 use std::env;
 use std::error::Error;
 
+use gio::{
+    Menu,
+    SimpleAction,
+};
+
 use gtk4::prelude::*;
 use gtk4::gio::ApplicationFlags;
+
 use libadwaita::Application;
 
 use crate::app::App;
@@ -38,17 +44,17 @@ impl Gui for App {
 
 
         application.connect_startup(|application| {
-            let preferences_action = gio::SimpleAction::new("preferences", None);
+            let preferences_action = SimpleAction::new("preferences", None);
             let application_handle = application.clone();
 
             preferences_action.connect_activate(move |_, _| {
                 if let Some(active_window) = application_handle.active_window() {
-                    show_preferences_dialog(&active_window, None);
+                    show_preferences_dialog(&active_window);
                 }
             });
 
 
-            let about_action = gio::SimpleAction::new("about", None);
+            let about_action = SimpleAction::new("about", None);
             let application_handle = application.clone();
 
             about_action.connect_activate(move |_, _| {
@@ -58,7 +64,7 @@ impl Gui for App {
             });
 
 
-            let action = gio::SimpleAction::new("sponsors", None);
+            let action = SimpleAction::new("sponsors", None);
             let application_handle = application.clone();
 
             action.connect_activate(move |_, _| {
@@ -73,7 +79,7 @@ impl Gui for App {
             application.add_action(&about_action);
 
 
-            let menu = gio::Menu::new();
+            let menu = Menu::new();
             menu.append(Some("Preferences"), Some("app.preferences"));
             // menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
             menu.append(Some("About Bobby"), Some("app.about"));

@@ -19,7 +19,7 @@ use libadwaita::{
 };
 
 
-pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) {
+pub fn show_preferences_dialog(parent: &Window) {
     let settings = Settings::new("studio.planetpeanut.Bobby");
 
     let page = PreferencesPage::builder()
@@ -31,7 +31,6 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
     let group_rows_columns = PreferencesGroup::builder()
         .title("Rows &amp; Columns")
         .build();
-
 
     group_rows_columns.add(&row_numbers(&settings));
     group_rows_columns.add(&row_order(&settings));
