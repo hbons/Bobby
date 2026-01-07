@@ -38,14 +38,14 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
     group_rows_columns.add(&row_separator(&settings));
 
 
-    let group_display = PreferencesGroup::builder()
-        .title("Display")
+    let group_appearance = PreferencesGroup::builder()
+        .title("Appearance")
         .build();
 
-    group_display.add(&row_monospace(&settings));
+    group_appearance.add(&row_monospace(&settings));
 
     page.add(&group_rows_columns);
-    page.add(&group_display);
+    page.add(&group_appearance);
 
 
     let preferences = PreferencesDialog::new();

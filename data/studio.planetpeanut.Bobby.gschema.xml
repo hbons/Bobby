@@ -22,7 +22,7 @@
             <default>'tabs'</default>
         </key>
 
-        <!-- Display -->
+        <!-- Appearance -->
         <key name="monospace-font" type="b">
             <default>false</default>
         </key>
