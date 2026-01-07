@@ -90,6 +90,8 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     label.set_sensitive(true);
 
                     // New state
+                    label.add_css_class("numeric");
+
                     if affinity == Affinity::INTEGER {
                         label.set_text(&format_thousands(text));
                     } else {
