@@ -8,20 +8,24 @@
 use std::error::Error;
 use std::path::Path;
 
-use gtk4::prelude::*;
+use gio::{ File, SimpleAction };
+
+use gtk4::{Label, prelude::*};
 use gtk4::{
+    gdk::DragAction,
+    gdk::Display,
+    glib::Variant,
+    glib::VariantTy,
     Align,
     Button,
     CenterBox,
     ColumnView,
+    DropTarget,
     Orientation,
     ScrolledWindow,
     SingleSelection,
     Widget,
 };
-use gtk4::gdk::Display;
-use gtk4::gio::SimpleAction;
-use gtk4::glib::{ Variant, VariantTy };
 
 use libadwaita::prelude::*;
 use libadwaita::{
@@ -62,9 +66,34 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
     layout.append(&center);
 
     window.set_content(Some(&layout));
+    window.add_controller(drop_target_new(&window));
 
     Ok(window)
 }
+
+
+fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
+    let drop_target = DropTarget::new(
+        File::static_type(),
+        DragAction::COPY,
+    );
+
+    let window_handle = window.clone();
+
+    drop_target.connect_drop(move |_, value, _, _| {
+        if let Ok(file) = value.get::<File>() {
+            if let Some(application) = window_handle.application() {
+                window_handle.close();
+                application.open(&[file], "");
+            }
+        }
+
+        true
+    });
+
+    drop_target
+}
+
 
 fn button_open_new(window: &ApplicationWindow) -> Button {
     let content = ButtonContent::new();
@@ -190,7 +219,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     layout.append(&content);
 
     window.set_content(Some(&layout));
-
+    window.add_controller(drop_target_new(&window));
 
     let window_handle = window.clone();
     let copy_val_action = gio::SimpleAction::new("copy-val", Some(VariantTy::STRING));
