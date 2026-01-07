@@ -45,6 +45,8 @@ use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
 
+const EMPTY_WINDOW: &str = "empty-window";
+
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
         .title("Bobby")
@@ -71,6 +73,7 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
     layout.append(&page);
 
     window.set_content(Some(&layout));
+    window.set_widget_name(EMPTY_WINDOW);
     window.add_controller(drop_target_new(&window));
 
     Ok(window)
@@ -89,7 +92,10 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
     drop_target.connect_drop(move |_, value, _, _| {
         if let Ok(file) = value.get::<File>() {
             if let Some(application) = window_handle.application() {
-                window_handle.close(); // TODO: Only close the Empty window
+                if window_handle.widget_name() == EMPTY_WINDOW {
+                    window_handle.close();
+                }
+
                 application.open(&[file], "");
             }
         }
