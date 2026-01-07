@@ -59,7 +59,7 @@ impl Row {
 }
 
 
-const N_PREVIEW_LEN: usize = 16;
+const N_PREVIEW_LEN: usize = 8;
 
 impl Database {
     pub fn rows(&self, table: &Table, row_order: Option<RowOrder>) -> Result<Vec<Row>, Box<dyn Error>> {
@@ -86,7 +86,7 @@ impl Database {
                     ValueRef::Integer(i) => i.to_string(),
                     ValueRef::Real(f)    => f.to_string(),
                     ValueRef::Text(t)    => String::from_utf8_lossy(t).into(),
-                    ValueRef::Blob(b)    => format!("{}: {}", b.len(), hex_preview(b, N_PREVIEW_LEN)),
+                    ValueRef::Blob(b)    => format!("{} BYTES:{}", b.len(), hex_preview(b, N_PREVIEW_LEN)),
                 };
 
                 values.push(value);

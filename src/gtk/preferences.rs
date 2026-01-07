@@ -43,8 +43,6 @@ pub fn show_preferences_dialog(parent: &Window, _page: Option<PreferencesPage>) 
         .build();
 
     group_display.add(&row_monospace(&settings));
-    group_display.add(&row_binary(&settings));
-
 
     page.add(&group_rows_columns);
     page.add(&group_display);
@@ -105,16 +103,6 @@ fn row_monospace(settings: &Settings) -> SwitchRow {
     ).build();
 
     switch
-}
-
-fn row_binary(settings: &Settings) -> ComboRow {
-    combo_row_with_binding(
-        settings,
-        "binary-preview",
-        "Binary Preview",
-        Some("How to display columns with binary data"),
-        &["Size in Bytes", "Hex Values"],
-    )
 }
 
 

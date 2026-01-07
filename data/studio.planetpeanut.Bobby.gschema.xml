@@ -26,12 +26,5 @@
         <key name="monospace-font" type="b">
             <default>false</default>
         </key>
-        <key name="binary-preview" type="s">
-            <choices>
-                <choice value="size-bytes"/>
-                <choice value="hex-values"/>
-            </choices>
-            <default>'size-bytes'</default>
-        </key>
     </schema>
 </schemalist>

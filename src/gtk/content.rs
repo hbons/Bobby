@@ -98,26 +98,13 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         label.set_text(text);
                     }
 
-                    let mut tooltip = String::new();
+                    let mut tooltip;
 
                     if affinity == Affinity::BLOB {
-                        let (length, hex_values) = text.split_once(": ").unwrap(); // TODO
+                        let (length, hex_values) = text.split_once(":").unwrap(); // TODO
                         label.set_sensitive(false);
-
-                        let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-                        // TODO: Bind to change
-                        match settings.string("binary-preview").as_str() {
-                            "size-bytes" => {
-                                label.set_text(&format!("{length} BYTES"));
-                                tooltip = format!("{affinity:?}  {length} BYTES");
-                            },
-                            "hex-values" => {
-                                label.set_text(hex_values);
-                                tooltip = format!("{affinity:?}  16 / {length} BYTES");
-                            },
-                            _ => {},
-                        };
+                        label.set_text(&length);
+                        tooltip = format!("{affinity:?}  {hex_values} …");
                     } else if column_handle.primary_key {
                         tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
                     } else {
@@ -203,7 +190,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
         } else {
             view_column.set_fixed_width(
                 match affinity {
-                    Affinity::BLOB => { view_column.set_resizable(false); 128 }, // TODO: Check width
+                    Affinity::BLOB => { view_column.set_resizable(false); 128 },
                     Affinity::TEXT => 192,
                     _ => 128,
                 }
