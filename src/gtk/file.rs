@@ -27,6 +27,7 @@ pub fn open_file_dialog(parent: &ApplicationWindow) {
         Some(&Cancellable::new()),
         move |result| {
             if let Err(e) = handle_file(&parent_handle, result) {
+                // TODO: Show error toast on window
                 eprintln!("Failed to open file: {e}");
             }
         },

@@ -33,9 +33,13 @@ use libadwaita::{
     ApplicationWindow,
     ButtonContent,
     HeaderBar,
+    // Toast,
+    // ToastOverlay,
+    // ToastPriority,
 };
 
 use crate::bobby::prelude::*;
+
 use super::content::content_new;
 use super::file::open_file_dialog;
 use super::menu::main_menu_new;
@@ -157,7 +161,6 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let header = HeaderBar::new();
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
-
 
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 

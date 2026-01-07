@@ -199,6 +199,11 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
             );
         }
 
+        if affinity == Affinity::NUMERIC {
+            // TODO: Check if a date or datetime and fit column width
+        }
+
+
         column_view.append_column(&view_column);
     }
 
@@ -256,6 +261,7 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
             .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
             .build();
 
+        // TODO: GTK warning when switching tables after opening menu
         popover.set_parent(&widget);
         popover.popup();
     }
