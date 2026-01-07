@@ -15,6 +15,9 @@ dependency('glib-2.0')
 dependency('gtk4')
 dependency('libadwaita-1')
 
+devenv = environment()
+devenv.prepend('PATH', meson.current_build_dir())
+meson.add_devenv(devenv)
 
 subdir('data')
 subdir('data/icons')
