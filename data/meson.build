@@ -28,3 +28,6 @@ install_data(
   'studio.planetpeanut.Bobby.gschema.xml',
   install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas')
 )
+gnome.post_install(glib_compile_schemas: true)
+gnome.compile_schemas(depend_files: files('studio.planetpeanut.Bobby.gschema.xml'))
+devenv.append('GSETTINGS_SCHEMA_DIR', meson.current_build_dir())
