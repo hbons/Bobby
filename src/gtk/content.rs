@@ -25,7 +25,6 @@ use gtk4::{
     GestureClick,
     Label,
     ListItem,
-    PickFlags,
     PopoverMenu,
     ScrolledWindow,
     SignalListItemFactory,
@@ -98,13 +97,15 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         label.set_text(text);
                     }
 
-                    let mut tooltip;
+                    let mut tooltip = String::new();
 
                     if affinity == Affinity::BLOB {
-                        let (length, hex_values) = text.split_once(":").unwrap(); // TODO
                         label.set_sensitive(false);
-                        label.set_text(&length);
-                        tooltip = format!("{affinity:?}  {hex_values} …");
+
+                        if let Some((length, hex_values)) = text.split_once(":") {
+                            label.set_text(length);
+                            tooltip = format!("{affinity:?}  {hex_values} …");
+                        }
                     } else if column_handle.primary_key {
                         tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
                     } else {
@@ -112,24 +113,19 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     }
 
 
-                    let gesture = GestureClick::builder()
-                        .button(BUTTON_SECONDARY)
-                        .build();
+                    let gesture = GestureClick::new();
+                    gesture.set_button(BUTTON_SECONDARY);
 
                     let list_item_handle = list_item.clone();
 
                     // TODO: Check performance impact of this
                     gesture.connect_pressed(move |gesture, _, x, y| {
-                        if let Some(widget) = gesture.widget() {
-                            if let Some(_picked) = widget.pick(x, y, PickFlags::DEFAULT) {
-                                let position = list_item_handle.position();
-                                let row = position as usize;
+                        let position = list_item_handle.position();
+                        let row = position as usize;
 
-                                 // Note (hidden) row number column
-                                if let Some(col) = i.checked_sub(1) {
-                                    context_menu_open(gesture, col, row, x, y);
-                                }
-                            }
+                        // Note (hidden) row number column
+                        if let Some(col) = i.checked_sub(1) {
+                            context_menu_open(gesture, col, row, x, y);
                         }
                     });
 

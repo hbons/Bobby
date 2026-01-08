@@ -300,7 +300,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
 fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
     let display = Display::default().ok_or("Missing Display")?;
     let clipboard = display.clipboard();
-    clipboard.set_text(s); // TODO: Confirm with libadwaita::ToastOverlay
+    clipboard.set_text(s);
 
     Ok(())
 }

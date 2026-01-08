@@ -32,7 +32,8 @@ use super::about::show_about_dialog;
 
 
 impl Gui for App {
-    // Docs: https://docs.gtk.org/gtk4/
+    // Docs: https://docs.gtk.org/gtk4
+    //       https://gnome.pages.gitlab.gnome.org/libadwaita/doc
 
     fn gui_run(&self) -> Result<(), Box<dyn Error>> {
         let application = Application::builder()
@@ -64,24 +65,11 @@ impl Gui for App {
             });
 
 
-            let action = SimpleAction::new("sponsors", None);
-            let application_handle = application.clone();
-
-            action.connect_activate(move |_, _| {
-                if let Some(active_window) = application_handle.active_window() {
-                    show_about_dialog(&active_window);
-                }
-            });
-
-
             application.add_action(&preferences_action);
-            application.add_action(&action);
             application.add_action(&about_action);
-
 
             let menu = Menu::new();
             menu.append(Some("Preferences"), Some("app.preferences"));
-            // menu.append(Some("Sponsors"), Some("app.sponsors")); // TODO
             menu.append(Some("About Bobby"), Some("app.about"));
 
             unsafe { application.set_data("menu", menu); }
@@ -92,7 +80,6 @@ impl Gui for App {
             if let Some(window) = application.active_window() {
                 window.present();
             } else {
-                // TODO: Sometimes still opens a duplicate window if 1st was opened by "empty" state
                 if let Ok(window) = window_empty_new(application) {
                     window.present();
                 }
