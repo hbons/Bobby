@@ -6,42 +6,25 @@
 
 
 use std::error::Error;
+use std::fmt;
 use std::str;
 
 use super::database::Database;
 
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, PartialEq)]
 pub struct Table {
-    name: String,
+    name: TableName,
     has_row_id: Option<bool>,
 }
 
 impl Table {
-    pub fn name(&self) -> &str {
-        &self.name
+    pub fn name(&self) -> String {
+        self.name.to_string()
     }
 
     pub fn has_row_id(&self) -> Option<bool> {
         self.has_row_id
-    }
-}
-
-
-// TODO: Replace with TableName(String)
-impl str::FromStr for Table {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.is_empty() || s.starts_with("sqlite_") {
-            return Err("Table name is empty or starts with sqlite_".into());
-        }
-
-        if !s.chars().all(|c| c.is_alphanumeric() || c == '_') {
-            return Err("Table name contains invalid characters".into());
-        }
-
-        Ok(Table { name: s.to_string(), has_row_id: None, })
     }
 }
 
@@ -68,6 +51,10 @@ impl Database {
                 let has_row_id: Option<i64> = row.get(1)?;
                 let _type: String = row.get(2)?;
 
+                let name = name
+                    .parse::<TableName>()
+                    .map_err(|_| rusqlite::Error::InvalidQuery)?;
+
                 Ok(Table {
                     name,
                     has_row_id: has_row_id.map(|v| v != 0),
@@ -82,5 +69,31 @@ impl Database {
     pub fn row_count(&self, table: &Table) -> Result<i64, Box<dyn Error>> {
         let sql = format!("SELECT COUNT(*) FROM {}", table.name());
         Ok(self.connection.query_row(&sql, [], |row| row.get(0))?)
+    }
+}
+
+
+#[derive(Clone, PartialEq)]
+pub struct TableName(pub String);
+
+impl str::FromStr for TableName {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.is_empty() || s.starts_with("sqlite_") {
+            return Err("Table name is empty or starts with sqlite_".into());
+        }
+
+        if !s.chars().all(|c| c.is_alphanumeric() || c == '_') {
+            return Err("Table name contains invalid characters".into());
+        }
+
+        Ok(Self(s.to_string()))
+    }
+}
+
+impl fmt::Display for TableName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }

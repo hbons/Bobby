@@ -164,7 +164,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
         .build();
 
     let switcher = table_switcher_new(&tables);
-    switcher.set_label(table.name());
+    switcher.set_label(&table.name());
 
     let main_menu = main_menu_new(application);
 
@@ -216,7 +216,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
             .and_then(|s| s.parse::<usize>().ok())
             .and_then(|i| tables.get(i))
         {
-            switcher_handle.set_label(table.name());
+            switcher_handle.set_label(&table.name());
 
             match window_change_content(&window_handle, table) {
                 Ok(new_content) => {

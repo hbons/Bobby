@@ -22,7 +22,7 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
 
     for (i, table) in tables.iter().enumerate() {
         section.append(
-            Some(table.name()),
+            Some(&table.name()),
             Some(&format!("win.table::{}", i)),
         );
     }
@@ -31,7 +31,7 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     // menu.append_section(Some("Views"), &section); // TODO
 
     if let Some(table) = tables.first() {
-        button.set_label(table.name());
+        button.set_label(&table.name());
     }
 
     button.set_menu_model(Some(&menu));
