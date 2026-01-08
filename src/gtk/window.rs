@@ -5,11 +5,13 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use std::cell::Ref;
 use std::error::Error;
 use std::path::Path;
 
 use gio::SimpleAction;
 
+use gio::glib::BoxedAnyObject;
 use gtk4::prelude::*;
 use gtk4::{
     gdk::DragAction,
@@ -249,9 +251,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 let col_index = col_index.parse::<usize>().unwrap_or_default();
 
                 if let Some(row) = get_row(column_view, row_index) {
-                    let cells = row.cells();
-
-                    if let Some(cell_text) = cells.get(col_index) {
+                    if let Some(cell_text) = row.cells.get(col_index) {
                         _ = copy_to_clipboard(cell_text);
                     }
                 }
@@ -353,7 +353,10 @@ fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
     let selection = model.downcast_ref::<SingleSelection>()?;
     let item = selection
         .item(position as u32)
-        .and_then(|o| o.downcast::<Row>().ok())?;
+        .and_then(|o| o.downcast::<BoxedAnyObject>().ok())?;
 
-    item.downcast::<Row>().ok()
+    let row: Ref<Row> = item.borrow();
+    let row = row.clone();
+
+    Some(row)
 }

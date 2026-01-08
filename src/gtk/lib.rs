@@ -79,10 +79,8 @@ impl Gui for App {
         application.connect_activate(|application| {
             if let Some(window) = application.active_window() {
                 window.present();
-            } else {
-                if let Ok(window) = window_empty_new(application) {
-                    window.present();
-                }
+            } else if let Ok(window) = window_empty_new(application) {
+                window.present();
             }
         });
 

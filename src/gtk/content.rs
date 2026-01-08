@@ -5,6 +5,7 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use std::cell::Ref;
 use std::error::Error;
 
 use gio::{
@@ -17,6 +18,7 @@ use gtk4::prelude::*;
 use gtk4::{
     gdk::BUTTON_SECONDARY,
     gdk::Rectangle,
+    glib::BoxedAnyObject,
     glib::Object,
     pango::EllipsizeMode,
     Align,
@@ -39,11 +41,13 @@ const SYMBOL_PRIMARY_KEY: &str = "◇";
 
 
 pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
-    let store = ListStore::new::<Row>();
+    let store = ListStore::new::<BoxedAnyObject>();
     let row_count = rows.len();
 
     for row in rows.iter().take(100_000) {
-        store.append(row); // TODO: Remove hard limit when we have lazy loading
+        let row = row.clone();
+        let boxed = BoxedAnyObject::new(row);
+        store.append(&boxed); // TODO: Remove hard limit when we have lazy loading
     }
 
     let selection = SingleSelection::new(Some(store));
@@ -72,9 +76,10 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
         // TODO: Move out
         factory.connect_bind(move |_, obj| {
             if let Some(list_item) = obj.downcast_ref::<ListItem>() &&
-               let Some(row) = list_item.item().and_downcast::<Row>()
+               let Some(boxed) = list_item.item().and_downcast::<BoxedAnyObject>()
             {
-                let mut cells = row.cells();
+                let row: Ref<Row> = boxed.borrow();
+                let mut cells = row.cells.clone();
 
                 let row_number = (list_item.position() as usize) + 1;
                 cells.insert(0, row_number.to_string());

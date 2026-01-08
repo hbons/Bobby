@@ -6,11 +6,8 @@
 
 
 use std::fmt;
-use std::cell::RefCell;
 use std::error::Error;
 
-use gtk4::glib;
-use gtk4::glib::subclass::prelude::*;
 use rusqlite::types::ValueRef;
 
 use super::column::ColumnSeparator;
@@ -18,44 +15,9 @@ use super::database::Database;
 use super::table::Table;
 
 
-// TODO: Use glib::BoxedAnyObject<Row>
-mod imp {
-    #[allow(clippy::wildcard_imports)]
-    use super::*;
-
-    #[derive(Default)]
-    pub struct Row {
-        pub cells: RefCell<Vec<String>>,
-    }
-
-
-    #[glib::object_subclass]
-    impl ObjectSubclass for Row {
-        const NAME: &'static str = "Row";
-        type Type = super::Row;
-    }
-
-
-    impl ObjectImpl for Row {}
-}
-
-
-glib::wrapper! {
-    pub struct Row(ObjectSubclass<imp::Row>);
-}
-
-
-impl Row {
-    pub fn new(cells: Vec<String>) -> Self {
-        let obj: Self = glib::Object::new();
-        obj.imp().cells.replace(cells);
-        obj
-    }
-
-
-    pub fn cells(&self) -> Vec<String> {
-        self.imp().cells.borrow().clone()
-    }
+#[derive(Clone, Debug, Default)]
+pub struct Row {
+    pub cells: Vec<String>,
 }
 
 
@@ -101,7 +63,7 @@ impl Database {
         })?;
 
         Ok(iter
-            .map(|cells| cells.map(Row::new))
+            .map(|res| res.map(|cells| Row { cells }))
             .collect::<Result<Vec<_>, _>>()?
         )
     }
@@ -120,10 +82,10 @@ pub fn hex_preview(blob: &[u8], length: usize) -> String {
 impl Row {
     pub fn to_string(&self, separator: Option<ColumnSeparator>) -> String {
         match separator {
-            Some(ColumnSeparator::Tabs)     => self.cells().join("\t"),
-            Some(ColumnSeparator::Spaces)   => self.cells().join(" "),
-            Some(ColumnSeparator::Commas)   => self.cells().join(","),
-            Some(ColumnSeparator::Markdown) => format!("| {} |", self.cells().join(" | ")),
+            Some(ColumnSeparator::Tabs)     => self.cells.join("\t"),
+            Some(ColumnSeparator::Spaces)   => self.cells.join(" "),
+            Some(ColumnSeparator::Commas)   => self.cells.join(","),
+            Some(ColumnSeparator::Markdown) => format!("| {} |", self.cells.join(" | ")),
             None => String::new(),
         }
     }
@@ -140,8 +102,8 @@ pub enum RowOrder {
 impl fmt::Display for RowOrder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            RowOrder::Ascending  => "ASC",
             RowOrder::Descending => "DESC",
+            RowOrder::Ascending  => "ASC",
         };
         write!(f, "{}", s)
     }
