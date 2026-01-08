@@ -101,28 +101,30 @@ impl Gui for App {
 
 
         application.connect_open(move |application, files, _| {
-            if let Some(path) = files.first().and_then(|f| f.path()) {
-                for window in application.windows() {
-                    // SAFETY: Window outlives the database
-                    let db = unsafe {
-                        window
-                            .data::<Database>("db")
-                            .map(|db| db.as_ref())
-                    };
+            for file in files {
+                if let Some(path) = file.path() {
+                    for window in application.windows() {
+                        // SAFETY: Window outlives the database
+                        let db = unsafe {
+                            window
+                                .data::<Database>("db")
+                                .map(|db| db.as_ref())
+                        };
 
-                    if let Some(db) = db {
-                        if db.path == path {
-                            window.present();
-                            return;
+                        if let Some(db) = db {
+                            if db.path == path {
+                                window.present();
+                                return;
+                            }
                         }
                     }
-                }
 
-                let table_name = env::args().nth(2);
-                let result = window_new(application, &path, table_name);
+                    let table_name = env::args().nth(2);
+                    let result = window_new(application, &path, table_name);
 
-                if let Ok(window) = result {
-                    window.present();
+                    if let Ok(window) = result {
+                        window.present();
+                    }
                 }
             }
         });

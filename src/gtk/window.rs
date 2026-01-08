@@ -8,12 +8,13 @@
 use std::error::Error;
 use std::path::Path;
 
-use gio::{ File, SimpleAction };
+use gio::SimpleAction;
 
 use gtk4::prelude::*;
 use gtk4::{
     gdk::DragAction,
     gdk::Display,
+    gdk::FileList,
     glib::Variant,
     glib::VariantTy,
     Align,
@@ -82,22 +83,26 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
 
 fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
     let drop_target = DropTarget::new(
-        File::static_type(),
+        FileList::static_type(),
         DragAction::COPY,
     );
 
     let window_handle = window.clone();
 
-    // TODO: Handle multiple files
     drop_target.connect_drop(move |_, value, _, _| {
-        if let Ok(file) = value.get::<File>() {
-            if let Some(application) = window_handle.application() {
-                if window_handle.widget_name() == EMPTY_WINDOW {
-                    window_handle.close();
-                }
+        if window_handle.widget_name() == EMPTY_WINDOW {
+            // Keep reference alive
+            window_handle.set_visible(false);
+        }
 
-                application.open(&[file], "");
+        if let Some(application) = window_handle.application() {
+            if let Ok(list) = value.get::<FileList>() {
+                application.open(&list.files(), "");
             }
+        }
+
+        if window_handle.widget_name() == EMPTY_WINDOW {
+            window_handle.close();
         }
 
         true
