@@ -28,7 +28,6 @@ impl Database {
         let sql =
             if table.has_row_id() == Some(true) {
                 if let Some(order) = row_order {
-                    // TODO: "LIMIT 100 OFFSET 0"
                     &format!("SELECT * FROM {} ORDER BY rowid {order};", table.name())
                 } else {
                     &format!("SELECT * FROM {} ORDER BY rowid DESC;", table.name())

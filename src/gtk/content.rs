@@ -47,7 +47,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
     for row in rows.iter().take(100_000) {
         let row = row.clone();
         let boxed = BoxedAnyObject::new(row);
-        store.append(&boxed); // TODO: Remove hard limit when we have lazy loading
+        store.append(&boxed); // TODO: Remove hard limit when we have lazy loading "LIMIT 100 OFFSET 0"
     }
 
     let selection = SingleSelection::new(Some(store));
@@ -250,7 +250,7 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
             Some(&format!("win.copy-row::{}", row_index))
         );
 
-        // TODO
+        // TODO: Also prepend column headers in Markdown mode
         // menu.append(
         //     Some("Copy Rows"),
         //     Some(&format!("win.copy-rows::{}", row_index))

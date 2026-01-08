@@ -12,12 +12,9 @@
         <url type="homepage">https://planetpeanut.studio</url>
     </developer>
 
-    <!-- TODO: Update URL to project -->
-    <url type="homepage">https://www.github.com/hbons</url>
-
-    <!-- TODO: Uncommment
+    <url type="homepage">https://www.github.com/hbons/Bobby</url>
     <url type="bugtracker">https://www.github.com/hbons/Bobby/issues</url>
-    -->
+
     <url type="donation">https://github.com/sponsors/hbons</url>
 
     <categories>
