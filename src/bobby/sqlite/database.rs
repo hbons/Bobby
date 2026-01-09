@@ -39,4 +39,15 @@ impl Database {
             }
         )
     }
+
+
+    pub fn data_version(&self) -> Option<i64> {
+        let version: i64 = self.connection.query_row(
+            "PRAGMA data_version;",
+            [],
+            |row| row.get(0),
+        ).ok()?;
+
+        Some(version)
+    }
 }
