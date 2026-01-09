@@ -44,7 +44,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
     let store = ListStore::new::<BoxedAnyObject>();
     let row_count = rows.len();
 
-    for row in rows.iter().take(100_000) {
+    for row in rows.iter() {
         let row = row.clone();
         let boxed = BoxedAnyObject::new(row);
         store.append(&boxed); // TODO: Remove hard limit when we have lazy loading "LIMIT 100 OFFSET 0"

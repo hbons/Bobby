@@ -24,16 +24,26 @@ pub struct Row {
 const BLOB_PREVIEW_LEN: usize = 8;
 
 impl Database {
-    pub fn rows(&self, table: &Table, row_order: Option<RowOrder>) -> Result<Vec<Row>, Box<dyn Error>> {
+    pub fn rows(
+        &self,
+        table: &Table,
+        row_order: Option<RowOrder>,
+        limit: Option<usize>,
+        offset: Option<usize>,
+    ) -> Result<Vec<Row>, Box<dyn Error>>
+{
+        let limit = limit.unwrap_or(100_000);
+        let offset = offset.unwrap_or(0);
+
         let sql =
             if table.has_row_id() == Some(true) {
                 if let Some(order) = row_order {
-                    &format!("SELECT * FROM {} ORDER BY rowid {order};", table.name())
+                    &format!("SELECT * FROM {} ORDER BY rowid {order} LIMIT {limit} OFFSET {offset};", table.name())
                 } else {
-                    &format!("SELECT * FROM {} ORDER BY rowid DESC;", table.name())
+                    &format!("SELECT * FROM {} ORDER BY rowid DESC LIMIT {limit} OFFSET {offset};", table.name())
                 }
             } else {
-                &format!("SELECT * FROM {}", table.name())
+                &format!("SELECT * FROM {} LIMIT {limit} OFFSET {offset}", table.name())
             };
 
         let mut sql = self.connection.prepare(sql)?;
