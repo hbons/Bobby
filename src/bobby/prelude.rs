@@ -6,7 +6,6 @@
 
 
 pub use crate::bobby::sqlite::affinity::Affinity;
-pub use crate::bobby::sqlite::cache::Cache;
 pub use crate::bobby::sqlite::column::Column;
 pub use crate::bobby::sqlite::column::ColumnSeparator;
 pub use crate::bobby::sqlite::database::Database;

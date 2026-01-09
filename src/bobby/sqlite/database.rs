@@ -7,16 +7,15 @@
 
 use std::error::Error;
 use std::path::{ Path, PathBuf };
+use std::time::Duration;
 
 use rusqlite::{ Connection, OpenFlags };
-use super::cache::Cache;
 
 
 #[derive(Debug)]
 pub struct Database {
     pub path: PathBuf,
     pub connection: Connection,
-    pub cache: Option<Cache>,
 }
 
 
@@ -29,11 +28,14 @@ impl Database {
             OpenFlags::SQLITE_OPEN_READ_ONLY
         )?;
 
+        connection.busy_timeout(Duration::from_secs(3))?;
+        connection.execute_batch("PRAGMA query_only = ON;")?;
+        connection.execute_batch("PRAGMA foreign_keys = ON;")?;
+
         Ok(
             Database {
                 path: path.to_path_buf(),
                 connection,
-                cache: None,
             }
         )
     }
