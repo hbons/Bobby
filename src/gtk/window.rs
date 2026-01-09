@@ -172,19 +172,17 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
+
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
-    let row_order = match settings.string("row-order").as_str() {
+    let _row_order = match settings.string("row-order").as_str() { // TODO
         "newest-first" => Some(RowOrder::Descending),
         "oldest-first" => Some(RowOrder::Ascending),
         _ => None,
     };
 
-    let content = content_new(
-        &db.columns(&table)?,
-        &db.rows(&table, row_order, None, None)?
-    );
 
+    let content = content_new(&db, &table);
 
     let table_index = tables
         .iter()
@@ -317,11 +315,7 @@ fn window_change_content(window: &ApplicationWindow, table: &Table)
     };
 
     let db = db.ok_or("Database not found on window")?;
-
-    let content = content_new(
-        &db.columns(table)?,
-        &db.rows(table, None, None, None)?
-    );
+    let content = content_new(db, table);
 
     // TODO: Swap the content here. Need to get the layout box somehow...
 

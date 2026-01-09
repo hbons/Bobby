@@ -9,7 +9,6 @@ use std::cell::Ref;
 use std::error::Error;
 
 use gio::{
-    ListStore,
     Menu,
     Settings
 };
@@ -34,23 +33,19 @@ use gtk4::{
 };
 
 use crate::bobby::prelude::*;
+use crate::bobby::sqlite::cache::DatabaseCacheModel;
 
 
 // U+25C7 "White Diamond"
 const SYMBOL_PRIMARY_KEY: &str = "◇";
 
 
-pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
-    let store = ListStore::new::<BoxedAnyObject>();
-    let row_count = rows.len();
+pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
+    let row_count = database.row_count(table).unwrap(); // TODO
+    let columns = database.columns(table).unwrap(); // TODO
 
-    for row in rows.iter() {
-        let row = row.clone();
-        let boxed = BoxedAnyObject::new(row);
-        store.append(&boxed); // TODO: Remove hard limit when we have lazy loading "LIMIT 100 OFFSET 0"
-    }
-
-    let selection = SingleSelection::new(Some(store));
+    let model = DatabaseCacheModel::from_database(&database, &table);
+    let selection = SingleSelection::new(Some(model));
     let column_view = ColumnView::new(Some(selection));
 
     let mut columns = columns.clone();
@@ -70,8 +65,10 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
             }
         });
 
+        let settings = Settings::new("studio.planetpeanut.Bobby");
 
         let column_handle = column.clone();
+        let settings_handle = settings.clone();
 
         // TODO: Move out
         factory.connect_bind(move |_, obj| {
@@ -79,7 +76,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                let Some(boxed) = list_item.item().and_downcast::<BoxedAnyObject>()
             {
                 let row: Ref<Row> = boxed.borrow();
-                let mut cells = row.cells.clone();
+                let mut cells = row.cells.clone(); // TODO: try Rc so no clone needed
 
                 let row_number = (list_item.position() as usize) + 1;
                 cells.insert(0, row_number.to_string());
@@ -91,48 +88,49 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
 
                 if let Some(label) = list_item.child().and_downcast::<Label>() {
                     // Reset state first to avoid rendering issues
-                    label.set_sensitive(true);
+                    // label.set_sensitive(true);
 
                     // New state
-                    label.add_css_class("numeric");
 
                     if affinity == Affinity::INTEGER {
-                        label.set_text(&format_thousands(text));
+                        // label.set_text(&format_thousands(text));
+                        label.set_text(text);
+
                     } else {
                         label.set_text(text);
                     }
 
-                    let mut tooltip = String::new();
+                    // let mut tooltip = String::new();
 
                     if affinity == Affinity::BLOB {
                         label.set_sensitive(false);
 
                         if let Some((length, hex_values)) = text.split_once(":") {
                             label.set_text(length);
-                            tooltip = format!("{affinity:?}  {hex_values} …");
+                            // tooltip = format!("{affinity:?}  {hex_values} …");
                         }
                     } else if column_handle.primary_key {
-                        tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
+                        // tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
                     } else {
-                        tooltip = format!("{affinity:?}  {text}");
+                        // tooltip = format!("{affinity:?}  {text}");
                     }
 
 
-                    let gesture = GestureClick::new();
-                    gesture.set_button(BUTTON_SECONDARY);
+                    // let gesture = GestureClick::new();
+                    // gesture.set_button(BUTTON_SECONDARY);
 
-                    let list_item_handle = list_item.clone();
+                    // let list_item_handle = list_item.clone();
 
-                    // TODO: Check performance impact of this
-                    gesture.connect_pressed(move |gesture, _, x, y| {
-                        let position = list_item_handle.position();
-                        let row = position as usize;
+                    // // TODO: Check performance impact of this
+                    // gesture.connect_pressed(move |gesture, _, x, y| {
+                    //     let position = list_item_handle.position();
+                    //     let row = position as usize;
 
-                        // Note (hidden) row number column
-                        if let Some(col) = i.checked_sub(1) {
-                            context_menu_open(gesture, col, row, x, y);
-                        }
-                    });
+                    //     // Note (hidden) row number column
+                    //     if let Some(col) = i.checked_sub(1) {
+                    //         context_menu_open(gesture, col, row, x, y);
+                    //     }
+                    // });
 
 
                     if text == "NULL" {
@@ -140,7 +138,7 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                     }
 
                     if is_index_column {
-                        tooltip = format!("{row_number} / {row_count}");
+                        // tooltip = format!("{row_number} / {row_count}");
                         label.add_css_class("monospace");
                         label.set_ellipsize(EllipsizeMode::Start);
                         label.set_halign(Align::End);
@@ -149,18 +147,16 @@ pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
                         label.set_sensitive(false);
                     }
 
-                    let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
-
                     // TODO: Bind to change
-                    if settings.boolean("monospace-font") {
-                        label.add_css_class("monospace");
-                        label.set_margin_top(1);
-                    }
+                    // if settings_handle.boolean("monospace-font") {
+                    //     label.add_css_class("monospace");
+                    //     label.set_margin_top(1);
+                    // } // TODO: do in setup
 
-                    if let Some(cell) = label.parent() {
-                        cell.add_controller(gesture);
-                        cell.set_tooltip_text(Some(&tooltip));
-                    }
+                    // if let Some(cell) = label.parent() {
+                        // cell.add_controller(gesture);
+                        // cell.set_tooltip_text(Some(&tooltip));
+                    // }
                 }
             }
         });
@@ -225,6 +221,7 @@ fn setup_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
         .ok_or("Object is not a gtk4::ListItem")?;
 
     let label = Label::builder()
+        .css_classes(["numeric"])
         .ellipsize(EllipsizeMode::End)
         .halign(Align::Start)
         .margin_start(4)

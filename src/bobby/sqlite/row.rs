@@ -28,8 +28,8 @@ impl Database {
         &self,
         table: &Table,
         row_order: Option<RowOrder>,
-        limit: Option<usize>,
-        offset: Option<usize>,
+        limit: Option<u32>,
+        offset: Option<u32>,
     ) -> Result<Vec<Row>, Box<dyn Error>>
 {
         let limit = limit.unwrap_or(100_000);
@@ -37,16 +37,18 @@ impl Database {
 
         let sql =
             if table.has_row_id() == Some(true) {
-                if let Some(order) = row_order {
-                    &format!("SELECT * FROM {} ORDER BY rowid {order} LIMIT {limit} OFFSET {offset};", table.name())
+                if let Some(order) = row_order { // TODO: not all tables have rowid
+                    &format!("SELECT * FROM {} WHERE rowid >= {offset} ORDER BY rowid {order} LIMIT {limit};", table.name())
                 } else {
-                    &format!("SELECT * FROM {} ORDER BY rowid DESC LIMIT {limit} OFFSET {offset};", table.name())
+                    &format!("SELECT * FROM {} WHERE rowid >= {offset} ORDER BY rowid DESC LIMIT {limit};", table.name())
                 }
             } else {
-                &format!("SELECT * FROM {} LIMIT {limit} OFFSET {offset}", table.name())
+                &format!("SELECT * FROM {} WHERE rowid >= {offset} LIMIT {limit}", table.name())
             };
 
-        let mut sql = self.connection.prepare(sql)?;
+        let connection = self.connection.borrow();
+
+        let mut sql = connection.prepare(sql)?;
         let n_columns = sql.column_count();
 
         let iter = sql.query_map([], |row| {
