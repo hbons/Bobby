@@ -16,6 +16,7 @@ use super::database::Database;
 pub struct Table {
     name: TableName,
     has_row_id: Option<bool>,
+    is_view: bool,
 }
 
 impl Table {
@@ -25,6 +26,10 @@ impl Table {
 
     pub fn has_row_id(&self) -> Option<bool> {
         self.has_row_id
+    }
+
+    pub fn is_view(&self) -> bool {
+        self.is_view
     }
 }
 
@@ -49,7 +54,7 @@ impl Database {
             |row| {
                 let name: String = row.get(0)?;
                 let has_row_id: Option<i64> = row.get(1)?;
-                let _type: String = row.get(2)?;
+                let type_str: String = row.get(2)?;
 
                 let name = name
                     .parse::<TableName>()
@@ -58,6 +63,7 @@ impl Database {
                 Ok(Table {
                     name,
                     has_row_id: has_row_id.map(|v| v != 0),
+                    is_view: type_str == "view",
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?;

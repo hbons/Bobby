@@ -18,17 +18,28 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
         .menu_model(&menu)
         .build();
 
-    let section = Menu::new();
+    let table_section = Menu::new();
+    let view_section  = Menu::new();
+
+    let view_count  = tables.iter().filter(|t| t.is_view()).count();
+    let table_count = tables.iter().filter(|t| !t.is_view()).count();
 
     for (i, table) in tables.iter().enumerate() {
-        section.append(
-            Some(&table.name()),
-            Some(&format!("win.table::{}", i)),
-        );
+        if table.is_view() {
+            view_section.append(
+                Some(&table.name()),
+                Some(&format!("win.table::{}", i)),
+            );
+        } else {
+            table_section.append(
+                Some(&table.name()),
+                Some(&format!("win.table::{}", i)),
+            );
+        }
     }
 
-    menu.append_section(Some(&format!("Tables – {}", tables.len())), &section);
-    // menu.append_section(Some("Views"), &section); // TODO
+    menu.append_section(Some(&format!("Views – {view_count}")), &view_section);
+    menu.append_section(Some(&format!("Tables – {table_count}")), &table_section);
 
     if let Some(table) = tables.first() {
         button.set_label(&table.name());
