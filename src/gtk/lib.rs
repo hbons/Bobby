@@ -42,7 +42,8 @@ impl Gui for App {
             .build();
 
         application.set_accels_for_action("app.preferences", &["<Control>comma"]);
-
+        // application.set_accels_for_action("app.close", &["<Ctrl>w"]); // TODO
+        // application.set_accels_for_action("app.quit", &["<Ctrl>q"]); // TODO
 
         application.connect_startup(|application| {
             let preferences_action = SimpleAction::new("preferences", None);
