@@ -5,10 +5,20 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gio::{
+    Cancellable,
+    File,
+    ListModel,
+    ListStore,
+};
+
 use gtk4::prelude::*;
-use gtk4::{ FileDialog, FileFilter };
-use gtk4::gio::{ Cancellable, File, ListStore };
-use gtk4::glib::Error;
+use gtk4::{
+    glib::Error,
+    FileDialog,
+    FileFilter,
+};
+
 use libadwaita::ApplicationWindow;
 
 use super::window::window_new;
@@ -22,38 +32,45 @@ pub fn open_file_dialog(parent: &ApplicationWindow) {
 
     let parent_handle = parent.clone();
 
-    dialog.open(
+    dialog.open_multiple(
         Some(parent),
         Some(&Cancellable::new()),
         move |result| {
-            if let Err(e) = handle_file(&parent_handle, result) {
+            if let Err(e) = handle_files(&parent_handle, result) {
                 // TODO: Show error on StatusPage
-                eprintln!("Failed to open file: {e}");
+                eprintln!("Failed to open files: {e}");
             }
         },
     );
 }
 
-fn handle_file(
+fn handle_files(
     parent: &ApplicationWindow,
-    result: Result<File, Error>)
-    -> Result<(), Box<dyn std::error::Error>> {
-
-    let path = result
-        .ok()
-        .and_then(|file| file.path())
-        .ok_or("No file selected")?;
+    result: Result<ListModel, Error>)
+    -> Result<(), Box<dyn std::error::Error>>
+{
+    let model = result?;
 
     let application = parent.application()
-        .ok_or("Missing application in Window")?;
-
-    let application = application
-        .downcast_ref::<libadwaita::Application>()
-        .ok_or("Not a libadwaita::Application")?;
+        .ok_or("Missing application in Window")?
+        .downcast::<libadwaita::Application>()
+        .map_err(|_| "Not a libadwaita::Application")?;
 
     parent.close();
-    let window = window_new(application, path.as_path(), None)?;
-    window.present();
+
+    for i in 0..model.n_items() {
+        let file = model
+            .item(i)
+            .and_then(|obj| obj.downcast::<File>().ok())
+            .ok_or("ListModel item is not a gio::File")?;
+
+        let path = file
+            .path()
+            .ok_or("Selected file has no local path")?;
+
+        let window = window_new(&application, path.as_path(), None)?;
+        window.present();
+    }
 
     Ok(())
 }
