@@ -5,8 +5,8 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use std::fmt;
 use std::error::Error;
+use std::fmt;
 
 use rusqlite::types::ValueRef;
 
@@ -27,26 +27,36 @@ impl Database {
     pub fn rows(
         &self,
         table: &Table,
-        row_order: Option<RowOrder>,
-        limit: Option<usize>,
-        offset: Option<usize>,
+        offset: Option<u32>,
+        limit:  Option<u32>,
     ) -> Result<Vec<Row>, Box<dyn Error>>
 {
-        let limit = limit.unwrap_or(100_000);
+        let limit = limit.unwrap_or(u32::MAX); // GTK models are limited to u32
         let offset = offset.unwrap_or(0);
+        let row_order = self.row_order.unwrap_or_default();
+        let table_name = table.name();
 
         let sql =
             if table.has_row_id() == Some(true) {
-                if let Some(order) = row_order {
-                    &format!("SELECT * FROM {} ORDER BY rowid {order} LIMIT {limit} OFFSET {offset};", table.name())
-                } else {
-                    &format!("SELECT * FROM {} ORDER BY rowid DESC LIMIT {limit} OFFSET {offset};", table.name())
-                }
+                &format!("
+                    SELECT *
+                    FROM {table_name}
+                    WHERE rowid >= {offset}
+                    ORDER BY rowid {row_order}
+                    LIMIT {limit};
+                ")
             } else {
-                &format!("SELECT * FROM {} LIMIT {limit} OFFSET {offset}", table.name())
+                &format!("
+                    SELECT *
+                    FROM {table_name}
+                    OFFSET {offset}
+                    LIMIT {limit}
+                ")
             };
 
-        let mut sql = self.connection.prepare(sql)?;
+        let connection = self.connection.borrow();
+
+        let mut sql = connection.prepare(sql)?;
         let n_columns = sql.column_count();
 
         let iter = sql.query_map([], |row| {
@@ -101,7 +111,7 @@ impl Row {
 }
 
 
-#[derive(Debug, Default)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum RowOrder {
     #[default]
     Descending,
@@ -114,6 +124,7 @@ impl fmt::Display for RowOrder {
             RowOrder::Descending => "DESC",
             RowOrder::Ascending  => "ASC",
         };
+
         write!(f, "{}", s)
     }
 }

@@ -9,7 +9,6 @@ use std::cell::Ref;
 use std::error::Error;
 
 use gio::{
-    ListStore,
     Menu,
     Settings
 };
@@ -34,23 +33,19 @@ use gtk4::{
 };
 
 use crate::bobby::prelude::*;
+use crate::bobby::sqlite::cache::DatabaseCacheModel;
 
 
 // U+25C7 "White Diamond"
 const SYMBOL_PRIMARY_KEY: &str = "◇";
 
 
-pub fn content_new(columns: &Vec<Column>, rows: &Vec<Row>) -> ScrolledWindow {
-    let store = ListStore::new::<BoxedAnyObject>();
-    let row_count = rows.len();
+pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
+    let row_count = database.row_count(table).unwrap(); // TODO
+    let columns = database.columns(table).unwrap(); // TODO
 
-    for row in rows.iter() {
-        let row = row.clone();
-        let boxed = BoxedAnyObject::new(row);
-        store.append(&boxed); // TODO: Remove hard limit when we have lazy loading "LIMIT 100 OFFSET 0"
-    }
-
-    let selection = SingleSelection::new(Some(store));
+    let model = DatabaseCacheModel::from_database(&database, &table);
+    let selection = SingleSelection::new(Some(model));
     let column_view = ColumnView::new(Some(selection));
 
     let mut columns = columns.clone();

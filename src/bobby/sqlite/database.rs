@@ -5,24 +5,32 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
+use std::cell::RefCell;
 use std::error::Error;
 use std::path::{ Path, PathBuf };
+use std::rc::Rc;
 use std::time::Duration;
 
-use rusqlite::{ Connection, OpenFlags };
+use rusqlite::{
+    Connection,
+    OpenFlags
+};
+
+use super::row::RowOrder;
 
 
 #[derive(Debug)]
 pub struct Database {
     pub path: PathBuf,
-    pub connection: Connection,
+    pub connection: Rc<RefCell<Connection>>,
+    pub row_order: Option<RowOrder>,
 }
 
 
 /// Database files to test on can be found at:
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-    pub fn from_file(path: &Path) -> Result<Self, Box<dyn Error>> {
+    pub fn from_file(path: &Path, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
         let connection = Connection::open_with_flags(
             path,
             OpenFlags::SQLITE_OPEN_READ_ONLY
@@ -35,19 +43,48 @@ impl Database {
         Ok(
             Database {
                 path: path.to_path_buf(),
-                connection,
+                connection: Rc::new(RefCell::new(connection)),
+                row_order,
             }
         )
     }
 
 
     pub fn data_version(&self) -> Option<i64> {
-        let version: i64 = self.connection.query_row(
+        let connection = self.connection.borrow();
+
+        let version: i64 = connection.query_row(
             "PRAGMA data_version;",
             [],
             |row| row.get(0),
         ).ok()?;
 
         Some(version)
+    }
+}
+
+
+impl Default for Database { // TODO: Decide what is default
+    fn default() -> Self {
+        let default_path = PathBuf::from(":memory:"); // or ":memory:" for in-memory DB
+        let connection = Connection::open_in_memory()
+            .expect("Failed to create default connection");
+
+        Database {
+            path: default_path,
+            connection: Rc::new(RefCell::new(connection)),
+            row_order: None,
+        }
+    }
+}
+
+
+impl Clone for Database {
+    fn clone(&self) -> Self {
+        Self {
+            path: self.path.clone(),
+            connection: Rc::clone(&self.connection),
+            row_order: None,
+        }
     }
 }

@@ -12,7 +12,7 @@ use std::str;
 use super::database::Database;
 
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Default, PartialEq)]
 pub struct Table {
     name: TableName,
     has_row_id: Option<bool>,
@@ -36,7 +36,9 @@ impl Table {
 
 impl Database {
     pub fn tables(&self) -> Result<Vec<Table>, Box<dyn Error>> {
-        let mut sql = self.connection.prepare(
+        let connection = self.connection.borrow();
+
+        let mut sql = connection.prepare(
             "SELECT name,
                CASE
                  WHEN type = 'table' AND sql LIKE '%WITHOUT ROWID%' THEN 0
@@ -72,15 +74,17 @@ impl Database {
     }
 
 
-    pub fn row_count(&self, table: &Table) -> Result<i64, Box<dyn Error>> {
+    pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
+        let connection = self.connection.borrow();
+
         let sql = format!("SELECT COUNT(*) FROM {}", table.name());
-        Ok(self.connection.query_row(&sql, [], |row| row.get(0))?)
+        Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
 }
 
 
 #[derive(Clone, PartialEq)]
-pub struct TableName(pub String);
+pub struct TableName(String);
 
 impl str::FromStr for TableName {
     type Err = String;
@@ -101,5 +105,11 @@ impl str::FromStr for TableName {
 impl fmt::Display for TableName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
+    }
+}
+
+impl Default for TableName {
+    fn default() -> Self {
+        "table".parse::<Self>().unwrap() // TODO
     }
 }

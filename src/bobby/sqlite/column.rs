@@ -26,7 +26,9 @@ pub struct Column {
 
 impl Database {
     pub fn columns(&self, table: &Table) -> Result<Vec<Column>, Box<dyn Error>> {
-        let mut sql = self.connection.prepare(
+        let connection = self.connection.borrow();
+
+        let mut sql = connection.prepare(
             &format!("PRAGMA table_info({});", table.name())
         )?;
 
