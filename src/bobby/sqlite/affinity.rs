@@ -10,13 +10,14 @@ use std::fmt;
 use std::str;
 
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub enum Affinity {
     NUMERIC(Option<String>),
     INTEGER(Option<i64>),
     REAL(Option<f64>),
     TEXT(Option<String>),
-    BLOB(Option<i32>, Option<Vec<u8>>),
+    BLOB(Option<i32>, Option<String>),
+    #[default] NULL,
 }
 
 
@@ -45,11 +46,12 @@ impl str::FromStr for Affinity {
 impl fmt::Display for Affinity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            Self::NUMERIC(_) => "NUMERIC",
-            Self::INTEGER(_) => "INTEGER",
-            Self::REAL(_)    => "REAL",
-            Self::TEXT(_)    => "TEXT",
-            Self::BLOB(_, _) => "BLOB",
+            Self::NUMERIC(Some(s)) => s.to_string(),
+            Self::INTEGER(Some(i)) => i.to_string(),
+            Self::REAL(Some(f)) => f.to_string(),
+            Self::TEXT(Some(s)) => s.to_string(),
+            Self::BLOB(Some(length), Some(_)) => format!("{length} BYTES"),
+            Self::NULL | _ => "NULL".to_string(),
         };
 
         write!(f, "{}", s)
@@ -57,8 +59,15 @@ impl fmt::Display for Affinity {
 }
 
 
-impl Default for Affinity {
-    fn default() -> Self {
-        Affinity::NUMERIC(None)
+impl Affinity {
+    pub fn to_type_string(&self) -> String {
+        match self {
+            Self::NUMERIC(_) => "NUMERIC",
+            Self::INTEGER(_) => "INTEGER",
+            Self::REAL(_) => "REAL",
+            Self::TEXT(_) => "TEXT",
+            Self::BLOB(_, _) => "BLOB",
+            Self::NULL => "NULL",
+        }.into()
     }
 }

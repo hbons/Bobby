@@ -37,7 +37,7 @@ use crate::bobby::sqlite::cache::DatabaseCacheModel;
 
 
 // U+25C7 "White Diamond"
-const SYMBOL_PRIMARY_KEY: &str = "◇";
+const SYMBOL_KEY: &str = "◇";
 
 
 pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
@@ -56,7 +56,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
         let is_last_column = i == columns.len() - 1;
 
         let factory = SignalListItemFactory::new();
-        let affinity = column.affinity.clone();
+        let column_affinity = column.affinity.clone();
 
 
         factory.connect_setup(move |_, obj| {
@@ -67,7 +67,6 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
 
 
         let column_handle = column.clone();
-        let affinity_handle = affinity.clone();
 
         // TODO: Move out
         factory.connect_bind(move |_, obj| {
@@ -77,42 +76,40 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
                 let row: Ref<Row> = boxed.borrow();
                 let mut cells = row.cells.clone();
 
-                let row_number = (list_item.position() as usize) + 1;
-                cells.insert(0, row_number.to_string());
+                let row_number = list_item.position() as i64 + 1;
+                cells.insert(0, Affinity::INTEGER(Some(row_number)));
 
-                let text = cells
-                    .get(i)
-                    .map(String::as_str)
-                    .unwrap_or_default();
+                let cell = cells.get(i).unwrap().to_owned(); // TODO
+                let cell_affinity = cell.clone();
+
+                let text = cell.clone().to_string(); // TODO: thousands
+
+                let tooltip_text = match cell.clone() {
+                    Affinity::NUMERIC(Some(s)) => format!("{} {s}", cell.to_type_string()),
+                    Affinity::INTEGER(Some(i)) => format!("{} {i}", cell.to_type_string()),
+                    Affinity::REAL(Some(f)) => format!("{} {f}", cell.to_type_string()),
+                    Affinity::TEXT(Some(s)) => format!("{} {s}", cell.to_type_string()),
+                    Affinity::BLOB(Some(_), Some(preview)) => format!("{} {preview} …", cell.to_type_string()),
+                    Affinity::NULL | _ => format!("{cell} NULL"),
+                };
+
+                let tooltip_text = if column_handle.primary_key {
+                    format!("{SYMBOL_KEY} PRIMARY_KEY  {tooltip_text}")
+                } else { tooltip_text };
+
+                let tooltip_text = if is_index_column {
+                    format!("{row_number} / {row_count}")
+                } else { tooltip_text };
 
                 if let Some(label) = list_item.child().and_downcast::<Label>() {
-                    // Reset state first to avoid rendering issues
+                    // Reset state first in case of GTK cell reuse
+                    label.set_text(&text);
                     label.set_sensitive(true);
+                    label.set_widget_name(&i.to_string());
 
-                    // New state
-                    label.add_css_class("numeric");
-
-                    if affinity_handle == Affinity::INTEGER(None) {
-                        label.set_text(&format_thousands(text));
-                    } else {
-                        label.set_text(text);
-                    }
-
-                    let mut tooltip = String::new();
-
-                    if affinity_handle == Affinity::BLOB(None, None) {
+                    if cell_affinity == Affinity::BLOB(None, None) {
                         label.set_sensitive(false);
-
-                        if let Some((length, hex_values)) = text.split_once(":") {
-                            label.set_text(length);
-                            tooltip = format!("{affinity_handle}  {hex_values} …");
-                        }
-                    } else if column_handle.primary_key {
-                        tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity_handle}  {text}");
-                    } else {
-                        tooltip = format!("{affinity_handle}  {text}");
                     }
-
 
                     let gesture = GestureClick::new();
                     gesture.set_button(BUTTON_SECONDARY);
@@ -130,13 +127,11 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
                         }
                     });
 
-
                     if text == "NULL" {
                         label.set_sensitive(false);
                     }
 
                     if is_index_column {
-                        tooltip = format!("{row_number} / {row_count}");
                         label.add_css_class("monospace");
                         label.set_ellipsize(EllipsizeMode::Start);
                         label.set_halign(Align::End);
@@ -155,14 +150,13 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
 
                     if let Some(cell) = label.parent() {
                         cell.add_controller(gesture);
-                        cell.set_tooltip_text(Some(&tooltip));
+                        cell.set_tooltip_text(Some(&tooltip_text));
                     }
                 }
-            }
+            };
         });
 
 
-        // TODO: Sorting
         let view_column = ColumnViewColumn::builder()
             .title(&column.name)
             .factory(&factory)
@@ -171,7 +165,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
             .build();
 
         if column.primary_key {
-            let title = format!("{} {}", &column.name, SYMBOL_PRIMARY_KEY);
+            let title = format!("{} {}", &column.name, SYMBOL_KEY);
             view_column.set_title(Some(&title));
         }
 
@@ -188,7 +182,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
                 ).build();
         } else {
             view_column.set_fixed_width(
-                match affinity {
+                match column_affinity {
                     Affinity::BLOB(_, _) => { view_column.set_resizable(false); 128 },
                     Affinity::TEXT(_) => 192,
                     _ => 128,
@@ -196,10 +190,9 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
             );
         }
 
-        if affinity == Affinity::NUMERIC(None) {
+        if column_affinity == Affinity::NUMERIC(None) {
             // TODO: Check if a date or datetime and fit column width
         }
-
 
         column_view.append_column(&view_column);
     }
@@ -221,6 +214,7 @@ fn setup_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
         .ok_or("Object is not a gtk4::ListItem")?;
 
     let label = Label::builder()
+        .css_classes(["numeric"])
         .ellipsize(EllipsizeMode::End)
         .halign(Align::Start)
         .margin_start(4)

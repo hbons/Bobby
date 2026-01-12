@@ -248,8 +248,8 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 let col_index = col_index.parse::<usize>().unwrap_or_default();
 
                 if let Some(row) = get_row(column_view, row_index) {
-                    if let Some(cell_text) = row.cells.get(col_index) {
-                        _ = copy_to_clipboard(cell_text);
+                    if let Some(cell) = row.cells.get(col_index) {
+                        _ = copy_to_clipboard(&cell.to_string()); // TODO
                     }
                 }
             }
@@ -274,7 +274,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 let separator = separator.as_str().parse::<ColumnSeparator>();
 
                 _ = copy_to_clipboard(
-                    &row.to_string(separator.ok())
+                    &row.format_with(separator.unwrap_or_default())
                 );
             }
         }

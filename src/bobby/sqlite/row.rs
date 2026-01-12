@@ -10,6 +10,7 @@ use std::fmt;
 
 use rusqlite::types::ValueRef;
 
+use super::affinity::Affinity;
 use super::column::ColumnSeparator;
 use super::database::Database;
 use super::table::Table;
@@ -17,7 +18,7 @@ use super::table::Table;
 
 #[derive(Clone, Debug, Default)]
 pub struct Row {
-    pub cells: Vec<String>,
+    pub cells: Vec<Affinity>,
 }
 
 
@@ -64,14 +65,13 @@ impl Database {
 
             for i in 0..n_columns {
                 let value = match row.get_ref(i)? {
-                    ValueRef::Null       => "NULL".to_string(),
-                    ValueRef::Integer(i) => i.to_string(),
-                    ValueRef::Real(f)    => f.to_string(),
-                    ValueRef::Text(t)    => String::from_utf8_lossy(t).into(),
-                    ValueRef::Blob(b)    => format!(
-                        "{} BYTES:{}",
-                        b.len(),
-                        hex_preview(b, BLOB_PREVIEW_LEN)
+                    ValueRef::Null       => Affinity::NUMERIC(None),
+                    ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
+                    ValueRef::Real(f)    => Affinity::REAL(Some(f)),
+                    ValueRef::Text(t)    => Affinity::TEXT(Some(String::from_utf8_lossy(t).into())),
+                    ValueRef::Blob(b)    => Affinity::BLOB(
+                        Some(b.len() as i32),
+                        Some(hex_preview(b, BLOB_PREVIEW_LEN)),
                     ),
                 };
 
@@ -99,13 +99,17 @@ pub fn hex_preview(blob: &[u8], length: usize) -> String {
 
 
 impl Row {
-    pub fn to_string(&self, separator: Option<ColumnSeparator>) -> String {
+    pub fn format_with(&self, separator: ColumnSeparator) -> String {
+        let collection = self.cells
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<_>>();
+
         match separator {
-            Some(ColumnSeparator::Tabs)     => self.cells.join("\t"),
-            Some(ColumnSeparator::Spaces)   => self.cells.join(" "),
-            Some(ColumnSeparator::Commas)   => self.cells.join(","),
-            Some(ColumnSeparator::Markdown) => format!("| {} |", self.cells.join(" | ")),
-            None => String::new(),
+            ColumnSeparator::Tabs     => collection.join("\t"),
+            ColumnSeparator::Spaces   => collection.join(" "),
+            ColumnSeparator::Commas   => collection.join(","),
+            ColumnSeparator::Markdown => format!("| {} |", collection.join(" | ")),
         }
     }
 }
@@ -121,8 +125,8 @@ pub enum RowOrder {
 impl fmt::Display for RowOrder {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = match self {
-            RowOrder::Descending => "DESC",
-            RowOrder::Ascending  => "ASC",
+            Self::Descending => "DESC",
+            Self::Ascending  => "ASC",
         };
 
         write!(f, "{}", s)
