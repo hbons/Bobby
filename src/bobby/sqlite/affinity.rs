@@ -6,17 +6,17 @@
 
 
 use std::error::Error;
+use std::fmt;
 use std::str;
 
 
-#[derive(Clone, Copy, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Affinity {
-    #[default]
-    NUMERIC,
-    INTEGER,
-    REAL,
-    TEXT,
-    BLOB,
+    NUMERIC(Option<String>),
+    INTEGER(Option<i64>),
+    REAL(Option<f64>),
+    TEXT(Option<String>),
+    BLOB(Option<i32>, Option<Vec<u8>>),
 }
 
 
@@ -32,11 +32,33 @@ impl str::FromStr for Affinity {
 
         // Docs: https://www.sqlite.org/datatype3.html
         match () {
-            _ if s.contains("INT") => Ok(Self::INTEGER),
-            _ if s.contains("TEXT") || s.contains("CHAR") || s.contains("CLOB") => Ok(Self::TEXT),
-            _ if s.contains("BLOB") || s.is_empty() => Ok(Self::BLOB),
-            _ if s.contains("REAL") || s.contains("FLOA") || s.contains("DOUB") => Ok(Self::REAL),
-            _ => Ok(Self::NUMERIC),
+            _ if s.contains("INT") => Ok(Self::INTEGER(None)),
+            _ if s.contains("TEXT") || s.contains("CHAR") || s.contains("CLOB") => Ok(Self::TEXT(None)),
+            _ if s.contains("BLOB") || s.is_empty() => Ok(Self::BLOB(None, None)),
+            _ if s.contains("REAL") || s.contains("FLOA") || s.contains("DOUB") => Ok(Self::REAL(None)),
+            _ => Ok(Self::NUMERIC(None)),
         }
+    }
+}
+
+
+impl fmt::Display for Affinity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            Self::NUMERIC(_) => "NUMERIC",
+            Self::INTEGER(_) => "INTEGER",
+            Self::REAL(_)    => "REAL",
+            Self::TEXT(_)    => "TEXT",
+            Self::BLOB(_, _) => "BLOB",
+        };
+
+        write!(f, "{}", s)
+    }
+}
+
+
+impl Default for Affinity {
+    fn default() -> Self {
+        Affinity::NUMERIC(None)
     }
 }

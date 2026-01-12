@@ -56,7 +56,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
         let is_last_column = i == columns.len() - 1;
 
         let factory = SignalListItemFactory::new();
-        let affinity = column.affinity;
+        let affinity = column.affinity.clone();
 
 
         factory.connect_setup(move |_, obj| {
@@ -67,6 +67,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
 
 
         let column_handle = column.clone();
+        let affinity_handle = affinity.clone();
 
         // TODO: Move out
         factory.connect_bind(move |_, obj| {
@@ -91,7 +92,7 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
                     // New state
                     label.add_css_class("numeric");
 
-                    if affinity == Affinity::INTEGER {
+                    if affinity_handle == Affinity::INTEGER(None) {
                         label.set_text(&format_thousands(text));
                     } else {
                         label.set_text(text);
@@ -99,17 +100,17 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
 
                     let mut tooltip = String::new();
 
-                    if affinity == Affinity::BLOB {
+                    if affinity_handle == Affinity::BLOB(None, None) {
                         label.set_sensitive(false);
 
                         if let Some((length, hex_values)) = text.split_once(":") {
                             label.set_text(length);
-                            tooltip = format!("{affinity:?}  {hex_values} …");
+                            tooltip = format!("{affinity_handle}  {hex_values} …");
                         }
                     } else if column_handle.primary_key {
-                        tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity:?}  {text}");
+                        tooltip = format!("{SYMBOL_PRIMARY_KEY} PRIMARY KEY  {affinity_handle}  {text}");
                     } else {
-                        tooltip = format!("{affinity:?}  {text}");
+                        tooltip = format!("{affinity_handle}  {text}");
                     }
 
 
@@ -188,14 +189,14 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
         } else {
             view_column.set_fixed_width(
                 match affinity {
-                    Affinity::BLOB => { view_column.set_resizable(false); 128 },
-                    Affinity::TEXT => 192,
+                    Affinity::BLOB(_, _) => { view_column.set_resizable(false); 128 },
+                    Affinity::TEXT(_) => 192,
                     _ => 128,
                 }
             );
         }
 
-        if affinity == Affinity::NUMERIC {
+        if affinity == Affinity::NUMERIC(None) {
             // TODO: Check if a date or datetime and fit column width
         }
 
