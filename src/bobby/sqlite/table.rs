@@ -110,6 +110,6 @@ impl fmt::Display for TableName {
 
 impl Default for TableName {
     fn default() -> Self {
-        "table".parse::<Self>().unwrap() // TODO
+        Self("table".into())
     }
 }
