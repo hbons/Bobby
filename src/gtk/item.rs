@@ -151,7 +151,7 @@ pub fn bind_list_item(
 
 
     let dimmed = matches!(cell,
-        Affinity::NULL | Affinity::BLOB(_, _) | Affinity::NUMERIC(None)
+        Affinity::NULL | Affinity::NUMERIC(None) | Affinity::BLOB(_, _)
     );
 
     if dimmed {
@@ -159,6 +159,7 @@ pub fn bind_list_item(
     } else {
         label.remove_css_class("dimmed");
     }
+
 
     if let Some(parent) = label.parent() {
         let tooltip_text = {

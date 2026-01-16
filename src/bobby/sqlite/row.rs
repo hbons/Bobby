@@ -65,13 +65,18 @@ impl Database {
 
             for i in 0..n_columns {
                 let value = match row.get_ref(i)? {
-                    ValueRef::Null       => Affinity::NUMERIC(None),
+                    ValueRef::Null       => Affinity::NULL,
                     ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
                     ValueRef::Real(f)    => Affinity::REAL(Some(f)),
-                    ValueRef::Text(t)    => Affinity::TEXT(Some(String::from_utf8_lossy(t).into())),
-                    ValueRef::Blob(b)    => Affinity::BLOB(
-                        Some(b.len() as i32),
-                        Some(hex_preview(b, BLOB_PREVIEW_LEN)),
+                    ValueRef::Text(t) =>
+                        Affinity::TEXT(
+                            Some(String::from_utf8_lossy(t).into())
+                        ),
+                    ValueRef::Blob(b) =>
+                        Affinity::BLOB(
+                            Some(b.len() as i32),
+                            Some(hex_preview(b, BLOB_PREVIEW_LEN)
+                        ),
                     ),
                 };
 
@@ -87,16 +92,6 @@ impl Database {
         )
     }
 }
-
-pub fn hex_preview(blob: &[u8], length: usize) -> String {
-    blob
-        .iter()
-        .take(length)
-        .map(|b| format!("{:02X}", b))
-        .collect::<Vec<_>>()
-        .join(" ")
-}
-
 
 impl Row {
     pub fn format_with(&self, separator: ColumnSeparator) -> String {
@@ -131,4 +126,14 @@ impl fmt::Display for RowOrder {
 
         write!(f, "{}", s)
     }
+}
+
+
+fn hex_preview(blob: &[u8], length: usize) -> String {
+    blob
+        .iter()
+        .take(length)
+        .map(|b| format!("{:02X}", b))
+        .collect::<Vec<_>>()
+        .join(" ")
 }

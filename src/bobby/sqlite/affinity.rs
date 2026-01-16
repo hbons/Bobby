@@ -50,8 +50,9 @@ impl fmt::Display for Affinity {
             Self::INTEGER(Some(i)) => i.to_string(),
             Self::REAL(Some(f)) => f.to_string(),
             Self::TEXT(Some(s)) => s.to_string(),
-            Self::BLOB(Some(length), Some(_)) => format!("{length} BYTES"),
-            Self::NULL | _ => "NULL".to_string(),
+            Self::BLOB(Some(length), _) => format!("{length} BYTES"),
+            Self::NULL | Self::NUMERIC(None) => "—".to_string(),
+            _ => "???".to_string(),
         };
 
         write!(f, "{}", s)
@@ -60,7 +61,7 @@ impl fmt::Display for Affinity {
 
 
 impl Affinity {
-    pub fn to_type_string(&self) -> String {
+    pub fn to_type_string(&self) -> &'static str {
         match self {
             Self::NUMERIC(_) => "NUMERIC",
             Self::INTEGER(_) => "INTEGER",
@@ -68,6 +69,6 @@ impl Affinity {
             Self::TEXT(_) => "TEXT",
             Self::BLOB(_, _) => "BLOB",
             Self::NULL => "NULL",
-        }.into()
+        }
     }
 }
