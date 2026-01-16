@@ -64,10 +64,12 @@ impl Database {
 }
 
 
-impl Default for Database { // TODO: Decide what is default
+impl Default for Database {
+    #[allow(clippy::expect_used)]
     fn default() -> Self {
-        let default_path = PathBuf::from(":memory:"); // or ":memory:" for in-memory DB
+        let default_path = PathBuf::from(":memory:");
         let connection = Connection::open_in_memory()
+            // This should never happen
             .expect("Failed to create default connection");
 
         Database {
@@ -84,7 +86,7 @@ impl Clone for Database {
         Self {
             path: self.path.clone(),
             connection: Rc::clone(&self.connection),
-            row_order: None,
+            row_order: self.row_order.clone(),
         }
     }
 }
