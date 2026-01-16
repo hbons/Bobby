@@ -82,7 +82,7 @@ mod imp {
             // println!("item({index})");
 
             if !self.cached_rows.borrow().contains_key(&index) {
-                println!("Caching {CACHE_PAGE_SIZE} rows around {index}");
+                // println!("Caching {CACHE_PAGE_SIZE} rows around {index}");
 
                 let database = self.database.borrow();
                 let table = self.table.borrow();
