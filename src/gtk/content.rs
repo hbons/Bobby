@@ -5,28 +5,24 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use std::cell::Ref;
 use std::error::Error;
 
 use gio::{
     Menu,
-    Settings
+    Settings,
 };
 
 use gtk4::prelude::*;
 use gtk4::{
     gdk::BUTTON_SECONDARY,
     gdk::Rectangle,
-    glib::BoxedAnyObject,
-    glib::Object,
-    pango::EllipsizeMode,
-    Align,
     ColumnView,
     ColumnViewColumn,
     GestureClick,
     Label,
-    ListItem,
+    ListTabBehavior,
     PopoverMenu,
+    PickFlags,
     ScrolledWindow,
     SignalListItemFactory,
     SingleSelection,
@@ -35,130 +31,84 @@ use gtk4::{
 use crate::bobby::prelude::*;
 use crate::bobby::sqlite::cache::DatabaseCacheModel;
 
+use super::item::{
+    bind_index_list_item,
+    bind_list_item,
+    setup_index_list_item,
+    setup_list_item,
+    SYMBOL_KEY,
+};
 
-// U+25C7 "White Diamond"
-const SYMBOL_KEY: &str = "◇";
 
+pub fn content_new(
+    database: &Database,
+    table: &Table,
+) -> Result<ScrolledWindow, Box<dyn Error>>
+{
+    let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
+    let monospace_font: bool = settings.get("monospace-font");
 
-pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
-    let row_count = database.row_count(table).unwrap(); // TODO
-    let columns = database.columns(table).unwrap(); // TODO
-
-    let model = DatabaseCacheModel::from_database(&database, &table);
+    let model = DatabaseCacheModel::from_database(database, table);
     let selection = SingleSelection::new(Some(model));
-    let column_view = ColumnView::new(Some(selection));
 
+    let column_view = ColumnView::builder()
+        .enable_rubberband(false)
+        .focusable(true)
+        .has_tooltip(true)
+        .model(&selection)
+        .reorderable(false)
+        .show_column_separators(true)
+        .show_row_separators(true)
+        .single_click_activate(true)
+        .tab_behavior(ListTabBehavior::Cell)
+        .build();
+
+    let row_count = database.row_count(table)?;
+    let columns = database.columns(table)?;
     let mut columns = columns.clone();
     columns.insert(0, Column::default()); // Reserve for row numbers
 
-    for (i, column) in columns.iter().enumerate() {
-        let is_index_column = i == 0;
-        let is_last_column = i == columns.len() - 1;
+    for (column_index, column) in columns.iter().enumerate() {
+        let is_index_column = column_index == 0;
+        let is_last_column = column_index == columns.len() - 1;
 
         let factory = SignalListItemFactory::new();
-        let column_affinity = column.affinity.clone();
 
+        unsafe {
+            factory.set_data("column", column_index.clone());
+        }
 
-        factory.connect_setup(move |_, obj| {
-            if let Err(e) = setup_list_item(obj) {
-                eprintln!("Failed to set up list item: {e}");
-            }
-        });
-
-
-        let column_handle = column.clone();
-
-        // TODO: Move out
-        factory.connect_bind(move |_, obj| {
-            if let Some(list_item) = obj.downcast_ref::<ListItem>() &&
-               let Some(boxed) = list_item.item().and_downcast::<BoxedAnyObject>()
-            {
-                let row: Ref<Row> = boxed.borrow();
-                let mut cells = row.cells.clone();
-
-                let row_number = list_item.position() as i64 + 1;
-                cells.insert(0, Affinity::INTEGER(Some(row_number)));
-
-                let cell = cells.get(i).unwrap().to_owned(); // TODO
-                let cell_affinity = cell.clone();
-
-                let text = cell.clone().to_string(); // TODO: thousands
-
-                let tooltip_text = match cell.clone() {
-                    Affinity::NUMERIC(Some(s)) => format!("{} {s}", cell.to_type_string()),
-                    Affinity::INTEGER(Some(i)) => format!("{} {i}", cell.to_type_string()),
-                    Affinity::REAL(Some(f)) => format!("{} {f}", cell.to_type_string()),
-                    Affinity::TEXT(Some(s)) => format!("{} {s}", cell.to_type_string()),
-                    Affinity::BLOB(Some(_), Some(preview)) => format!("{} {preview} …", cell.to_type_string()),
-                    Affinity::NULL | _ => format!("{cell} NULL"),
-                };
-
-                let tooltip_text = if column_handle.primary_key {
-                    format!("{SYMBOL_KEY} PRIMARY_KEY  {tooltip_text}")
-                } else { tooltip_text };
-
-                let tooltip_text = if is_index_column {
-                    format!("{row_number} / {row_count}")
-                } else { tooltip_text };
-
-                if let Some(label) = list_item.child().and_downcast::<Label>() {
-                    // Reset state first in case of GTK cell reuse
-                    label.set_text(&text);
-                    label.set_sensitive(true);
-                    label.set_widget_name(&i.to_string());
-
-                    if cell_affinity == Affinity::BLOB(None, None) {
-                        label.set_sensitive(false);
-                    }
-
-                    let gesture = GestureClick::new();
-                    gesture.set_button(BUTTON_SECONDARY);
-
-                    let list_item_handle = list_item.clone();
-
-                    // TODO: Check performance impact of this
-                    gesture.connect_pressed(move |gesture, _, x, y| {
-                        let position = list_item_handle.position();
-                        let row = position as usize;
-
-                        // Note (hidden) row number column
-                        if let Some(col) = i.checked_sub(1) {
-                            context_menu_open(gesture, col, row, x, y);
-                        }
-                    });
-
-                    if text == "NULL" {
-                        label.set_sensitive(false);
-                    }
-
-                    if is_index_column {
-                        label.add_css_class("monospace");
-                        label.set_ellipsize(EllipsizeMode::Start);
-                        label.set_halign(Align::End);
-                        label.set_margin_end(2);
-                        label.set_margin_top(1);
-                        label.set_sensitive(false);
-                    }
-
-                    let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-                    // TODO: Bind to change
-                    if settings.boolean("monospace-font") {
-                        label.add_css_class("monospace");
-                        label.set_margin_top(1);
-                    }
-
-                    if let Some(cell) = label.parent() {
-                        cell.add_controller(gesture);
-                        cell.set_tooltip_text(Some(&tooltip_text));
-                    }
+        if is_index_column {
+            factory.connect_setup(move |_factory, obj| {
+                if let Err(e) = setup_index_list_item(obj) {
+                    eprintln!("Failed to set up index list item: {e}");
                 }
-            };
-        });
+            });
 
+            factory.connect_bind(move |_factory, obj| {
+                if let Err(e) = bind_index_list_item(obj, row_count) {
+                    eprintln!("Failed to bind index list item: {e}");
+                }
+            });
+        } else {
+            let primary_key = column.primary_key;
+
+            factory.connect_setup(move |_factory, obj| {
+                if let Err(e) = setup_list_item(obj, monospace_font) {
+                    eprintln!("Failed to set up list item: {e}");
+                }
+            });
+
+            factory.connect_bind(move |_factory, obj| {
+                if let Err(e) = bind_list_item(obj, column_index, primary_key) {
+                    eprintln!("Failed to bind index list item: {e}");
+                }
+            });
+        }
 
         let view_column = ColumnViewColumn::builder()
             .title(&column.name)
+            .id(&column_index.to_string())
             .factory(&factory)
             .resizable(true)
             .expand(is_last_column)
@@ -170,19 +120,22 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
         }
 
         if is_index_column {
-            // Holds numbers up to 100k without ellipsis
-            view_column.set_fixed_width(64);
+            const CHAR_WIDTH: usize = 12;
+            let margin_end = super::item::MARGIN_END as usize;
+
+            let width = ((row_count.to_string().len() + 1) * CHAR_WIDTH) + margin_end;
+            view_column.set_fixed_width(width as i32);
+            view_column.set_resizable(false);
 
             // TODO: File GTK rendering bug
-            Settings::new("studio.planetpeanut.Bobby")
-                .bind(
-                    "row-numbers",
-                    &view_column,
-                    "visible"
-                ).build();
+            settings.bind(
+                "row-numbers",
+                &view_column,
+                "visible"
+            ).build();
         } else {
             view_column.set_fixed_width(
-                match column_affinity {
+                match column.affinity {
                     Affinity::BLOB(_, _) => { view_column.set_resizable(false); 128 },
                     Affinity::TEXT(_) => 192,
                     _ => 128,
@@ -190,37 +143,64 @@ pub fn content_new(database: &Database, table: &Table) -> ScrolledWindow {
             );
         }
 
-        if column_affinity == Affinity::NUMERIC(None) {
-            // TODO: Check if a date or datetime and fit column width
-        }
-
         column_view.append_column(&view_column);
     }
 
-    column_view.set_show_column_separators(true);
-    column_view.set_show_row_separators(true);
-    column_view.set_reorderable(false);
+
+    let click = GestureClick::builder()
+        .button(BUTTON_SECONDARY)
+        .build();
+
+    let column_view_handle = column_view.clone();
+
+    click.connect_pressed(move |gesture, _n_presses, x, y| {
+        if let Err(e) = content_clicked(gesture, x, y, &column_view_handle) {
+            eprintln!("Failed to open context menu: {e}");
+        }
+    });
+
+
+    column_view.add_controller(click);
+    column_view.grab_focus();
 
     let scrolled_window = ScrolledWindow::new();
     scrolled_window.set_child(Some(&column_view));
     scrolled_window.set_vexpand(true);
-    scrolled_window
+
+    Ok(scrolled_window)
 }
 
 
-fn setup_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
-    let list_item = obj
-        .downcast_ref::<ListItem>()
-        .ok_or("Object is not a gtk4::ListItem")?;
+fn content_clicked(
+    gesture: &GestureClick,
+    x: f64,
+    y: f64,
+    column_view: &ColumnView,
+) -> Result<(), Box<dyn Error>>
+{
+    let model = column_view
+        .model()
+        .ok_or("Missing model on ColumnView")?;
 
-    let label = Label::builder()
-        .css_classes(["numeric"])
-        .ellipsize(EllipsizeMode::End)
-        .halign(Align::Start)
-        .margin_start(4)
-        .build();
+    let single_selection = model
+        .downcast::<SingleSelection>()
+        .map_err(|_| "Model is not a gtk4::SingleSelection")?;
 
-    list_item.set_child(Some(&label));
+    let picked = column_view
+        .pick(x, y, PickFlags::NON_TARGETABLE)
+        .ok_or("Could not pick Widget")?;
+
+    // TODO: Also handle label parent if internal margin clicked
+    let label = picked
+        .downcast::<Label>()
+        .map_err(|_| "Widget is not a gtk4::Label")?;
+
+    let row = single_selection.selected() as usize;
+    let col = label.widget_name().parse::<usize>()?;
+
+    if let Some(col) = col.checked_sub(1) {
+        context_menu_open(gesture, col, row, x, y);
+    }
 
     Ok(())
 }
@@ -252,35 +232,8 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
             .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
             .build();
 
-        // TODO: GTK warning when switching tables after opening menu
+        // TODO: GTK warning when switching tables after opening context menu
         popover.set_parent(&widget);
         popover.popup();
     }
-}
-
-
-fn format_thousands(s: &str) -> String {
-    let original = s;
-
-    let (sign, digits) = s.strip_prefix('-')
-        .map(|d| ("-", d))
-        .unwrap_or(("", s));
-
-    if digits.len() < 5 {
-        return original.into();
-    }
-
-    let mut out = String::new();
-    let mut count = 0;
-
-    for ch in digits.chars().rev() {
-        if count == 3 {
-            out.push(',');
-            count = 0;
-        }
-        out.push(ch);
-        count += 1;
-    }
-
-    format!("{}{}", sign, out.chars().rev().collect::<String>())
 }
