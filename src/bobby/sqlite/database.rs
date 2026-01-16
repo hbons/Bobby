@@ -13,7 +13,7 @@ use std::time::Duration;
 
 use rusqlite::{
     Connection,
-    OpenFlags
+    OpenFlags,
 };
 
 use super::row::RowOrder;
@@ -37,8 +37,8 @@ impl Database {
         )?;
 
         connection.busy_timeout(Duration::from_secs(3))?;
-        connection.execute_batch("PRAGMA query_only = ON;")?;
-        connection.execute_batch("PRAGMA foreign_keys = ON;")?;
+        connection.pragma_update(None, "query_only", true)?;
+        connection.pragma_update(None, "foreign_keys", true)?;
 
         Ok(
             Database {
@@ -53,13 +53,9 @@ impl Database {
     pub fn data_version(&self) -> Option<i64> {
         let connection = self.connection.borrow();
 
-        let version: i64 = connection.query_row(
-            "PRAGMA data_version;",
-            [],
-            |row| row.get(0),
-        ).ok()?;
-
-        Some(version)
+        connection.pragma_query_value(
+            None, "data_version", |row| row.get(0)
+        ).ok()
     }
 }
 
