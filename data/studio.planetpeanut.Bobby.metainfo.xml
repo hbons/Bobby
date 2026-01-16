@@ -36,15 +36,26 @@
         <keyword>inspect</keyword>
     </keywords>
 
-    <!-- <screenshots>
+    <screenshots>
         <screenshot type="default">
-            <image type="source" width="1200" height="675">
-                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-1.png
-                ./screenshot-1.png
+            <image>
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-default.png
             </image>
             <caption>Browse SQLite files</caption>
         </screenshot>
-    </screenshots> -->
+        <screenshot>
+            <image>
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-1.png
+            </image>
+            <caption>Preferences dialog</caption>
+        </screenshot>
+        <screenshot>
+            <image>
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-2.png
+            </image>
+            <caption>Empty page</caption>
+        </screenshot>
+    </screenshots>
 
     <description>
         <p>

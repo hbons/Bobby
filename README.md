@@ -2,7 +2,7 @@
 
 *Browse SQLite files*
 
-<img src="data/screenshots/bobby-1.png">
+<img src="data/screenshots/screenshot-readme.png">
 
 Bobby lets you open `SQLite` database files (`.db`, `.sqlite`) and browse the tables inside. Handy for app development or inspecting downloaded databases.
 
