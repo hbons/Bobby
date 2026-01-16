@@ -46,13 +46,17 @@ cargo_build = custom_target(
   install_dir: get_option('bindir'),
 )
 
-
 gnome.post_install(
     glib_compile_schemas: true,
     gtk_update_icon_cache: true,
     update_desktop_database: true,
 )
 
+meson.add_dist_script(
+  'build-aux/dist-vendor.sh',
+  meson.project_source_root(),
+  meson.project_build_root() / 'meson-dist' / '@0@-@1@'.format(meson.project_name(), meson.project_version()),
+)
 
 summary(
   {
