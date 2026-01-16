@@ -21,11 +21,10 @@ pub fn show_about_dialog(parent: &Window) {
         .developer_name("Hylke Bons")
         .version(env!["CARGO_PKG_VERSION"])
         .website(env!["CARGO_PKG_HOMEPAGE"])
-        .issue_url(env!["CARGO_PKG_REPOSITORY"])
         .copyright("Copyright © 2025–2026  Hylke Bons")
         .license_type(License::Gpl30)
-        .debug_info(format!("SQLite {}", rusqlite::version()))
         .build();
 
+    // about.add_other_app(); // TODO
     about.present(Some(parent));
 }
