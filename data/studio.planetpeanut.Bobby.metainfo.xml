@@ -3,8 +3,13 @@
     <name>Bobby</name>
     <summary>Browse SQLite files</summary>
     <id>studio.planetpeanut.Bobby</id>
+
     <project_group>Planet Peanut Studio</project_group>
     <project_license>GPL-3.0-or-later</project_license>
+
+    <url type="homepage">https://www.github.com/hbons/Bobby</url>
+    <url type="bugtracker">https://www.github.com/hbons/Bobby/issues</url>
+    <url type="donation">https://github.com/sponsors/hbons</url>
 
     <developer id="studio.planetpeanut">
         <name>Hylke Bons</name>
@@ -12,29 +17,10 @@
         <url type="homepage">https://planetpeanut.studio</url>
     </developer>
 
-    <url type="homepage">https://www.github.com/hbons/Bobby</url>
-    <url type="bugtracker">https://www.github.com/hbons/Bobby/issues</url>
-
-    <url type="donation">https://github.com/sponsors/hbons</url>
-
-    <categories>
-        <category>Developer Tools</category>
-        <category>Science</category>
-        <category>Utility</category>
-    </categories>
-
-    <keywords>
-        <keyword>sql</keyword>
-        <keyword>sqlite</keyword>
-        <keyword>query</keyword>
-        <keyword>database</keyword>
-        <keyword>db</keyword>
-        <keyword>table</keyword>
-        <keyword>row</keyword>
-        <keyword>column</keyword>
-        <keyword>cell</keyword>
-        <keyword>inspect</keyword>
-    </keywords>
+    <branding>
+        <color type="primary" scheme_preference="light">#A6D7ED</color>
+        <color type="primary" scheme_preference="dark">#084B82</color>
+    </branding>
 
     <screenshots>
         <screenshot type="default">
@@ -68,30 +54,44 @@
     </description>
 
     <releases>
-        <release version="49.0.0" date="2025-12-25" urgency="medium">
+        <release version="49.0.0" date="2026-01-20">
             <description>
                 <ul>
                     <li>First release!</li>
                     <li>Designed for GNOME</li>
-                    <li>Written in Rust</li>
+                    <li>Made by a human using Rust</li>
                 </ul>
            </description>
         </release>
     </releases>
-
-    <!-- <branding>
-        <color type="primary" scheme_preference="light">#6DD2F3</color>
-        <color type="primary" scheme_preference="dark">#00455B</color>
-    </branding> -->
 
     <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
     <provides>
         <binary>bobby</binary>
     </provides>
 
-    <content_rating type="oars-1.1">
+    <!-- <content_rating type="oars-1.1">
         <content_attribute id="money-purchasing">mild</content_attribute>
-    </content_rating>
+    </content_rating> -->
+
+    <categories>
+        <category>Developer Tools</category>
+        <category>Science</category>
+        <category>Utility</category>
+    </categories>
+
+    <keywords>
+        <keyword>sql</keyword>
+        <keyword>sqlite</keyword>
+        <keyword>query</keyword>
+        <keyword>database</keyword>
+        <keyword>table</keyword>
+        <keyword>row</keyword>
+        <keyword>column</keyword>
+        <keyword>cell</keyword>
+        <keyword>gnome</keyword>
+        <keyword>gtk</keyword>
+    </keywords>
 
     <metadata_license>CC0-1.0</metadata_license>
     <update_contact>hello_AT_planetpeanut.studio</update_contact>
