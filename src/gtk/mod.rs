@@ -8,6 +8,7 @@
 pub mod about;
 pub mod content;
 pub mod file;
+pub mod item;
 pub mod lib;
 pub mod menu;
 pub mod preferences;
