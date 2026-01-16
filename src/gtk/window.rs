@@ -133,6 +133,7 @@ fn button_open_new(window: &ApplicationWindow) -> Button {
 }
 
 
+// TODO: Remove views and Database from memory on close
 pub fn window_new(application: &Application, path: &Path, table_name: Option<String>) -> Result<ApplicationWindow, Box<dyn Error>> {
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
@@ -160,13 +161,14 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
         };
 
     let title = &path.file_name()
-        .ok_or("err")?
+        .ok_or("Missing file name")?
         .to_string_lossy()
         .to_string();
 
     let window = ApplicationWindow::builder()
         .application(application)
         .title(title)
+        .tooltip_text(path.to_string_lossy())
         .default_width(960)
         .default_height(640)
         .build();
@@ -181,7 +183,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     header.pack_end(&main_menu);
 
 
-    let content = content_new(&db, &table);
+    let content = content_new(&db, &table)?;
 
     let table_index = tables
         .iter()
@@ -247,10 +249,9 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 let row_index = row_index.parse::<usize>().unwrap_or_default();
                 let col_index = col_index.parse::<usize>().unwrap_or_default();
 
-                if let Some(row) = get_row(column_view, row_index) {
-                    if let Some(cell) = row.cells.get(col_index) {
-                        _ = copy_to_clipboard(&cell.to_string()); // TODO
-                    }
+                if let Some(row) = get_row(column_view, row_index) &&
+                   let Some(cell) = row.cells.get(col_index) {
+                    _ = copy_to_clipboard(&cell.to_string());
                 }
             }
         }
@@ -259,6 +260,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
 
     let window_handle = window.clone();
     let copy_row_action = SimpleAction::new("copy-row", Some(VariantTy::STRING));
+    let settings_handle = settings.clone();
 
     // TODO: Move to actions.rs
     copy_row_action.connect_activate(move |_, row_index| {
@@ -268,9 +270,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
                 .and_then(|s| s.parse::<usize>().ok())
                 .and_then(|i| get_row(column_view, i))
             {
-                let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-                let separator = settings.string("column-separator");
+                let separator = settings_handle.string("column-separator");
                 let separator = separator.as_str().parse::<ColumnSeparator>();
 
                 _ = copy_to_clipboard(
@@ -314,7 +314,7 @@ fn window_change_content(window: &ApplicationWindow, table: &Table)
     };
 
     let db = db.ok_or("Database not found on window")?;
-    let content = content_new(db, table);
+    let content = content_new(db, table)?;
 
     // TODO: Swap the content here. Need to get the layout box somehow...
 
@@ -344,6 +344,7 @@ fn find_column_view(root: &Widget) -> Option<ColumnView> {
 fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
     let model = column_view.model()?;
     let selection = model.downcast_ref::<SingleSelection>()?;
+
     let item = selection
         .item(position as u32)
         .and_then(|o| o.downcast::<BoxedAnyObject>().ok())?;
