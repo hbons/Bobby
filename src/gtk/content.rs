@@ -120,11 +120,19 @@ pub fn content_new(
         }
 
         if is_index_column {
-            const CHAR_WIDTH: usize = 12;
-            let margin_end = super::item::MARGIN_END as usize;
+            let margin = super::item::MARGIN;
 
-            let width = ((row_count.to_string().len() + 1) * CHAR_WIDTH) + margin_end;
-            view_column.set_fixed_width(width as i32);
+            let label = Label::new(None); // Find out rendering char width
+            label.add_css_class("monospace");
+            let layout = label.create_pango_layout(Some("0"));
+            let (_, char) = layout.pixel_extents();
+
+            let width =
+                margin +
+                ((row_count.to_string().len() as i32 + 2) * char.width()) +
+                margin;
+
+            view_column.set_fixed_width(width);
             view_column.set_resizable(false);
 
             view_column.set_visible(

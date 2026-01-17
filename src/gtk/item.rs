@@ -22,7 +22,7 @@ use crate::bobby::prelude::*;
 
 
 // U+25C7 "White Diamond"
-pub const MARGIN_END: i32 = 4;
+pub const MARGIN: i32 = 4;
 
 pub fn setup_index_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
     let list_item = obj
@@ -33,7 +33,8 @@ pub fn setup_index_list_item(obj: &Object) -> Result<(), Box<dyn Error>> {
         .css_classes(["dimmed", "monospace"])
         .halign(Align::End)
         .has_tooltip(true)
-        .margin_end(MARGIN_END)
+        .margin_start(MARGIN)
+        .margin_end(MARGIN)
         .margin_top(1)
         .single_line_mode(true)
         .build();
@@ -92,7 +93,7 @@ pub fn setup_list_item(obj: &Object, monospace_font: bool) -> Result<(), Box<dyn
         // .ellipsize(EllipsizeMode::End) // TODO: Still a bit slow...
         .halign(Align::Start)
         .has_tooltip(true)
-        .margin_start(4)
+        .margin_start(MARGIN)
         .single_line_mode(true)
         .build();
 
