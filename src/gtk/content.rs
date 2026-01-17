@@ -127,12 +127,16 @@ pub fn content_new(
             view_column.set_fixed_width(width as i32);
             view_column.set_resizable(false);
 
+            view_column.set_visible(
+                settings.boolean("row-numbers")
+            );
+
             // TODO: File GTK rendering bug
-            settings.bind(
-                "row-numbers",
-                &view_column,
-                "visible"
-            ).build();
+            // settings.bind(
+            //     "row-numbers",
+            //     &view_column,
+            //     "visible"
+            // ).build();
         } else {
             view_column.set_fixed_width(
                 match column.affinity {
