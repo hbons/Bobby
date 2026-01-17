@@ -7,6 +7,8 @@
     <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
     <provides>
         <binary>bobby</binary>
+        <mimetype>application/x-sqlite3</mimetype>
+        <mimetype>application/vnd.sqlite3</mimetype>
     </provides>
 
     <project_group>Planet Peanut Studio</project_group>
@@ -76,7 +78,8 @@
     </content_rating>
 
     <categories>
-        <category>Developer Tools</category>
+        <category>Database</category>
+        <category>Development</category>
         <category>Science</category>
         <category>Utility</category>
     </categories>
