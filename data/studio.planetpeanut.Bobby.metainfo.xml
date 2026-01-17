@@ -4,6 +4,11 @@
     <summary>Browse SQLite files</summary>
     <id>studio.planetpeanut.Bobby</id>
 
+    <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
+    <provides>
+        <binary>bobby</binary>
+    </provides>
+
     <project_group>Planet Peanut Studio</project_group>
     <project_license>GPL-3.0-or-later</project_license>
 
@@ -65,11 +70,6 @@
            </description>
         </release>
     </releases>
-
-    <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
-    <provides>
-        <binary>bobby</binary>
-    </provides>
 
     <content_rating type="oars-1.1">
         <!-- <content_attribute id="money-purchasing">mild</content_attribute> -->

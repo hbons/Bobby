@@ -82,7 +82,7 @@ impl Clone for Database {
         Self {
             path: self.path.clone(),
             connection: Rc::clone(&self.connection),
-            row_order: self.row_order.clone(),
+            row_order: self.row_order,
         }
     }
 }

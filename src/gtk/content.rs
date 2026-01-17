@@ -75,7 +75,7 @@ pub fn content_new(
         let factory = SignalListItemFactory::new();
 
         unsafe {
-            factory.set_data("column", column_index.clone());
+            factory.set_data("column", column_index);
         }
 
         if is_index_column {
@@ -108,7 +108,7 @@ pub fn content_new(
 
         let view_column = ColumnViewColumn::builder()
             .title(&column.name)
-            .id(&column_index.to_string())
+            .id(column_index.to_string())
             .factory(&factory)
             .resizable(true)
             .expand(is_last_column)
