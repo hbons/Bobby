@@ -70,9 +70,9 @@
         <binary>bobby</binary>
     </provides>
 
-    <!-- <content_rating type="oars-1.1">
-        <content_attribute id="money-purchasing">mild</content_attribute>
-    </content_rating> -->
+    <content_rating type="oars-1.1">
+        <!-- <content_attribute id="money-purchasing">mild</content_attribute> -->
+    </content_rating>
 
     <categories>
         <category>Developer Tools</category>
