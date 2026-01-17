@@ -1,4 +1,5 @@
 app-id: studio.planetpeanut.Bobby
+branch: devel
 command: bobby
 
 runtime: org.gnome.Platform
@@ -21,7 +22,9 @@ modules:
   - name: bobby
     buildsystem: meson
     builddir: true
+    build-options:
+      build-args:
+        - --share=network
     sources:
-      - type: archive
-        url: https://github.com/hbons/Bobby/releases/download/49.0.0/Bobby-49.0.0.tar.xz
-        sha256: 68e52200507b8f0753fdb1afbf7c145fb04ee18e7ee6e95fb013e192237eeb90
+      - type: dir
+        path: "."
