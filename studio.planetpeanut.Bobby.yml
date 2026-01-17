@@ -24,4 +24,4 @@ modules:
     sources:
       - type: archive
         url: https://github.com/hbons/Bobby/releases/download/49.0.0/Bobby-49.0.0.tar.xz
-        sha256: 68e52200507b8f0753fdb1afbf7c145fb04ee18e7ee6e95fb013e192237eeb90
+        sha256: e470e3f537eacdce5ceefac4c63a807d7e512e8f6a1acc3567a14ac892001cf3
