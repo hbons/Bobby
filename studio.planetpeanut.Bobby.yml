@@ -31,6 +31,5 @@ modules:
       build-args:
         - --share=network
     sources:
-      - type: git
-        url: https://github.com/hbons/Bobby
-        branch: main
+      - type: dir
+        path: "."
