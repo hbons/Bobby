@@ -85,10 +85,10 @@
     </categories>
 
     <keywords>
-        <keyword>sql</keyword>
-        <keyword>sqlite</keyword>
-        <keyword>query</keyword>
         <keyword>database</keyword>
+        <keyword>sqlite</keyword>
+        <keyword>sql</keyword>
+        <keyword>query</keyword>
         <keyword>table</keyword>
         <keyword>row</keyword>
         <keyword>column</keyword>
