@@ -6,7 +6,8 @@
 
 Bobby lets you open `SQLite` database files (`.db`, `.sqlite`) and browse the tables inside. Handy for app development or inspecting downloaded databases.
 
-<!--## Install on Linux
+
+## Install on Linux
 
 Bobby is designed and built for the *GNOME* platform. Available on [Flathub](https://flathub.org/).
 
@@ -14,7 +15,7 @@ Bobby is designed and built for the *GNOME* platform. Available on [Flathub](htt
 # Install from Flathub
 flatpak remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
 flatpak install flathub studio.planetpeanut.Bobby
-```-->
+```
 
 
 ## Build from source
