@@ -25,17 +25,18 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     let table_count = tables.iter().filter(|t| !t.is_view()).count();
 
     for (i, table) in tables.iter().enumerate() {
-        if table.is_view() {
-            view_section.append(
-                Some(&table.name()),
-                Some(&format!("win.table::{}", i)),
-            );
+        let name = table.name().replace("_", "__"); // Avoid mnemonics
+
+        let section = if table.is_view() {
+            &view_section
         } else {
-            table_section.append(
-                Some(&table.name()),
-                Some(&format!("win.table::{}", i)),
-            );
-        }
+            &table_section
+        };
+
+        section.append(
+            Some(&name),
+            Some(&format!("win.table::{}", i)),
+        );
     }
 
     menu.append_section(Some(&format!("Views – {view_count}")), &view_section);
