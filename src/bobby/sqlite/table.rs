@@ -12,7 +12,7 @@ use std::str;
 use super::database::Database;
 
 
-#[derive(Clone, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Table {
     name: TableName,
     has_row_id: Option<bool>,
@@ -83,7 +83,7 @@ impl Database {
 }
 
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TableName(String);
 
 impl str::FromStr for TableName {

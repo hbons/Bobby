@@ -50,8 +50,8 @@ impl Database {
                 &format!("
                     SELECT *
                     FROM {table_name}
-                    OFFSET {offset}
                     LIMIT {limit}
+                    OFFSET {offset};
                 ")
             };
 
