@@ -168,7 +168,6 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let window = ApplicationWindow::builder()
         .application(application)
         .title(title)
-        .tooltip_text(path.to_string_lossy())
         .default_width(960)
         .default_height(640)
         .build();
@@ -179,6 +178,7 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     let main_menu = main_menu_new(application);
 
     let header = HeaderBar::new();
+    header.set_tooltip_text(Some(&path.to_string_lossy()));
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
