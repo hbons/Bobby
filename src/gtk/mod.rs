@@ -12,5 +12,6 @@ pub mod item;
 pub mod lib;
 pub mod menu;
 pub mod preferences;
+pub mod shortcuts;
 pub mod switcher;
 pub mod window;
