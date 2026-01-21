@@ -106,7 +106,7 @@ impl Gui for App {
                     }
 
                     let table_name = env::args().nth(2);
-                    let result = window_new(application, &path, table_name);
+                    let result = window_new(application, &path, table_name, true);
 
                     if let Ok(window) = result {
                         window.present();

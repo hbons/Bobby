@@ -68,7 +68,7 @@ fn handle_files(
             .path()
             .ok_or("Selected file has no local path")?;
 
-        let window = window_new(&application, path.as_path(), None)?;
+        let window = window_new(&application, path.as_path(), None, false)?;
         window.present();
     }
 

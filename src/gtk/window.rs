@@ -19,6 +19,7 @@ use gtk4::{
     gdk::FileList,
     glib::Variant,
     glib::VariantTy,
+    glib::Propagation,
     Align,
     Button,
     ColumnView,
@@ -134,7 +135,13 @@ fn button_open_new(window: &ApplicationWindow) -> Button {
 
 
 // TODO: Remove views and Database from memory on close
-pub fn window_new(application: &Application, path: &Path, table_name: Option<String>) -> Result<ApplicationWindow, Box<dyn Error>> {
+pub fn window_new(
+    application: &Application,
+    path: &Path,
+    table_name: Option<String>,
+    quit_on_close: bool,
+) -> Result<ApplicationWindow, Box<dyn Error>>
+{
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     let row_order = match settings.string("row-order").as_str() {
@@ -284,6 +291,23 @@ pub fn window_new(application: &Application, path: &Path, table_name: Option<Str
     window.add_action(&copy_val_action);
     window.add_action(&copy_row_action);
     window.add_action(&table_action);
+
+
+    window.connect_close_request({
+        let app = application.clone();
+
+        move |_| {
+            if !quit_on_close && app.windows().len() == 1 {
+                // app.activate(); // TODO: Use activate logic
+                if let Ok(empty_window) = window_empty_new(&app) {
+                    empty_window.present();
+                }
+            }
+
+            Propagation::Proceed
+        }
+    });
+
 
     // SAFETY: Window outlives the database
     unsafe {
