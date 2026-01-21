@@ -15,17 +15,15 @@ use gio::{
 
 use gtk4::prelude::*;
 use gtk4::{
-    glib::Error,
     FileDialog,
     FileFilter,
+    Window,
 };
 
-use libadwaita::ApplicationWindow;
-
-use super::window::window_new;
+use super::window::{ IS_EMPTY_WINDOW, window_new };
 
 
-pub fn open_file_dialog(parent: &ApplicationWindow) {
+pub fn show_file_dialog(parent: &Window) {
     let dialog = FileDialog::builder()
         .filters(&filters())
         .modal(true)
@@ -46,7 +44,7 @@ pub fn open_file_dialog(parent: &ApplicationWindow) {
 }
 
 fn handle_files(
-    parent: &ApplicationWindow,
+    parent: &Window,
     result: Result<ListModel, Error>)
     -> Result<(), Box<dyn std::error::Error>>
 {
@@ -71,8 +69,16 @@ fn handle_files(
             .path()
             .ok_or("Selected file has no local path")?;
 
-        let window = window_new(&application, path.as_path(), None, false)?;
-        window.present();
+        if let Some(window) = application
+            .windows()
+            .iter()
+            .find(|w| w.widget_name().to_string() == path.to_string_lossy())
+        {
+            window.present();
+        } else {
+            let window = window_new(&application, path.as_path(), None, false)?;
+            window.present();
+        }
     }
 
     Ok(())
