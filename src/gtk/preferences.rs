@@ -5,9 +5,16 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use gtk4::{ StringList, Window };
-use gtk4::gio::{ Settings, SettingsSchemaSource };
-use gtk4::glib::Variant;
+use gio::{
+    Settings,
+    SettingsSchemaSource
+};
+
+use gtk4::{
+    glib::Variant,
+    StringList,
+    Window
+};
 
 use libadwaita::prelude::*;
 use libadwaita::{
@@ -20,7 +27,7 @@ use libadwaita::{
 
 
 pub fn show_preferences_dialog(parent: &Window) {
-    let settings = Settings::new("studio.planetpeanut.Bobby");
+    let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     let page = PreferencesPage::builder()
         .title("Preferences")

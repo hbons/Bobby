@@ -11,12 +11,12 @@ use std::path::Path;
 
 use gio::SimpleAction;
 
-use gio::glib::BoxedAnyObject;
 use gtk4::prelude::*;
 use gtk4::{
     gdk::DragAction,
     gdk::Display,
     gdk::FileList,
+    glib::BoxedAnyObject,
     glib::Variant,
     glib::VariantTy,
     glib::Propagation,

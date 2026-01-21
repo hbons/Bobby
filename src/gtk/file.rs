@@ -6,6 +6,7 @@
 
 
 use gio::{
+    glib::Error,
     Cancellable,
     File,
     ListModel,

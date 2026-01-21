@@ -47,6 +47,6 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     }
 
     button.set_menu_model(Some(&menu));
-    button.set_tooltip_text(Some("Select Table"));
+    button.set_tooltip_text(Some("Tables"));
     button
 }

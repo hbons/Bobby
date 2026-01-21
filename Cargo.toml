@@ -16,7 +16,6 @@ id = "studio.planetpeanut.Bobby"
 chrono = "0.4.42"
 rusqlite = { version = "0.37.0", features = ["bundled"] }
 
-
 # From the GNOME Project – https://gnome.org
 gio = "0.21.5"
 gtk4 = { version = "0.10.3", features = ["gnome_49"] }

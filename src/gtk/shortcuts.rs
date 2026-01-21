@@ -10,8 +10,8 @@ use gtk4::Window;
 use libadwaita::prelude::*;
 use libadwaita::{
     ShortcutsDialog,
-    ShortcutsSection,
     ShortcutsItem,
+    ShortcutsSection,
 };
 
 
