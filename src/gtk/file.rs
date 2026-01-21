@@ -57,7 +57,9 @@ fn handle_files(
         .downcast::<libadwaita::Application>()
         .map_err(|_| "Not a libadwaita::Application")?;
 
-    parent.close();
+    if parent.widget_name() == IS_EMPTY_WINDOW {
+        parent.close();
+    }
 
     for i in 0..model.n_items() {
         let file = model

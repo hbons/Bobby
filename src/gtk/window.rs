@@ -49,7 +49,7 @@ use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
 
-const EMPTY_WINDOW: &str = "empty-window";
+pub const IS_EMPTY_WINDOW: &str = "1";
 
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
@@ -77,7 +77,7 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
     layout.append(&page);
 
     window.set_content(Some(&layout));
-    window.set_widget_name(EMPTY_WINDOW);
+    window.set_widget_name(IS_EMPTY_WINDOW);
     window.add_controller(drop_target_new(&window));
 
     Ok(window)
@@ -93,7 +93,7 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
     let window_handle = window.clone();
 
     drop_target.connect_drop(move |_, value, _, _| {
-        if window_handle.widget_name() == EMPTY_WINDOW {
+        if window_handle.widget_name() == IS_EMPTY_WINDOW {
             // Keep reference alive
             window_handle.set_visible(false);
         }
@@ -104,7 +104,7 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
             }
         }
 
-        if window_handle.widget_name() == EMPTY_WINDOW {
+        if window_handle.widget_name() == IS_EMPTY_WINDOW {
             window_handle.close();
         }
 
@@ -241,6 +241,7 @@ pub fn window_new(
 
     window.set_content(Some(&layout));
     window.add_controller(drop_target_new(&window));
+    window.set_widget_name(&path.to_string_lossy());
 
 
     let window_handle = window.clone();

@@ -5,7 +5,6 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use std::env;
 use std::error::Error;
 
 use gio::{
@@ -19,7 +18,6 @@ use gtk4::gio::ApplicationFlags;
 use libadwaita::Application;
 
 use crate::app::App;
-use crate::bobby::sqlite::database::Database;
 use crate::gui::Gui;
 
 use super::window::{
@@ -89,27 +87,16 @@ impl Gui for App {
         application.connect_open(move |application, files, _| {
             for file in files {
                 if let Some(path) = file.path() {
-                    for window in application.windows() {
-                        // SAFETY: Window outlives the database
-                        let db = unsafe {
-                            window
-                                .data::<Database>("db")
-                                .map(|db| db.as_ref())
-                        };
-
-                        if let Some(db) = db {
-                            if db.path == path {
-                                window.present();
-                                return;
-                            }
-                        }
-                    }
-
-                    let table_name = env::args().nth(2);
-                    let result = window_new(application, &path, table_name, true);
-
-                    if let Ok(window) = result {
+                    if let Some(window) = application
+                        .windows()
+                        .iter()
+                        .find(|w| w.widget_name().to_string() == path.to_string_lossy())
+                    {
                         window.present();
+                    } else {
+                        if let Ok(window) = window_new(&application, path.as_path(), None, false) {
+                            window.present();
+                        }
                     }
                 }
             }
