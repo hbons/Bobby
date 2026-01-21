@@ -16,31 +16,32 @@ use libadwaita::{
 
 
 pub fn show_shortcuts_dialog(parent: &Window){
-    // let table_section = ShortcutsSection::new(Some("Tables"));
+    // let section_table = ShortcutsSection::new(Some("Tables"));
 
-    // let item_goto = ShortcutsItem::new("Go To Row Number", "<Ctrl>G");
-    // let item_copy = ShortcutsItem::new("Copy Row", "<Ctrl>C");
+    // let item_goto = ShortcutsItem::new("Go To Row Number", "<Primary>G");
+    // let item_copy = ShortcutsItem::new("Copy Row", "<Primary>C");
+    // let item_refresh = ShortcutsItem::new("Refresh", "<Primary>R");
 
-    // table_section.add(item_goto); // TODO
-    // table_section.add(item_copy); // TODO
+    // section_table.add(item_goto); // TODO
+    // section_table.add(item_copy); // TODO
+    // section_table.add(item_refresh); // TODO
 
 
-    let general_section = ShortcutsSection::new(Some("General"));
+    let section_general = ShortcutsSection::new(Some("General"));
 
-    let item_open = ShortcutsItem::new("Open File", "<Ctrl>O");
-    let item_close = ShortcutsItem::new("Close Window", "<Ctrl>W");
-    let item_menu = ShortcutsItem::new("Open Menu", "F10");
-    let item_quit = ShortcutsItem::new("Quit", "<Ctrl>Q");
+    let item_open  = ShortcutsItem::new("Open File", "<Primary>O");
+    // let item_menu  = ShortcutsItem::new("Open Menu", "F10"); // TODO
+    let item_close = ShortcutsItem::new("Close Window", "<Primary>w");
+    let item_quit  = ShortcutsItem::new("Quit", "<Primary>q");
 
-    general_section.add(item_open);
-    general_section.add(item_close);
-    general_section.add(item_menu);
-    general_section.add(item_quit);
+    section_general.add(item_open);
+    // section_general.add(item_menu);
+    section_general.add(item_close);
+    section_general.add(item_quit);
 
 
     let shortcuts = ShortcutsDialog::new();
     // shortcuts.add(table_section);
-    shortcuts.add(general_section);
-
+    shortcuts.add(section_general);
     shortcuts.present(Some(parent));
 }

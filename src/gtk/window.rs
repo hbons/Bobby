@@ -44,7 +44,6 @@ use libadwaita::{
 use crate::bobby::prelude::*;
 
 use super::content::content_new;
-use super::file::open_file_dialog;
 use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
@@ -59,9 +58,11 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
         .default_height(500)
         .build();
 
+    let menu = &main_menu_new(application);
+
     let header = HeaderBar::new();
     header.add_css_class("flat");
-    header.pack_end(&main_menu_new(application));
+    header.pack_end(menu);
 
     let page = StatusPage::builder()
         .icon_name("studio.planetpeanut.Bobby-symbolic")
@@ -108,7 +109,7 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
             window_handle.close();
         }
 
-        true
+        true // Drop accepted
     });
 
     drop_target
@@ -126,7 +127,9 @@ fn button_open_new(window: &ApplicationWindow) -> Button {
 
     button.connect_clicked(move |_| {
         if let Some(window) = window_weak.upgrade() {
-            open_file_dialog(&window);
+            if let Some(application) = window.application() {
+                application.activate_action("open", None);
+            }
         }
     });
 
@@ -188,7 +191,6 @@ pub fn window_new(
     header.set_tooltip_text(Some(&path.to_string_lossy()));
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
-
 
     let content = content_new(&db, &table)?;
 

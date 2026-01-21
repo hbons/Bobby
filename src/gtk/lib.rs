@@ -20,13 +20,11 @@ use libadwaita::Application;
 use crate::app::App;
 use crate::gui::Gui;
 
-use super::window::{
-    window_empty_new,
-    window_new,
-};
-
-use super::preferences::show_preferences_dialog;
 use super::about::show_about_dialog;
+use super::file::show_file_dialog;
+use super::preferences::show_preferences_dialog;
+use super::shortcuts::show_shortcuts_dialog;
+use super::window::{ window_empty_new, window_new };
 
 
 impl Gui for App {
@@ -39,17 +37,25 @@ impl Gui for App {
             .flags(ApplicationFlags::HANDLES_OPEN)
             .build();
 
-        application.set_accels_for_action("app.preferences", &["<Control>comma"]);
-        // application.set_accels_for_action("app.close", &["<Ctrl>w"]); // TODO
-        // application.set_accels_for_action("app.quit", &["<Ctrl>q"]); // TODO
-
         application.connect_startup(|application| {
+            // TODO: Move all tow actions.rs
+
             let preferences_action = SimpleAction::new("preferences", None);
             let application_handle = application.clone();
 
             preferences_action.connect_activate(move |_, _| {
                 if let Some(active_window) = application_handle.active_window() {
                     show_preferences_dialog(&active_window);
+                }
+            });
+
+
+            let shortcuts_action = SimpleAction::new("shortcuts", None);
+            let application_handle = application.clone();
+
+            shortcuts_action.connect_activate(move |_, _| {
+                if let Some(active_window) = application_handle.active_window() {
+                    show_shortcuts_dialog(&active_window);
                 }
             });
 
@@ -64,14 +70,54 @@ impl Gui for App {
             });
 
 
+            let close_action = gio::SimpleAction::new("close", None);
+            let application_handle = application.clone();
+
+            close_action.connect_activate(move |_, _| {
+                if let Some(window) = application_handle.active_window() {
+                    // TODO: Remove database from memory here
+                    window.close();
+                }
+            });
+
+
+            let quit_action = gio::SimpleAction::new("quit", None);
+            let application_handle = application.clone();
+
+            quit_action.connect_activate(move |_, _| {
+                application_handle.quit();
+            });
+
+
+            let open_action = gio::SimpleAction::new("open", None);
+            let application_handle = application.clone();
+
+            open_action.connect_activate(move |_, _| {
+                if let Some(parent) = application_handle.active_window() {
+                    show_file_dialog(&parent);
+                }
+            });
+
+
             application.add_action(&preferences_action);
+            application.add_action(&shortcuts_action);
             application.add_action(&about_action);
+            application.add_action(&close_action);
+            application.add_action(&open_action);
+
+            application.set_accels_for_action("app.preferences", &["<Primary>comma"]);
+            application.set_accels_for_action("app.shortcuts", &["<Primary>question"]);
+            application.set_accels_for_action("app.close", &["<Primary>w"]);
+            application.set_accels_for_action("app.quit", &["<Primary>q"]);
+            application.set_accels_for_action("app.open", &["<Primary>o"]);
+
 
             let menu = Menu::new();
             menu.append(Some("Preferences"), Some("app.preferences"));
+            menu.append(Some("Keyboard Shortcuts"), Some("app.shortcuts"));
             menu.append(Some("About Bobby"), Some("app.about"));
 
-            unsafe { application.set_data("menu", menu); }
+            unsafe { application.set_data("menu", menu); } // TODO: Still needed?
         });
 
 
@@ -102,8 +148,8 @@ impl Gui for App {
             }
         });
 
-
         application.run();
+
         Ok(())
     }
 }
