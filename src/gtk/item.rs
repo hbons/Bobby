@@ -91,7 +91,7 @@ pub fn setup_list_item(obj: &Object, monospace_font: bool) -> Result<(), Box<dyn
     let label = Label::builder()
         .css_classes(["numeric"])
         // .ellipsize(EllipsizeMode::End) // TODO: Still a bit slow...
-        .halign(Align::Start)
+        .xalign(0.0)
         .has_tooltip(true)
         .margin_start(MARGIN)
         .single_line_mode(true)
