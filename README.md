@@ -1,4 +1,4 @@
-# [Bobby](https://github.com/hbons/Bobby)
+# [Bobby](https://planetpeanut.studio/bobby)
 
 *Browse SQLite files*
 

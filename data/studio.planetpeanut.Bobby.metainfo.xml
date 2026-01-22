@@ -62,6 +62,15 @@
     </description>
 
     <releases>
+        <release version="49.0.1" date="2026-01-22">
+            <description>
+                <ul>
+                    <li>Fix display of tables without a rowid</li>
+                    <li>Keyboard shortcuts for Open/Close/Quit</li>
+                    <li>Return to start page after close if it was used</li>
+                </ul>
+           </description>
+        </release>
         <release version="49.0.0" date="2026-01-20">
             <description>
                 <ul>
@@ -83,8 +92,8 @@
     </content_rating>
 
     <categories>
-        <category>Database</category>
         <category>Development</category>
+        <category>Database</category>
         <category>Science</category>
         <category>Utility</category>
     </categories>
