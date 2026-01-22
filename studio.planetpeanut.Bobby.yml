@@ -24,5 +24,5 @@ modules:
     builddir: true
     sources:
       - type: archive
-        url: https://github.com/hbons/Bobby/releases/download/49.0.0/Bobby-49.0.0.tar.xz
-        sha256: e470e3f537eacdce5ceefac4c63a807d7e512e8f6a1acc3567a14ac892001cf3
+        url: https://github.com/hbons/Bobby/releases/download/49.0.1/Bobby-49.0.1.tar.xz
+        sha256: f2418c857cf35bf22afa1ecaddca56822160e695077d8996492dc65275e1c07f
