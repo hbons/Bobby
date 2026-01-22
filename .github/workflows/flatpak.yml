@@ -3,13 +3,17 @@ name: Flatpak
 on:
   push:
     branches: [ main, dev ]
+    tags:
+      - '*'
 
 jobs:
   flatpak:
     name: Flatpak
+
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
       options: --privileged
+
     strategy:
       matrix:
         variant:
@@ -17,12 +21,16 @@ jobs:
             runner: ubuntu-24.04
           - arch: aarch64
             runner: ubuntu-24.04-arm
+
     runs-on: ${{ matrix.variant.runner }}
+
     steps:
     - uses: actions/checkout@v4
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: bobby.flatpak
-        manifest-path: studio.planetpeanut.Bobby.devel.yml
+        manifest-path: ${{ github.ref_type == 'tag'
+          && 'studio.planetpeanut.Bobby.yml'
+          || 'studio.planetpeanut.Bobby.devel.yml' }}
         cache-key: flatpak-builder-${{ github.sha }}
         arch: ${{ matrix.variant.arch }}
