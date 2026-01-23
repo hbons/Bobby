@@ -1,6 +1,6 @@
 [package]
 name = "Bobby"
-version = "49.0.1"
+version = "49.0.2"
 repository = "https://www.github.com/hbons/Bobby"
 homepage = "https://planetpeanut.studio/bobby"
 authors = ["Hylke Bons <hello@planetpeanut.studio>"]
