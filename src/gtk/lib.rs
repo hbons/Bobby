@@ -8,6 +8,7 @@
 use std::error::Error;
 
 use gio::{
+    glib::Propagation,
     Menu,
     SimpleAction,
 };
@@ -141,7 +142,7 @@ impl Gui for App {
                     {
                         window.present();
                     } else {
-                        if let Ok(window) = window_new(&application, path.as_path(), None, true) {
+                        if let Ok(window) = window_new(&application, &path, None, Propagation::Proceed) {
                             window.present();
                         }
                     }

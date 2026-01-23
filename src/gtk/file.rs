@@ -7,6 +7,7 @@
 
 use gio::{
     glib::Error,
+    glib::Propagation,
     Cancellable,
     File,
     ListModel,
@@ -76,7 +77,7 @@ fn handle_files(
         {
             window.present();
         } else {
-            let window = window_new(&application, path.as_path(), None, false)?;
+            let window = window_new(&application, &path, None, Propagation::Stop)?;
             window.present();
         }
     }

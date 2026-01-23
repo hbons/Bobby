@@ -142,7 +142,7 @@ pub fn window_new(
     application: &Application,
     path: &Path,
     table_name: Option<String>,
-    quit_on_close: bool,
+    on_close: Propagation,
 ) -> Result<ApplicationWindow, Box<dyn Error>>
 {
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
@@ -300,7 +300,7 @@ pub fn window_new(
         let app = application.clone();
 
         move |_| {
-            if !quit_on_close && app.windows().len() == 1 {
+            if on_close == Propagation::Stop && app.windows().len() == 1 {
                 // app.activate(); // TODO: Use activate logic
                 if let Ok(empty_window) = window_empty_new(&app) {
                     empty_window.present();
