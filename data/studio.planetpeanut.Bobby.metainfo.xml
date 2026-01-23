@@ -69,7 +69,7 @@
                     <li>Fix Quit keyboard shortcut</li>
                     <li>Fix start page opening after every close</li>
                 </ul>
-        </description>
+            </description>
         </release>
         <release version="49.0.1" date="2026-01-22">
             <description>
