@@ -103,6 +103,7 @@ impl Gui for App {
             application.add_action(&shortcuts_action);
             application.add_action(&about_action);
             application.add_action(&close_action);
+            application.add_action(&quit_action);
             application.add_action(&open_action);
 
             application.set_accels_for_action("app.preferences", &["<Primary>comma"]);
