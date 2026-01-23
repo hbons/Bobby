@@ -37,7 +37,7 @@ read -p "When done, press [Enter]: "
 git add "./data/$FLATPAK_ID.yml"
 git commit -m "meta: Update release notes for $VERSION"
 meson setup --wipe ./build
-meson dist -C ./build --allow-dirty
+meson dist -C ./build
 git tag $VERSION HEAD
 git push origin main
 git push --tags origin main
