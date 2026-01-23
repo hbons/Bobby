@@ -9,7 +9,6 @@ use std::error::Error;
 
 use gio::{
     glib::Propagation,
-    Menu,
     SimpleAction,
 };
 
@@ -112,14 +111,6 @@ impl Gui for App {
             application.set_accels_for_action("app.close", &["<Primary>w"]);
             application.set_accels_for_action("app.quit", &["<Primary>q"]);
             application.set_accels_for_action("app.open", &["<Primary>o"]);
-
-
-            let menu = Menu::new();
-            menu.append(Some("Preferences"), Some("app.preferences"));
-            menu.append(Some("Keyboard Shortcuts"), Some("app.shortcuts"));
-            menu.append(Some("About Bobby"), Some("app.about"));
-
-            unsafe { application.set_data("menu", menu); } // TODO: Still needed?
         });
 
 

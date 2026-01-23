@@ -58,7 +58,7 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
         .default_height(500)
         .build();
 
-    let menu = &main_menu_new(application);
+    let menu = &main_menu_new();
 
     let header = HeaderBar::new();
     header.add_css_class("flat");
@@ -106,6 +106,7 @@ fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
         }
 
         if window_handle.widget_name() == IS_EMPTY_WINDOW {
+            // Now we can close it
             window_handle.close();
         }
 
@@ -185,7 +186,7 @@ pub fn window_new(
     let switcher = table_switcher_new(&tables);
     switcher.set_label(&table.name());
 
-    let main_menu = main_menu_new(application);
+    let main_menu = main_menu_new();
 
     let header = HeaderBar::new();
     header.set_tooltip_text(Some(&path.to_string_lossy()));
