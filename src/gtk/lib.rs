@@ -141,7 +141,7 @@ impl Gui for App {
                     {
                         window.present();
                     } else {
-                        if let Ok(window) = window_new(&application, path.as_path(), None, false) {
+                        if let Ok(window) = window_new(&application, path.as_path(), None, true) {
                             window.present();
                         }
                     }
