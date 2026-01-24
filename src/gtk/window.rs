@@ -267,13 +267,10 @@ pub fn window_new(
                 if let Some(row) = get_row(column_view, row_index) &&
                    let Some(cell) = row.cells.get(col_index) {
                     let selection = &cell.to_string();
-                    _ = copy_to_clipboard(&selection);
+                    _ = copy_to_clipboard(selection);
 
                     let title = if selection.len() < 96 {
-                        &format!(
-                            "<span font_features='tnum=1'>‘{}’  copied to clipboard</span>",
-                            selection
-                        )
+                        &format!("<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>")
                     } else {
                         "Copied to clipboard"
                     };
@@ -301,25 +298,26 @@ pub fn window_new(
     // TODO: Move to actions.rs
     copy_row_action.connect_activate(move |_, row_index| {
         if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
-            if let Some(row) = row_index
+            if let Some(row_index) = row_index
                 .and_then(|v| v.str())
                 .and_then(|s| s.parse::<usize>().ok())
-                .and_then(|i| get_row(column_view, i))
             {
-                let separator = settings_handle.string("column-separator");
-                let separator = separator.as_str().parse::<ColumnSeparator>();
+                if let Some(row) = get_row(column_view, row_index) {
+                    let separator = settings_handle.string("column-separator");
+                    let separator = separator.as_str().parse::<ColumnSeparator>();
 
-                _ = copy_to_clipboard(
-                    &row.format_with(separator.unwrap_or_default())
-                );
+                    _ = copy_to_clipboard(
+                        &row.format_with(separator.unwrap_or_default())
+                    );
 
-                overlay_handle.dismiss_all();
-                overlay_handle.add_toast(
-                    Toast::builder()
-                        .title(&format!("Row copied to clipboard"))
-                        .timeout(2)
-                        .build()
-                );
+                    overlay_handle.dismiss_all();
+                    overlay_handle.add_toast(
+                        Toast::builder()
+                            .title(format!("Row {} copied to clipboard", row_index + 1))
+                            .timeout(2)
+                            .build()
+                    );
+                }
             }
         }
     });
