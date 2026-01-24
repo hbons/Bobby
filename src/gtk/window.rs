@@ -267,16 +267,23 @@ pub fn window_new(
                 if let Some(row) = get_row(column_view, row_index) &&
                    let Some(cell) = row.cells.get(col_index) {
                     let selection = &cell.to_string();
-
                     _ = copy_to_clipboard(&selection);
 
-                    overlay_handle.dismiss_all();
-                    overlay_handle.add_toast(
-                        Toast::builder()
-                            .title(&format!("<span font_features='tnum=1'>Copied ‘{selection}’ to clipboard</span>"))
-                            .timeout(2)
-                            .build()
-                    );
+                    let title = if selection.len() < 96 {
+                        &format!("<span font_features='tnum=1'>‘{selection}’ copied to clipboard</span>")
+                    } else {
+                        "Copied to clipboard"
+                    };
+
+                    if selection.len() < 96 {
+                        overlay_handle.dismiss_all();
+                        overlay_handle.add_toast(
+                            Toast::builder()
+                                .title(title)
+                                .timeout(2)
+                                .build()
+                        );
+                    }
                 }
             }
         }
@@ -306,7 +313,7 @@ pub fn window_new(
                 overlay_handle.dismiss_all();
                 overlay_handle.add_toast(
                     Toast::builder()
-                        .title(&format!("Copied row to clipboard"))
+                        .title(&format!("Row copied to clipboard"))
                         .timeout(2)
                         .build()
                 );
