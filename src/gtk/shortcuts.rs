@@ -18,18 +18,18 @@ use libadwaita::{
 pub fn show_shortcuts_dialog(parent: &Window){
     // let section_table = ShortcutsSection::new(Some("Tables"));
 
-    // let item_goto = ShortcutsItem::new("Go To Row Number", "<Primary>G");
-    // let item_copy = ShortcutsItem::new("Copy Row", "<Primary>C");
-    // let item_refresh = ShortcutsItem::new("Refresh", "<Primary>R");
+    // let item_jump = ShortcutsItem::new("Jump To Row", "<Primary>l");
+    // let item_copy = ShortcutsItem::new("Copy Row", "<Primary>c");
+    // let item_refresh = ShortcutsItem::new("Refresh", "<Primary>r");
 
-    // section_table.add(item_goto); // TODO
+    // section_table.add(item_jump); // TODO
     // section_table.add(item_copy); // TODO
     // section_table.add(item_refresh); // TODO
 
 
     let section_general = ShortcutsSection::new(Some("General"));
 
-    let item_open  = ShortcutsItem::new("Open File", "<Primary>O");
+    let item_open  = ShortcutsItem::new("Open File", "<Primary>o");
     // let item_menu  = ShortcutsItem::new("Open Menu", "F10"); // TODO
     let item_close = ShortcutsItem::new("Close Window", "<Primary>w");
     let item_quit  = ShortcutsItem::new("Quit", "<Primary>q");
