@@ -270,7 +270,10 @@ pub fn window_new(
                     _ = copy_to_clipboard(&selection);
 
                     let title = if selection.len() < 96 {
-                        &format!("<span font_features='tnum=1'>‘{selection}’ copied to clipboard</span>")
+                        &format!(
+                            "<span font_features='tnum=1'>‘{}’  copied to clipboard</span>",
+                            selection
+                        )
                     } else {
                         "Copied to clipboard"
                     };

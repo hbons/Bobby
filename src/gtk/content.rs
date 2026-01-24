@@ -65,6 +65,7 @@ pub fn content_new(
 
     let row_count = database.row_count(table)?;
     let columns = database.columns(table)?;
+
     let mut columns = columns.clone();
     columns.insert(0, Column::default()); // Reserve for row numbers
 
