@@ -132,10 +132,8 @@ impl Gui for App {
                         .find(|w| w.widget_name().to_string() == path.to_string_lossy())
                     {
                         window.present();
-                    } else {
-                        if let Ok(window) = window_new(&application, &path, None, Propagation::Proceed) {
-                            window.present();
-                        }
+                    } else if let Ok(window) = window_new(application, &path, None, Propagation::Proceed) {
+                        window.present();
                     }
                 }
             }
