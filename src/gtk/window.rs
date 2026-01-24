@@ -36,9 +36,8 @@ use libadwaita::{
     ApplicationWindow,
     HeaderBar,
     StatusPage,
-    // Toast,
-    // ToastOverlay,
-    // ToastPriority,
+    Toast,
+    ToastOverlay,
 };
 
 use crate::bobby::prelude::*;
@@ -242,13 +241,18 @@ pub fn window_new(
     layout.append(&header);
     layout.append(&content);
 
-    window.set_content(Some(&layout));
+
+    let overlay = ToastOverlay::new();
+    overlay.set_child(Some(&layout));
+
+    window.set_content(Some(&overlay));
     window.add_controller(drop_target_new(&window));
     window.set_widget_name(&path.to_string_lossy());
 
 
     let window_handle = window.clone();
     let copy_val_action = gio::SimpleAction::new("copy-val", Some(VariantTy::STRING));
+    let overlay_handle = overlay.clone();
 
     // TODO: Move to actions.rs
     copy_val_action.connect_activate(move |_, row_col_index| {
@@ -262,7 +266,17 @@ pub fn window_new(
 
                 if let Some(row) = get_row(column_view, row_index) &&
                    let Some(cell) = row.cells.get(col_index) {
-                    _ = copy_to_clipboard(&cell.to_string());
+                    let selection = &cell.to_string();
+
+                    _ = copy_to_clipboard(&selection);
+
+                    overlay_handle.dismiss_all();
+                    overlay_handle.add_toast(
+                        Toast::builder()
+                            .title(&format!("<span font_features='tnum=1'>Copied ‘{selection}’ to clipboard</span>"))
+                            .timeout(2)
+                            .build()
+                    );
                 }
             }
         }
@@ -272,6 +286,7 @@ pub fn window_new(
     let window_handle = window.clone();
     let copy_row_action = SimpleAction::new("copy-row", Some(VariantTy::STRING));
     let settings_handle = settings.clone();
+    let overlay_handle = overlay.clone();
 
     // TODO: Move to actions.rs
     copy_row_action.connect_activate(move |_, row_index| {
@@ -286,6 +301,14 @@ pub fn window_new(
 
                 _ = copy_to_clipboard(
                     &row.format_with(separator.unwrap_or_default())
+                );
+
+                overlay_handle.dismiss_all();
+                overlay_handle.add_toast(
+                    Toast::builder()
+                        .title(&format!("Copied row to clipboard"))
+                        .timeout(2)
+                        .build()
                 );
             }
         }
