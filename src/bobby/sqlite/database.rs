@@ -30,11 +30,17 @@ pub struct Database {
 /// Database files to test on can be found at:
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-    pub fn from_file(path: &Path, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
-        let connection = Connection::open_with_flags(
-            path,
-            OpenFlags::SQLITE_OPEN_READ_ONLY
-        )?;
+        pub fn from_file(path: &Path, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
+            let uri = &format!( // TODO: URL encoding
+                "file:{}?mode=ro&immutable=1",
+                path.to_string_lossy()
+            );
+
+            let connection = Connection::open_with_flags(
+                uri,
+                OpenFlags::SQLITE_OPEN_READ_ONLY |
+                OpenFlags::SQLITE_OPEN_URI
+            )?;
 
         connection.busy_timeout(Duration::from_secs(3))?;
         connection.pragma_update(None, "query_only", true)?;
