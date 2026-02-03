@@ -3,17 +3,3 @@
 //
 //   This program is free software: you can redistribute it and/or modify it
 //   under the terms of the GNU General Public License v3 or any later version.
-
-
-pub mod about;
-pub mod actions;
-pub mod content;
-pub mod drop_target;
-pub mod files;
-pub mod item;
-pub mod lib;
-pub mod menu;
-pub mod preferences;
-pub mod shortcuts;
-pub mod switcher;
-pub mod window;

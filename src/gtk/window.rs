@@ -13,9 +13,7 @@ use gio::SimpleAction;
 
 use gtk4::prelude::*;
 use gtk4::{
-    gdk::DragAction,
     gdk::Display,
-    gdk::FileList,
     glib::BoxedAnyObject,
     glib::Variant,
     glib::VariantTy,
@@ -23,7 +21,6 @@ use gtk4::{
     Align,
     Button,
     ColumnView,
-    DropTarget,
     Orientation,
     ScrolledWindow,
     SingleSelection,
@@ -43,6 +40,7 @@ use libadwaita::{
 use crate::bobby::prelude::*;
 
 use super::content::content_new;
+use super::drop_target::drop_target_new;
 use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
