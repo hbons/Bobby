@@ -26,7 +26,7 @@ impl App {
 
 
     pub fn cli_option_help(&self) {
-        println!("Usage: bobby <file> [table]");
+        println!("Usage: bobby [file]...");
         println!();
         println!("Options:");
         println!("    --help, --version, --deps, --env");

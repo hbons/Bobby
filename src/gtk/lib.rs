@@ -8,23 +8,25 @@
 use std::error::Error;
 
 use gio::{
-    glib::Propagation,
+    ApplicationFlags,
     SimpleAction,
 };
 
 use gtk4::prelude::*;
-use gtk4::gio::ApplicationFlags;
-
 use libadwaita::Application;
 
 use crate::app::App;
 use crate::gui::Gui;
 
 use super::about::show_about_dialog;
-use super::file::show_file_dialog;
+use super::files::show_file_dialog;
 use super::preferences::show_preferences_dialog;
 use super::shortcuts::show_shortcuts_dialog;
-use super::window::{ window_empty_new, window_new };
+
+use super::window::{
+    window_empty_new,
+    try_window_new,
+};
 
 
 impl Gui for App {
@@ -132,8 +134,8 @@ impl Gui for App {
                         .find(|w| w.widget_name().to_string() == path.to_string_lossy())
                     {
                         window.present();
-                    } else if let Ok(window) = window_new(application, &path, None, Propagation::Proceed) {
-                        window.present();
+                    } else {
+                        try_window_new(application, &path, true);
                     }
                 }
             }

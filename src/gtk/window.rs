@@ -45,8 +45,33 @@ use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
 
+pub fn try_window_new(application: &Application, path: &Path, quit_on_close: bool) {
+    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+    let row_order = match settings.string("row-order").as_str() {
+        "newest-first" => Some(RowOrder::Descending),
+        "oldest-first" => Some(RowOrder::Ascending),
+        _ => None,
+    };
+
+    match Database::from_file(path, row_order) {
+        Ok(db) => {
+            if let Ok(window) = window_new(application, &db, None, quit_on_close) {
+                window.present();
+            }
+        },
+        Err(e) => {
+            if let Ok(window) = window_error_new(application, path, e) {
+                window.present();
+            }
+        }
+    }
+}
+
+
 pub const IS_EMPTY_WINDOW: &str = "1";
 
+// TODO: window_new_with_status. args: Result<>. style different with error
 pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
     let window = ApplicationWindow::builder()
         .title("Bobby")
@@ -54,6 +79,8 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
         .default_width(600)
         .default_height(500)
         .build();
+
+    // window.add_css_class("devel"); // TODO
 
     let menu = &main_menu_new();
 
@@ -82,76 +109,57 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
 }
 
 
-fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
-    let drop_target = DropTarget::new(
-        FileList::static_type(),
-        DragAction::COPY,
-    );
+pub fn window_error_new(application: &Application, path: &Path, error: Box<dyn Error>) -> Result<ApplicationWindow, Box<dyn Error>> {
+    let title = path.file_name()
+        .ok_or("Missing file name")?
+        .to_string_lossy()
+        .to_string();
 
-    let window_handle = window.clone();
-
-    drop_target.connect_drop(move |_, value, _, _| {
-        if window_handle.widget_name() == IS_EMPTY_WINDOW {
-            // Keep reference alive
-            window_handle.set_visible(false);
-        }
-
-        if let Some(application) = window_handle.application() {
-            if let Ok(list) = value.get::<FileList>() {
-                application.open(&list.files(), "");
-            }
-        }
-
-        if window_handle.widget_name() == IS_EMPTY_WINDOW {
-            // Now we can close it
-            window_handle.close();
-        }
-
-        true // Drop accepted
-    });
-
-    drop_target
-}
-
-
-fn button_open_new(window: &ApplicationWindow) -> Button {
-    let button = Button::builder()
-        .label("Open...")
-        .css_classes(["pill", "suggested-action"])
-        .halign(Align::Center)
+    let window = ApplicationWindow::builder()
+        .title(title)
+        .application(application)
+        .default_width(600)
+        .default_height(500)
         .build();
 
-    let window_weak = window.downgrade();
+    // window.add_css_class("devel"); // TODO
 
-    button.connect_clicked(move |_| {
-        if let Some(window) = window_weak.upgrade() {
-            if let Some(application) = window.application() {
-                application.activate_action("open", None);
-            }
-        }
-    });
+    let menu = &main_menu_new();
 
-    button
+    let header = HeaderBar::new();
+    header.add_css_class("flat");
+    header.pack_end(menu);
+
+    let page = StatusPage::builder()
+        .icon_name("dialog-error-symbolic")
+        .title("Unable to Open File")
+        .description(error.to_string())
+        .child(&button_open_new(&window))
+        .hexpand(true)
+        .vexpand(true)
+        .build();
+
+    let layout = gtk4::Box::new(Orientation::Vertical, 0);
+    layout.append(&header);
+    layout.append(&page);
+
+    window.set_content(Some(&layout));
+    window.set_widget_name(IS_EMPTY_WINDOW);
+    // window.set_widget_name(&path.to_string_lossy());
+    window.add_controller(drop_target_new(&window));
+
+    Ok(window)
 }
 
 
 // TODO: Remove views and Database from memory on close
 pub fn window_new(
     application: &Application,
-    path: &Path,
+    db: &Database,
     table_name: Option<String>,
-    on_close: Propagation,
+    quit_on_close: bool
 ) -> Result<ApplicationWindow, Box<dyn Error>>
 {
-    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-    let row_order = match settings.string("row-order").as_str() {
-        "newest-first" => Some(RowOrder::Descending),
-        "oldest-first" => Some(RowOrder::Ascending),
-        _ => None,
-    };
-
-    let db = Database::from_file(path, row_order)?;
     let tables = db.tables()?;
 
     let table =
@@ -168,7 +176,7 @@ pub fn window_new(
                 .ok_or("Table list empty")?
         };
 
-    let title = &path.file_name()
+    let title = &db.path.file_name()
         .ok_or("Missing file name")?
         .to_string_lossy()
         .to_string();
@@ -180,17 +188,19 @@ pub fn window_new(
         .default_height(640)
         .build();
 
+    // window.add_css_class("devel"); // TODO
+
     let switcher = table_switcher_new(&tables);
     switcher.set_label(&table.name());
 
     let main_menu = main_menu_new();
 
     let header = HeaderBar::new();
-    header.set_tooltip_text(Some(&path.to_string_lossy()));
+    header.set_tooltip_text(Some(&db.path.to_string_lossy()));
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
-    let content = content_new(&db, &table)?;
+    let content = content_new(db, &table)?;
 
     let table_index = tables
         .iter()
@@ -245,7 +255,7 @@ pub fn window_new(
 
     window.set_content(Some(&overlay));
     window.add_controller(drop_target_new(&window));
-    window.set_widget_name(&path.to_string_lossy());
+    window.set_widget_name(&db.path.to_string_lossy());
 
 
     let window_handle = window.clone();
@@ -287,6 +297,7 @@ pub fn window_new(
         }
     });
 
+    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     let window_handle = window.clone();
     let copy_row_action = SimpleAction::new("copy-row", Some(VariantTy::STRING));
@@ -330,7 +341,7 @@ pub fn window_new(
         let app = application.clone();
 
         move |_| {
-            if on_close == Propagation::Stop && app.windows().len() == 1 {
+            if !quit_on_close && app.windows().len() == 1 {
                 // app.activate(); // TODO: Use activate logic
                 if let Ok(empty_window) = window_empty_new(&app) {
                     empty_window.present();
@@ -344,15 +355,37 @@ pub fn window_new(
 
     // SAFETY: Window outlives the database
     unsafe {
-        window.set_data("db", db);
+        window.set_data("db", db.clone());
     }
 
     Ok(window)
 }
 
 
+fn button_open_new(window: &ApplicationWindow) -> Button {
+    let button = Button::builder()
+        .label("Open...")
+        .css_classes(["pill", "suggested-action"])
+        .halign(Align::Center)
+        .build();
+
+    let window_weak = window.downgrade();
+
+    button.connect_clicked(move |_| {
+        if let Some(window) = window_weak.upgrade() {
+            if let Some(application) = window.application() {
+                application.activate_action("open", None);
+            }
+        }
+    });
+
+    button
+}
+
+
 fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
     let display = Display::default().ok_or("Missing Display")?;
+
     let clipboard = display.clipboard();
     clipboard.set_text(s);
 
