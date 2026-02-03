@@ -21,7 +21,8 @@ use gtk4::{
     Window,
 };
 
-use super::window::{ IS_EMPTY_WINDOW, window_new };
+use crate::bobby::prelude::*;
+use super::window::{ IS_EMPTY_WINDOW, window_error_new, window_new };
 
 
 pub fn show_file_dialog(parent: &Window) {
@@ -43,6 +44,7 @@ pub fn show_file_dialog(parent: &Window) {
         },
     );
 }
+
 
 fn handle_files(
     parent: &Window,
@@ -77,8 +79,24 @@ fn handle_files(
         {
             window.present();
         } else {
-            let window = window_new(&application, &path, None, Propagation::Stop)?;
-            window.present();
+            let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+            let row_order = match settings.string("row-order").as_str() {
+                "newest-first" => Some(RowOrder::Descending),
+                "oldest-first" => Some(RowOrder::Ascending),
+                _ => None,
+            };
+
+            if let Ok(db) = Database::from_file(&path, row_order) {
+                dbg!(&db);
+                dbg!("1");
+                // TODO: store the Stream in the Database struct to keep open
+                let window = window_new(&application, &db, None, Propagation::Stop)?;
+                window.present();
+            } else {
+                let window = window_error_new(&application, &path)?;
+                window.present();
+            }
         }
     }
 
