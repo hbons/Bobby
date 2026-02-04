@@ -135,7 +135,7 @@ impl Gui for App {
                     {
                         window.present();
                     } else {
-                        try_window_new(application, &path, true);
+                        try_window_new(application, file, true);
                     }
                 }
             }

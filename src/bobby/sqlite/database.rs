@@ -7,9 +7,12 @@
 
 use std::cell::RefCell;
 use std::error::Error;
-use std::path::{ Path, PathBuf };
+use std::path::Path;
 use std::rc::Rc;
 use std::time::Duration;
+
+use gio::prelude::FileExt;
+use gio::File;
 
 use rusqlite::{
     Connection,
@@ -21,7 +24,7 @@ use super::row::RowOrder;
 
 #[derive(Debug)]
 pub struct Database {
-    pub path: PathBuf,
+    pub file: File,
     pub connection: Rc<RefCell<Connection>>,
     pub row_order: Option<RowOrder>,
 }
@@ -30,17 +33,22 @@ pub struct Database {
 /// Database files to test on can be found at:
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-        pub fn from_file(path: &Path, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
-            let uri = &format!( // TODO: URL encoding
-                "file:{}?mode=ro&immutable=1",
-                path.to_string_lossy()
-            );
+    pub fn from_file(file: &File, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
+        let uri = format!("{}?{}", file.uri(),
+            "immutable=1", // Docs: https://sqlite.org/uri.html#uriimmutable
+        );
 
-            let connection = Connection::open_with_flags(
-                uri,
-                OpenFlags::SQLITE_OPEN_READ_ONLY |
-                OpenFlags::SQLITE_OPEN_URI
-            )?;
+        let connection = Connection::open_with_flags(
+            uri,
+            OpenFlags::SQLITE_OPEN_READ_ONLY |
+            OpenFlags::SQLITE_OPEN_URI
+        ).map_err(|_|
+            Box::<dyn Error>::from("Could not open a database connection")
+        )?;
+
+        if Database::journal_mode(&connection).is_none() {
+            return Err("File is not a <b>SQLite database</b>".into());
+        }
 
         connection.busy_timeout(Duration::from_secs(3))?;
         connection.pragma_update(None, "query_only", true)?;
@@ -48,7 +56,7 @@ impl Database {
 
         Ok(
             Database {
-                path: path.to_path_buf(),
+                file: file.to_owned(),
                 connection: Rc::new(RefCell::new(connection)),
                 row_order,
             }
@@ -60,8 +68,23 @@ impl Database {
         let connection = self.connection.borrow();
 
         connection.pragma_query_value(
-            None, "data_version", |row| row.get(0)
+            None,
+            "data_version",
+            |row| row.get(0)
         ).ok()
+    }
+
+
+    pub fn journal_mode(connection: &Connection) -> Option<String> {
+        let mode: String = connection
+            .query_row(
+                "PRAGMA journal_mode",
+                [],
+                |row| row.get(0)
+            )
+        .ok()?;
+
+        Some(mode)
     }
 }
 
@@ -69,13 +92,12 @@ impl Database {
 impl Default for Database {
     #[allow(clippy::expect_used)]
     fn default() -> Self {
-        let default_path = PathBuf::from(":memory:");
         let connection = Connection::open_in_memory()
             // This should never happen
             .expect("Failed to create default connection");
 
         Database {
-            path: default_path,
+            file: File::for_path(Path::new("")),
             connection: Rc::new(RefCell::new(connection)),
             row_order: None,
         }
@@ -86,7 +108,7 @@ impl Default for Database {
 impl Clone for Database {
     fn clone(&self) -> Self {
         Self {
-            path: self.path.clone(),
+            file: self.file.clone(),
             connection: Rc::clone(&self.connection),
             row_order: self.row_order,
         }

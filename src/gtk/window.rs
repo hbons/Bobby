@@ -9,7 +9,10 @@ use std::cell::Ref;
 use std::error::Error;
 use std::path::Path;
 
-use gio::SimpleAction;
+use gio::{
+    File,
+    SimpleAction,
+};
 
 use gtk4::prelude::*;
 use gtk4::{
@@ -45,7 +48,7 @@ use super::menu::main_menu_new;
 use super::switcher::table_switcher_new;
 
 
-pub fn try_window_new(application: &Application, path: &Path, quit_on_close: bool) {
+pub fn try_window_new(application: &Application, file: &File, quit_on_close: bool) {
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     let row_order = match settings.string("row-order").as_str() {
@@ -54,14 +57,15 @@ pub fn try_window_new(application: &Application, path: &Path, quit_on_close: boo
         _ => None,
     };
 
-    match Database::from_file(path, row_order) {
+    match Database::from_file(file, row_order) {
         Ok(db) => {
             if let Ok(window) = window_new(application, &db, None, quit_on_close) {
                 window.present();
             }
         },
         Err(e) => {
-            if let Ok(window) = window_error_new(application, path, e) {
+            if let Some(path) = &file.path() &&
+               let Ok(window) = window_error_new(application, path, e) {
                 window.present();
             }
         }
@@ -176,7 +180,11 @@ pub fn window_new(
                 .ok_or("Table list empty")?
         };
 
-    let title = &db.path.file_name()
+    let path = db.file
+        .path()
+        .ok_or("Missing file path")?;
+
+    let title = path.file_name()
         .ok_or("Missing file name")?
         .to_string_lossy()
         .to_string();
@@ -196,7 +204,7 @@ pub fn window_new(
     let main_menu = main_menu_new();
 
     let header = HeaderBar::new();
-    header.set_tooltip_text(Some(&db.path.to_string_lossy()));
+    header.set_tooltip_text(Some(&path.to_string_lossy()));
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
@@ -255,7 +263,7 @@ pub fn window_new(
 
     window.set_content(Some(&overlay));
     window.add_controller(drop_target_new(&window));
-    window.set_widget_name(&db.path.to_string_lossy());
+    window.set_widget_name(&path.to_string_lossy());
 
 
     let window_handle = window.clone();

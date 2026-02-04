@@ -78,7 +78,7 @@ fn handle_files(
         {
             window.present();
         } else {
-            try_window_new(&application, &path, false);
+            try_window_new(&application, &file, false);
         }
     }
 
