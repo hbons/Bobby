@@ -15,10 +15,8 @@ use crate::app::App;
 use crate::gtk::actions::prelude::*;
 use crate::gui::Gui;
 
-use super::window::{
-    window_empty_new,
-    try_window_new,
-};
+use crate::gtk::windows::window_empty::window_empty_new;
+use crate::gtk::windows::window::try_window_new;
 
 
 impl Gui for App {
@@ -26,43 +24,41 @@ impl Gui for App {
     //       https://gnome.pages.gitlab.gnome.org/libadwaita/doc
 
     fn gui_run(&self) -> Result<(), Box<dyn Error>> {
-        let application = Application::builder()
+        let app = Application::builder()
             .application_id(&self.id)
             .flags(ApplicationFlags::HANDLES_OPEN)
             .build();
 
-        application.connect_startup(|application| {
-            application.add_action(&app_about_action(&application));
-            application.add_action(&app_close_action(&application));
-            application.add_action(&app_open_action(&application));
-            application.add_action(&app_preferences_action(&application));
-            application.add_action(&app_quit_action(&application));
-            application.add_action(&app_shortcuts_action(&application));
-        });
-
-        application.connect_activate(|application| {
-            if let Some(window) = application.active_window() {
+        app.connect_activate(|app| {
+            if let Some(window) = app.active_window() {
                 window.present();
-            } else if let Ok(window) = window_empty_new(application) {
+            } else if let Ok(window) = window_empty_new(app) {
                 window.present();
             }
         });
 
-        application.connect_open(move |application, files, _| {
+        app.connect_open(move |app, files, _| {
             for file in files {
                 if let Some(path) = file.path() &&
-                   let Some(window) = application.windows()
+                   let Some(window) = app.windows()
                        .iter()
                        .find(|w| w.widget_name().to_string() == path.to_string_lossy())
                 {
                     window.present();
                 } else {
-                    try_window_new(application, file, true);
+                    try_window_new(app, file, true);
                 }
             }
         });
 
-        application.run();
+        app.add_action(&app_about_action(&app));
+        app.add_action(&app_close_action(&app));
+        app.add_action(&app_open_action(&app));
+        app.add_action(&app_preferences_action(&app));
+        app.add_action(&app_quit_action(&app));
+        app.add_action(&app_shortcuts_action(&app));
+
+        app.run();
 
         Ok(())
     }

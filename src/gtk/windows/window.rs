@@ -7,7 +7,6 @@
 
 use std::cell::Ref;
 use std::error::Error;
-use std::path::Path;
 
 use gio::{
     File,
@@ -21,8 +20,6 @@ use gtk4::{
     glib::Variant,
     glib::VariantTy,
     glib::Propagation,
-    Align,
-    Button,
     ColumnView,
     Orientation,
     ScrolledWindow,
@@ -35,17 +32,19 @@ use libadwaita::{
     Application,
     ApplicationWindow,
     HeaderBar,
-    StatusPage,
     Toast,
     ToastOverlay,
 };
 
 use crate::bobby::prelude::*;
 
-use super::content::content_new;
-use super::drop_target::drop_target_new;
-use super::menu::main_menu_new;
-use super::switcher::table_switcher_new;
+use super::super::content::content_new;
+use super::super::drop_target::drop_target_new;
+use super::super::menu::main_menu_new;
+use super::super::switcher::table_switcher_new;
+
+use crate::gtk::windows::window_error::window_error_new;
+use crate::gtk::windows::window_empty::window_empty_new;
 
 
 pub fn try_window_new(application: &Application, file: &File, quit_on_close: bool) {
@@ -70,89 +69,6 @@ pub fn try_window_new(application: &Application, file: &File, quit_on_close: boo
             }
         }
     }
-}
-
-
-pub const IS_EMPTY_WINDOW: &str = "1";
-
-// TODO: window_new_with_status. args: Result<>. style different with error
-pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, Box<dyn Error>> {
-    let window = ApplicationWindow::builder()
-        .title("Bobby")
-        .application(application)
-        .default_width(600)
-        .default_height(500)
-        .build();
-
-    // window.add_css_class("devel"); // TODO
-
-    let menu = &main_menu_new();
-
-    let header = HeaderBar::new();
-    header.add_css_class("flat");
-    header.pack_end(menu);
-
-    let page = StatusPage::builder()
-        .icon_name("studio.planetpeanut.Bobby-symbolic")
-        .title("Browse Databases")
-        .description("Drag and drop <b>SQLite files</b> here")
-        .child(&button_open_new(&window))
-        .hexpand(true)
-        .vexpand(true)
-        .build();
-
-    let layout = gtk4::Box::new(Orientation::Vertical, 0);
-    layout.append(&header);
-    layout.append(&page);
-
-    window.set_content(Some(&layout));
-    window.set_widget_name(IS_EMPTY_WINDOW);
-    window.add_controller(drop_target_new(&window));
-
-    Ok(window)
-}
-
-
-pub fn window_error_new(application: &Application, path: &Path, error: Box<dyn Error>) -> Result<ApplicationWindow, Box<dyn Error>> {
-    let title = path.file_name()
-        .ok_or("Missing file name")?
-        .to_string_lossy()
-        .to_string();
-
-    let window = ApplicationWindow::builder()
-        .title(title)
-        .application(application)
-        .default_width(600)
-        .default_height(500)
-        .build();
-
-    // window.add_css_class("devel"); // TODO
-
-    let menu = &main_menu_new();
-
-    let header = HeaderBar::new();
-    header.add_css_class("flat");
-    header.pack_end(menu);
-
-    let page = StatusPage::builder()
-        .icon_name("dialog-error-symbolic")
-        .title("Unable to Open File")
-        .description(error.to_string())
-        .child(&button_open_new(&window))
-        .hexpand(true)
-        .vexpand(true)
-        .build();
-
-    let layout = gtk4::Box::new(Orientation::Vertical, 0);
-    layout.append(&header);
-    layout.append(&page);
-
-    window.set_content(Some(&layout));
-    window.set_widget_name(IS_EMPTY_WINDOW);
-    // window.set_widget_name(&path.to_string_lossy());
-    window.add_controller(drop_target_new(&window));
-
-    Ok(window)
 }
 
 
@@ -367,27 +283,6 @@ pub fn window_new(
     }
 
     Ok(window)
-}
-
-
-fn button_open_new(window: &ApplicationWindow) -> Button {
-    let button = Button::builder()
-        .label("Open...")
-        .css_classes(["pill", "suggested-action"])
-        .halign(Align::Center)
-        .build();
-
-    let window_weak = window.downgrade();
-
-    button.connect_clicked(move |_| {
-        if let Some(window) = window_weak.upgrade() {
-            if let Some(application) = window.application() {
-                application.activate_action("open", None);
-            }
-        }
-    });
-
-    button
 }
 
 

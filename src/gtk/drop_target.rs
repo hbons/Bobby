@@ -14,7 +14,7 @@ use gtk4::{
 
 use libadwaita::ApplicationWindow;
 
-use super::window::IS_EMPTY_WINDOW;
+use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
 
 
 pub fn drop_target_new(window: &ApplicationWindow) -> DropTarget {

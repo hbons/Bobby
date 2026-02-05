@@ -20,8 +20,8 @@ use gtk4::{
     Window,
 };
 
-use crate::gtk::window::try_window_new;
-use super::window::IS_EMPTY_WINDOW;
+use crate::gtk::windows::window::try_window_new;
+use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
 
 
 pub fn show_file_dialog(parent: &Window) {

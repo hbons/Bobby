@@ -22,6 +22,12 @@ pub mod dialogs {
     pub mod shortcuts;
 }
 
+pub mod windows {
+    pub mod window;
+    pub mod window_empty;
+    pub mod window_error;
+}
+
 pub mod content;
 pub mod drop_target;
 pub mod files;
@@ -29,4 +35,3 @@ pub mod item;
 pub mod lib;
 pub mod menu;
 pub mod switcher;
-pub mod window;
