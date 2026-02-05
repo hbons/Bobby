@@ -45,6 +45,37 @@ pub fn show_file_dialog(parent: &Window) {
 }
 
 
+fn filters() -> ListStore {
+    let filters = ListStore::new::<FileFilter>();
+    filters.append(&filter_sqlite_files());
+    filters.append(&filter_all_files());
+    filters
+}
+
+
+fn filter_sqlite_files() -> FileFilter {
+    let filter = FileFilter::new();
+    filter.set_name(Some("SQLite Databases"));
+
+    filter.add_mime_type("application/x-sqlite3");
+    filter.add_mime_type("application/vnd-sqlite3");
+
+    filter.add_pattern("*.db");
+    filter.add_pattern("*.db3");
+    filter.add_pattern("*.sqlite");
+    filter.add_pattern("*.sqlite3");
+    filter
+}
+
+
+fn filter_all_files() -> FileFilter {
+    let filter = FileFilter::new();
+    filter.set_name(Some("All Files"));
+    filter.add_pattern("*");
+    filter
+}
+
+
 fn handle_files(
     parent: &Window,
     result: Result<ListModel, Error>)
@@ -83,35 +114,4 @@ fn handle_files(
     }
 
     Ok(())
-}
-
-
-fn filters() -> ListStore {
-    let filters = ListStore::new::<FileFilter>();
-    filters.append(&filter_sqlite_files());
-    filters.append(&filter_all_files());
-    filters
-}
-
-
-fn filter_sqlite_files() -> FileFilter {
-    let filter = FileFilter::new();
-    filter.set_name(Some("SQLite Databases"));
-
-    filter.add_mime_type("application/x-sqlite3");
-    filter.add_mime_type("application/vnd-sqlite3");
-
-    filter.add_pattern("*.db");
-    filter.add_pattern("*.db3");
-    filter.add_pattern("*.sqlite");
-    filter.add_pattern("*.sqlite3");
-    filter
-}
-
-
-fn filter_all_files() -> FileFilter {
-    let filter = FileFilter::new();
-    filter.set_name(Some("All Files"));
-    filter.add_pattern("*");
-    filter
 }

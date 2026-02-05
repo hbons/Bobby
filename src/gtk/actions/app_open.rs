@@ -9,10 +9,10 @@ use gio::SimpleAction;
 use gtk4::prelude::*;
 use libadwaita::Application;
 
-use crate::gtk::files::show_file_dialog;
+use crate::gtk::dialogs::file::show_file_dialog;
 
 
-pub fn app_open_action(app: &Application) -> SimpleAction {
+pub fn open_action(app: &Application) -> SimpleAction {
     app.set_accels_for_action("app.open", &["<Primary>o"]);
 
     let action = SimpleAction::new("open", None);

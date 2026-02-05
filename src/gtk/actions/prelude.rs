@@ -5,9 +5,14 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-pub use crate::gtk::actions::app_about::app_about_action;
-pub use crate::gtk::actions::app_close::app_close_action;
-pub use crate::gtk::actions::app_open::app_open_action;
-pub use crate::gtk::actions::app_preferences::app_preferences_action;
-pub use crate::gtk::actions::app_quit::app_quit_action;
-pub use crate::gtk::actions::app_shortcuts::app_shortcuts_action;
+pub use crate::gtk::actions::app_about::about_action;
+pub use crate::gtk::actions::app_preferences::preferences_action;
+pub use crate::gtk::actions::app_shortcuts::shortcuts_action;
+
+pub use crate::gtk::actions::app_open::open_action;
+pub use crate::gtk::actions::app_close::close_action;
+pub use crate::gtk::actions::app_quit::quit_action;
+
+pub use crate::gtk::actions::win_copy_row::copy_row_action;
+pub use crate::gtk::actions::win_copy_val::copy_val_action;
+pub use crate::gtk::actions::win_switch_table::switch_table_action;

@@ -7,13 +7,7 @@
 
 use std::error::Error;
 
-use gtk4::prelude::*;
-use gtk4::{
-    Align,
-    Button,
-    Orientation,
-};
-
+use gtk4::Orientation;
 use libadwaita::prelude::*;
 use libadwaita::{
     Application,
@@ -22,8 +16,9 @@ use libadwaita::{
     StatusPage,
 };
 
-use super::super::drop_target::drop_target_new;
-use super::super::menu::main_menu_new;
+use crate::gtk::widgets::button::button_open_new;
+use crate::gtk::widgets::drop_target::drop_target_new;
+use crate::gtk::widgets::menu::main_menu_new;
 
 
 pub const IS_EMPTY_WINDOW: &str = "1";
@@ -62,25 +57,4 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
     window.add_controller(drop_target_new(&window));
 
     Ok(window)
-}
-
-
-pub fn button_open_new(window: &ApplicationWindow) -> Button {
-    let button = Button::builder()
-        .label("Open...")
-        .css_classes(["pill", "suggested-action"])
-        .halign(Align::Center)
-        .build();
-
-    let window_weak = window.downgrade();
-
-    button.connect_clicked(move |_| {
-        if let Some(window) = window_weak.upgrade() {
-            if let Some(application) = window.application() {
-                application.activate_action("open", None);
-            }
-        }
-    });
-
-    button
 }

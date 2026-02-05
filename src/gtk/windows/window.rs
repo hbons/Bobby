@@ -8,17 +8,12 @@
 use std::cell::Ref;
 use std::error::Error;
 
-use gio::{
-    File,
-    SimpleAction,
-};
+use gio::File;
 
 use gtk4::prelude::*;
 use gtk4::{
     gdk::Display,
     glib::BoxedAnyObject,
-    glib::Variant,
-    glib::VariantTy,
     glib::Propagation,
     ColumnView,
     Orientation,
@@ -32,19 +27,17 @@ use libadwaita::{
     Application,
     ApplicationWindow,
     HeaderBar,
-    Toast,
     ToastOverlay,
 };
 
 use crate::bobby::prelude::*;
 
-use super::super::content::content_new;
-use super::super::drop_target::drop_target_new;
-use super::super::menu::main_menu_new;
-use super::super::switcher::table_switcher_new;
-
-use crate::gtk::windows::window_error::window_error_new;
-use crate::gtk::windows::window_empty::window_empty_new;
+use crate::gtk::actions::prelude::*;
+use crate::gtk::widgets::content::content_new;
+use crate::gtk::widgets::drop_target::drop_target_new;
+use crate::gtk::widgets::menu::main_menu_new;
+use crate::gtk::widgets::switcher::table_switcher_new;
+use crate::gtk::windows::prelude::*;
 
 
 pub fn try_window_new(application: &Application, file: &File, quit_on_close: bool) {
@@ -132,47 +125,9 @@ pub fn window_new(
         .ok_or("Table does not exist")?
         .to_string();
 
-    let table_action = SimpleAction::new_stateful(
-        "table",
-        Some(&String::static_variant_type()),
-        &Variant::from(table_index),
-    );
-
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
-
-
-    let window_handle = window.clone();
-    let switcher_handle = switcher.clone();
-    let layout_handle = layout.clone();
-
-    // TODO: Move to actions.rs
-    table_action.connect_change_state(move |action, value| {
-        if let Some(v) = value {
-            action.set_state(v);
-        }
-
-        if let Some(table) = value
-            .and_then(|v| v.str())
-            .and_then(|s| s.parse::<usize>().ok())
-            .and_then(|i| tables.get(i))
-        {
-            switcher_handle.set_label(&table.name());
-
-            match window_change_content(&window_handle, table) {
-                Ok(new_content) => {
-                    if let Some(old_content) = layout_handle.last_child() {
-                        layout_handle.remove(&old_content);
-                        layout_handle.append(&new_content);
-                    }
-                },
-                Err(e) => eprintln!("Could not change content: {e}"),
-            };
-        }
-    });
-
     layout.append(&header);
     layout.append(&content);
-
 
     let overlay = ToastOverlay::new();
     overlay.set_child(Some(&layout));
@@ -181,84 +136,9 @@ pub fn window_new(
     window.add_controller(drop_target_new(&window));
     window.set_widget_name(&path.to_string_lossy());
 
-
-    let window_handle = window.clone();
-    let copy_val_action = gio::SimpleAction::new("copy-val", Some(VariantTy::STRING));
-    let overlay_handle = overlay.clone();
-
-    // TODO: Move to actions.rs
-    copy_val_action.connect_activate(move |_, row_col_index| {
-        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
-            if let Some((row_index, col_index)) = row_col_index
-                .and_then(|v| v.str())
-                .and_then(|s| s.split_once(':'))
-            {
-                let row_index = row_index.parse::<usize>().unwrap_or_default();
-                let col_index = col_index.parse::<usize>().unwrap_or_default();
-
-                if let Some(row) = get_row(column_view, row_index) &&
-                   let Some(cell) = row.cells.get(col_index) {
-                    let selection = &cell.to_string();
-                    _ = copy_to_clipboard(selection);
-
-                    let title = if selection.len() < 96 {
-                        &format!("<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>")
-                    } else {
-                        "Copied to clipboard"
-                    };
-
-                    if selection.len() < 96 {
-                        overlay_handle.dismiss_all();
-                        overlay_handle.add_toast(
-                            Toast::builder()
-                                .title(title)
-                                .timeout(2)
-                                .build()
-                        );
-                    }
-                }
-            }
-        }
-    });
-
-    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-    let window_handle = window.clone();
-    let copy_row_action = SimpleAction::new("copy-row", Some(VariantTy::STRING));
-    let settings_handle = settings.clone();
-    let overlay_handle = overlay.clone();
-
-    // TODO: Move to actions.rs
-    copy_row_action.connect_activate(move |_, row_index| {
-        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
-            if let Some(row_index) = row_index
-                .and_then(|v| v.str())
-                .and_then(|s| s.parse::<usize>().ok())
-            {
-                if let Some(row) = get_row(column_view, row_index) {
-                    let separator = settings_handle.string("column-separator");
-                    let separator = separator.as_str().parse::<ColumnSeparator>();
-
-                    _ = copy_to_clipboard(
-                        &row.format_with(separator.unwrap_or_default())
-                    );
-
-                    overlay_handle.dismiss_all();
-                    overlay_handle.add_toast(
-                        Toast::builder()
-                            .title(format!("Row {} copied to clipboard", row_index + 1))
-                            .timeout(2)
-                            .build()
-                    );
-                }
-            }
-        }
-    });
-
-
-    window.add_action(&copy_val_action);
-    window.add_action(&copy_row_action);
-    window.add_action(&table_action);
+    window.add_action(&copy_row_action(&window, &overlay));
+    window.add_action(&copy_val_action(&window, &overlay));
+    window.add_action(&switch_table_action(&window, layout, table_index, tables, switcher));
 
 
     window.connect_close_request({
@@ -286,7 +166,7 @@ pub fn window_new(
 }
 
 
-fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
+pub fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
     let display = Display::default().ok_or("Missing Display")?;
 
     let clipboard = display.clipboard();
@@ -296,7 +176,7 @@ fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
 }
 
 
-fn window_change_content(window: &ApplicationWindow, table: &Table)
+pub fn window_change_content(window: &ApplicationWindow, table: &Table)
     -> Result<ScrolledWindow, Box<dyn Error>> {
 
     // SAFETY: Window outlives the database
@@ -315,7 +195,7 @@ fn window_change_content(window: &ApplicationWindow, table: &Table)
 }
 
 
-fn find_column_view(root: &Widget) -> Option<ColumnView> {
+pub fn find_column_view(root: &Widget) -> Option<ColumnView> {
     if let Ok(column_view) = root.clone().downcast::<ColumnView>() {
         return Some(column_view);
     }
@@ -334,7 +214,7 @@ fn find_column_view(root: &Widget) -> Option<ColumnView> {
 }
 
 
-fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
+pub fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
     let model = column_view.model()?;
     let selection = model.downcast_ref::<SingleSelection>()?;
 

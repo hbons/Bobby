@@ -10,7 +10,7 @@ use gtk4::prelude::*;
 use libadwaita::Application;
 
 
-pub fn app_quit_action(app: &Application) -> SimpleAction {
+pub fn quit_action(app: &Application) -> SimpleAction {
     app.set_accels_for_action("app.quit", &["<Primary>q"]);
 
     let action = SimpleAction::new("quit", None);

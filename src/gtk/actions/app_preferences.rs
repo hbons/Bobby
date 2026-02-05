@@ -12,7 +12,7 @@ use libadwaita::Application;
 use crate::gtk::dialogs::preferences::show_preferences_dialog;
 
 
-pub fn app_preferences_action(app: &Application) -> SimpleAction {
+pub fn preferences_action(app: &Application) -> SimpleAction {
     app.set_accels_for_action("app.preferences", &["<Primary>comma"]);
 
     let action = SimpleAction::new("preferences", None);

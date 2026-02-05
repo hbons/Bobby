@@ -12,7 +12,7 @@ use libadwaita::Application;
 use crate::gtk::dialogs::shortcuts::show_shortcuts_dialog;
 
 
-pub fn app_shortcuts_action(app: &Application) -> SimpleAction {
+pub fn shortcuts_action(app: &Application) -> SimpleAction {
     app.set_accels_for_action("app.shortcuts", &["<Primary>question"]);
 
     let action = SimpleAction::new("shortcuts", None);

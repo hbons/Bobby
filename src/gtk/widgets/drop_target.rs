@@ -13,7 +13,6 @@ use gtk4::{
 };
 
 use libadwaita::ApplicationWindow;
-
 use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
 
 

@@ -8,9 +8,7 @@
 use std::error::Error;
 use std::path::Path;
 
-use gtk4::prelude::*;
 use gtk4::Orientation;
-
 use libadwaita::prelude::*;
 use libadwaita::{
     Application,
@@ -19,12 +17,10 @@ use libadwaita::{
     StatusPage,
 };
 
-use super::super::drop_target::drop_target_new;
-use super::super::menu::main_menu_new;
-use super::window_empty::{
-    button_open_new,
-    IS_EMPTY_WINDOW,
-};
+use crate::gtk::widgets::button::button_open_new;
+use crate::gtk::widgets::drop_target::drop_target_new;
+use crate::gtk::widgets::menu::main_menu_new;
+use crate::gtk::windows::prelude::*;
 
 
 pub fn window_error_new(

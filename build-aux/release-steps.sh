@@ -29,12 +29,12 @@ git commit -m "meta: Bump version to $VERSION"
 echo ""
 echo ""
 echo "Step 2/3: Update the release notes:"
-echo " - ./data/$FLATPAK_ID.yml"
+echo " - ./data/$FLATPAK_ID.metainfo.xml"
 echo ""
 read -p "When done, press [Enter]: "
 
 
-git add "./data/$FLATPAK_ID.yml"
+git add ./data/$FLATPAK_ID.metainfo.xml
 git commit -m "meta: Update release notes for $VERSION"
 meson setup --wipe ./build
 meson dist -C ./build

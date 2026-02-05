@@ -12,7 +12,7 @@ use libadwaita::Application;
 use crate::gtk::dialogs::about::show_about_dialog;
 
 
-pub fn app_about_action(app: &Application) -> SimpleAction {
+pub fn about_action(app: &Application) -> SimpleAction {
     let action = SimpleAction::new("about", None);
     let app_handle = app.clone();
 
