@@ -37,8 +37,7 @@ pub fn show_file_dialog(parent: &Window) {
         Some(&Cancellable::new()),
         move |result| {
             if let Err(e) = handle_files(&parent_handle, result) {
-                // TODO: Show error on StatusPage
-                eprintln!("Failed to open files: {e}");
+                eprintln!("Could not handle file(s): {e}");
             }
         },
     );
@@ -78,8 +77,8 @@ fn filter_all_files() -> FileFilter {
 
 fn handle_files(
     parent: &Window,
-    result: Result<ListModel, Error>)
-    -> Result<(), Box<dyn std::error::Error>>
+    result: Result<ListModel, Error>
+) -> Result<(), Box<dyn std::error::Error>>
 {
     let model = result?;
 
@@ -102,14 +101,17 @@ fn handle_files(
             .path()
             .ok_or("Selected file has no local path")?;
 
-        if let Some(window) = application
-            .windows()
+        let windows = application.windows();
+
+        let window = windows
             .iter()
-            .find(|w| w.widget_name().to_string() == path.to_string_lossy())
-        {
-            window.present();
-        } else {
-            try_window_new(&application, &file, false);
+            .find(|w|
+                w.widget_name().to_string() == path.to_string_lossy()
+            );
+
+        match window {
+            Some(w) => w.present(),
+            None => try_window_new(&application, &file, false),
         }
     }
 
