@@ -179,6 +179,7 @@ pub fn content_new(
     let scrolled_window = ScrolledWindow::new();
     scrolled_window.set_child(Some(&column_view));
     scrolled_window.set_vexpand(true);
+    // scrolled_window.set_sensitive(false); // TODO: Disable when file changed
 
     Ok(scrolled_window)
 }
