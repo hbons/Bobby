@@ -12,6 +12,7 @@ pub mod actions {
     pub mod app_open;
     pub mod app_preferences;
     pub mod app_quit;
+    pub mod app_refresh;
     pub mod app_shortcuts;
     pub mod win_copy_val;
     pub mod win_copy_row;
