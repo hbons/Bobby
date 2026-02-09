@@ -124,8 +124,17 @@ pub fn window_new(
         .ok_or("Table does not exist")?
         .to_string();
 
+    let banner = libadwaita::Banner::builder()
+        .title("File has changed")
+        .button_label("Refresh")
+        .action_name("app.refresh")
+        .button_style(libadwaita::BannerButtonStyle::Suggested)
+        // .revealed(true) // TODO: Reveal on file changes
+        .build();
+
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
     layout.append(&header);
+    layout.append(&banner);
     layout.append(&content);
 
     let overlay = ToastOverlay::new();
