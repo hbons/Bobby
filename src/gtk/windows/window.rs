@@ -113,7 +113,6 @@ pub fn window_new(
     let main_menu = main_menu_new();
 
     let header = HeaderBar::new();
-    header.set_tooltip_text(Some(&path.to_string_lossy()));
     header.pack_start(&switcher);
     header.pack_end(&main_menu);
 
