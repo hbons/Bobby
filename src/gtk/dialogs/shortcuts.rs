@@ -31,11 +31,13 @@ pub fn show_shortcuts_dialog(parent: &Window){
 
     let item_open  = ShortcutsItem::new("Open File", "<Primary>o");
     // let item_menu  = ShortcutsItem::new("Open Menu", "F10"); // TODO
-    let item_close = ShortcutsItem::new("Close Window", "<Primary>w");
-    let item_quit  = ShortcutsItem::new("Quit", "<Primary>q");
+    // let item_refresh = ShortcutsItem::new("Refresh Window", "<Primary>r");
+    let item_close   = ShortcutsItem::new("Close Window", "<Primary>w");
+    let item_quit    = ShortcutsItem::new("Quit", "<Primary>q");
 
     section_general.add(item_open);
     // section_general.add(item_menu);
+    // section_general.add(item_refresh);
     section_general.add(item_close);
     section_general.add(item_quit);
 
