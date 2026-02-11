@@ -1,29 +1,24 @@
-apps_dir = join_paths(get_option('prefix'), 'share', 'applications')
-
-if get_option('nightly')
-  install_data(
-    sources: 'studio.planetpeanut.Bobby.Nightly.desktop',
-    install_dir: apps_dir,
-    rename: 'studio.planetpeanut.Bobby.desktop'
-  )
-else
-  install_data(
-    sources: 'studio.planetpeanut.Bobby.desktop',
-    install_dir: apps_dir
-  )
-endif
+# .desktop
 
 install_data(
-  'studio.planetpeanut.Bobby.metainfo.xml',
-  install_dir: join_paths(get_option('datadir'), 'metainfo')
+  ('@0@.desktop').format(application_id),
+  install_dir: get_option('prefix') / 'share/applications'
 )
+
+
+# .metainfo.xml
 
 install_data(
-  'studio.planetpeanut.Bobby.gschema.xml',
-  install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas')
+  ('@0@.metainfo.xml').format(application_id),
+  install_dir: get_option('datadir') / 'metainfo'
 )
 
-gnome.post_install(glib_compile_schemas: true)
-gnome.compile_schemas(depend_files: files('studio.planetpeanut.Bobby.gschema.xml'))
+
+# .gschema.xml
+
+install_data(
+  ('@0@.gschema.xml').format(application_id),
+  install_dir: get_option('datadir') / 'glib-2.0/schemas'
+)
 
 devenv.append('GSETTINGS_SCHEMA_DIR', meson.current_build_dir())
