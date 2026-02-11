@@ -6,8 +6,7 @@ project(
 )
 
 command_name = 'bobby'
-configuration = configuration_data()
-configuration.set('APP_ID', 'studio.planetpeanut.Bobby')
+application_id = 'studio.planetpeanut.Bobby'
 
 
 gnome = import('gnome')
@@ -21,8 +20,14 @@ meson.add_devenv(devenv)
 
 subdir('data')
 subdir('data/icons')
-subdir('data/screenshots')
-subdir('src')
+
+summary(
+  {
+    'nightly': get_option('nightly'),
+    'bindir': get_option('bindir')
+  },
+  section: 'Options',
+)
 
 
 cargo = find_program('cargo', required: true)
@@ -56,12 +61,4 @@ meson.add_dist_script(
   'build-aux/dist-vendor.sh',
   meson.project_source_root(),
   meson.project_build_root() / 'meson-dist' / '@0@-@1@'.format(meson.project_name(), meson.project_version()),
-)
-
-summary(
-  {
-    'nightly': get_option('nightly'),
-    'bindir': get_option('bindir')
-  },
-  section: 'Options',
 )
