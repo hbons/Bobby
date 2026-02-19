@@ -27,6 +27,7 @@ pub struct Database {
     pub file: File,
     pub connection: Rc<RefCell<Connection>>,
     pub row_order: Option<RowOrder>,
+    pub read_only: bool,
 }
 
 
@@ -34,24 +35,32 @@ pub struct Database {
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
     pub fn from_file(file: &File, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
-        let uri = format!("{}?{}", file.uri(),
-            "immutable=1", // Docs: https://sqlite.org/uri.html#uriimmutable
-        );
+        let uri = file.uri();
 
-        let connection = Connection::open_with_flags(
-            uri,
-            OpenFlags::SQLITE_OPEN_READ_ONLY |
-            OpenFlags::SQLITE_OPEN_URI
-        ).map_err(|_|
-            Box::<dyn Error>::from("Could not open a database connection")
-        )?;
+        let (connection, read_only) = match Connection::open_with_flags(
+            &uri,
+            OpenFlags::SQLITE_OPEN_READ_WRITE |
+            OpenFlags::SQLITE_OPEN_URI,
+        ) {
+            Ok(connection) => (connection, false),
+            Err(_) => (
+                Connection::open_with_flags(
+                    &uri,
+                    OpenFlags::SQLITE_OPEN_READ_ONLY |
+                    OpenFlags::SQLITE_OPEN_URI,
+                ).map_err(|_|
+                    Box::<dyn Error>::from("Could not open a database connection")
+                )?,
+                true,
+            )
+        };
 
         if Database::journal_mode(&connection).is_none() {
             return Err("File is not a <b>SQLite database</b>".into());
         }
 
         connection.busy_timeout(Duration::from_secs(3))?;
-        connection.pragma_update(None, "query_only", true)?;
+        connection.pragma_update(None, "query_only", read_only)?;
         connection.pragma_update(None, "foreign_keys", true)?;
 
         Ok(
@@ -59,6 +68,7 @@ impl Database {
                 file: file.to_owned(),
                 connection: Rc::new(RefCell::new(connection)),
                 row_order,
+                read_only,
             }
         )
     }
@@ -100,6 +110,7 @@ impl Default for Database {
             file: File::for_path(Path::new("")),
             connection: Rc::new(RefCell::new(connection)),
             row_order: None,
+            read_only: true,
         }
     }
 }
@@ -111,6 +122,7 @@ impl Clone for Database {
             file: self.file.clone(),
             connection: Rc::clone(&self.connection),
             row_order: self.row_order,
+            read_only: self.read_only,
         }
     }
 }

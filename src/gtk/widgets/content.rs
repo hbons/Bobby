@@ -165,9 +165,10 @@ pub fn content_new(
         .build();
 
     let column_view_handle = column_view.clone();
+    let can_delete_row = !database.read_only && !table.is_view() && table.has_row_id() == Some(true);
 
     click.connect_pressed(move |gesture, _n_presses, x, y| {
-        if let Err(e) = content_clicked(gesture, x, y, &column_view_handle) {
+        if let Err(e) = content_clicked(gesture, x, y, &column_view_handle, can_delete_row) {
             eprintln!("Failed to open context menu: {e}");
         }
     });
@@ -189,6 +190,7 @@ fn content_clicked(
     x: f64,
     y: f64,
     column_view: &ColumnView,
+    can_delete_row: bool,
 ) -> Result<(), Box<dyn Error>>
 {
     let model = column_view
@@ -212,14 +214,21 @@ fn content_clicked(
     let col = label.widget_name().parse::<usize>()?;
 
     if let Some(col) = col.checked_sub(1) {
-        context_menu_open(gesture, col, row, x, y);
+        context_menu_open(gesture, col, row, x, y, can_delete_row);
     }
 
     Ok(())
 }
 
 
-fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize, x: f64, y: f64) {
+fn context_menu_open(
+    gesture: &GestureClick,
+    col_index: usize,
+    row_index: usize,
+    x: f64,
+    y: f64,
+    can_delete_row: bool,
+) {
     if let Some(widget) = gesture.widget() {
         let menu = Menu::new();
 
@@ -232,6 +241,13 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
             Some("Copy Row"),
             Some(&format!("win.copy-row::{}", row_index))
         );
+
+        if can_delete_row {
+            menu.append(
+                Some("Delete Row"),
+                Some(&format!("win.delete-row::{}", row_index)),
+            );
+        }
 
         // TODO: Also prepend column headers in Markdown mode
         // menu.append(

@@ -18,6 +18,7 @@ use super::table::Table;
 
 #[derive(Clone, Debug, Default)]
 pub struct Row {
+    pub rowid: Option<i64>,
     pub cells: Vec<Affinity>,
 }
 
@@ -40,11 +41,11 @@ impl Database {
         let sql =
             if table.has_row_id() == Some(true) {
                 &format!("
-                    SELECT *
+                    SELECT rowid, *
                     FROM {table_name}
-                    WHERE rowid >= {offset}
                     ORDER BY rowid {row_order}
-                    LIMIT {limit};
+                    LIMIT {limit}
+                    OFFSET {offset};
                 ")
             } else {
                 &format!("
@@ -59,11 +60,20 @@ impl Database {
 
         let mut sql = connection.prepare(sql)?;
         let n_columns = sql.column_count();
+        let has_row_id = table.has_row_id() == Some(true);
 
         let iter = sql.query_map([], |row| {
+            let mut rowid = None;
             let mut values = Vec::new();
 
-            for i in 0..n_columns {
+            let first_index = if has_row_id {
+                rowid = row.get(0)?;
+                1
+            } else {
+                0
+            };
+
+            for i in first_index..n_columns {
                 let value = match row.get_ref(i)? {
                     ValueRef::Null       => Affinity::NULL,
                     ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
@@ -83,13 +93,35 @@ impl Database {
                 values.push(value);
             }
 
-            Ok(values)
+            Ok(Row {
+                rowid,
+                cells: values,
+            })
         })?;
 
-        Ok(iter
-            .map(|res| res.map(|cells| Row { cells }))
-            .collect::<Result<Vec<_>, _>>()?
-        )
+        Ok(iter.collect::<Result<Vec<_>, _>>()?)
+    }
+
+
+    pub fn delete_row(&self, table: &Table, row: &Row) -> Result<usize, Box<dyn Error>> {
+        if self.read_only {
+            return Err("Database is opened read-only".into());
+        }
+
+        if table.is_view() {
+            return Err("Cannot delete rows from views".into());
+        }
+
+        if table.has_row_id() != Some(true) {
+            return Err("Table does not expose rowid".into());
+        }
+
+        let rowid = row.rowid.ok_or("Could not resolve rowid for selected row")?;
+
+        let sql = format!("DELETE FROM {} WHERE rowid = ?1", table.name());
+        let connection = self.connection.borrow();
+
+        Ok(connection.execute(&sql, [rowid])?)
     }
 }
 

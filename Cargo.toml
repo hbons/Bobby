@@ -18,8 +18,8 @@ rusqlite = { version = "0.37.0", features = ["bundled"] }
 
 # From the GNOME Project – https://gnome.org
 gio = "0.21.5"
-gtk4 = { version = "0.10.3", features = ["gnome_49"] }
-libadwaita = { version = "0.8.1", features = ["v1_8"] }
+gtk4 = { version = "0.10.3", features = ["gnome_48"] }
+libadwaita = { version = "0.8.1", features = ["v1_7"] }
 
 [[bin]]
 name = "bobby"

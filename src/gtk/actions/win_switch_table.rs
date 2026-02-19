@@ -42,11 +42,12 @@ pub fn switch_table_action(
             action.set_state(v);
         }
 
-        if let Some(table) = value
+        let table_index = value
             .and_then(|v| v.str())
-            .and_then(|s| s.parse::<usize>().ok())
-            .and_then(|i| tables.get(i))
-        {
+            .and_then(|s| s.parse::<usize>().ok());
+
+        if let Some(table_index) = table_index &&
+           let Some(table) = tables.get(table_index) {
             switcher_handle.set_label(&table.name());
 
             match window_change_content(&window_handle, table) {
@@ -54,6 +55,10 @@ pub fn switch_table_action(
                     if let Some(old_content) = layout_handle.last_child() {
                         layout_handle.remove(&old_content);
                         layout_handle.append(&new_content);
+
+                        unsafe {
+                            window_handle.set_data("table-index", table_index.to_string());
+                        }
                     }
                 },
                 Err(e) => eprintln!("Could not change content: {e}"),

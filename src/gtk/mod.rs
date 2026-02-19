@@ -15,6 +15,7 @@ pub mod actions {
     pub mod app_shortcuts;
     pub mod win_copy_val;
     pub mod win_copy_row;
+    pub mod win_delete_row;
     pub mod win_switch_table;
 }
 

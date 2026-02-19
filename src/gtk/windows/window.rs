@@ -138,7 +138,8 @@ pub fn window_new(
 
     window.add_action(&copy_row_action(&window, &overlay));
     window.add_action(&copy_val_action(&window, &overlay));
-    window.add_action(&switch_table_action(&window, layout, table_index, tables, switcher));
+    window.add_action(&delete_row_action(&window, &overlay));
+    window.add_action(&switch_table_action(&window, layout, table_index.clone(), tables, switcher));
 
 
     window.connect_close_request({
@@ -160,6 +161,7 @@ pub fn window_new(
     // SAFETY: Window outlives the database
     unsafe {
         window.set_data("db", db.clone());
+        window.set_data("table-index", table_index);
     }
 
     Ok(window)

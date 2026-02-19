@@ -15,4 +15,5 @@ pub use crate::gtk::actions::app_quit::quit_action;
 
 pub use crate::gtk::actions::win_copy_row::copy_row_action;
 pub use crate::gtk::actions::win_copy_val::copy_val_action;
+pub use crate::gtk::actions::win_delete_row::delete_row_action;
 pub use crate::gtk::actions::win_switch_table::switch_table_action;
