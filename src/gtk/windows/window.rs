@@ -110,7 +110,7 @@ pub fn window_new(
     let switcher = table_switcher_new(&tables);
     switcher.set_label(&table.name());
 
-    let main_menu = main_menu_new();
+    let main_menu = main_menu_new(application);
 
     let header = HeaderBar::new();
     header.set_tooltip_text(Some(&path.to_string_lossy()));

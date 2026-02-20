@@ -43,7 +43,7 @@ pub fn window_error_new(
 
     // window.add_css_class("devel"); // TODO
 
-    let menu = &main_menu_new();
+    let menu = &main_menu_new(application);
 
     let header = HeaderBar::new();
     header.add_css_class("flat");
