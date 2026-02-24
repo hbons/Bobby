@@ -11,8 +11,8 @@ pub use crate::gtk::actions::app_shortcuts::shortcuts_action;
 
 pub use crate::gtk::actions::app_open::open_action;
 pub use crate::gtk::actions::app_close::close_action;
-pub use crate::gtk::actions::app_refresh::refresh_action;
 pub use crate::gtk::actions::app_quit::quit_action;
+pub use crate::gtk::actions::app_reload::reload_action;
 
 pub use crate::gtk::actions::win_copy_row::copy_row_action;
 pub use crate::gtk::actions::win_copy_val::copy_val_action;

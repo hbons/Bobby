@@ -126,8 +126,8 @@ pub fn window_new(
 
     let banner = libadwaita::Banner::builder()
         .title("File has changed")
-        .button_label("Refresh")
-        .action_name("app.refresh")
+        .button_label("Reload")
+        .action_name("app.reload")
         .button_style(libadwaita::BannerButtonStyle::Suggested)
         // .revealed(true) // TODO: Reveal on file changes
         .build();
