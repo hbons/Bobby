@@ -40,6 +40,7 @@ use crate::gtk::widgets::switcher::table_switcher_new;
 use crate::gtk::windows::prelude::*;
 
 
+// TODO: BobbyWindow { app (window.app()?), file, db, window, quit_on_close, is_empty }
 pub fn try_window_new(application: &Application, file: &File, quit_on_close: bool) {
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 

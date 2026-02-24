@@ -21,6 +21,7 @@ pub struct Column {
     pub primary_key: bool,
     pub not_null: bool,
     pub default: Option<String>,
+    pub unique: bool,
 }
 
 
@@ -39,6 +40,8 @@ impl Database {
                 .parse::<Affinity>()
                 .unwrap_or_default();
 
+            let unique = false; // TODO
+
             Ok(Column {
                 id:          row.get(0)?,
                 name:        row.get(1)?,
@@ -46,6 +49,7 @@ impl Database {
                 not_null:    row.get(3)?,
                 default:     row.get(4)?,
                 primary_key: row.get(5)?,
+                unique
             })
         })?;
 

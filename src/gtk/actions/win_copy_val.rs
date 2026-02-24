@@ -6,11 +6,8 @@
 
 
 use gio::SimpleAction;
-
 use gtk4::prelude::*;
-use gtk4::{
-    glib::VariantTy,
-};
+use gtk4::glib::VariantTy;
 
 use libadwaita::{
     ApplicationWindow,
@@ -45,7 +42,7 @@ pub fn copy_val_action(
                 let col_index = col_index.parse::<usize>().unwrap_or_default();
 
                 if let Some(row) = get_row(column_view, row_index) &&
-                   let Some(cell) = row.cells.get(col_index) {
+                    let Some(cell) = row.cells.get(col_index) {
                     let selection = &cell.to_string();
                     _ = copy_to_clipboard(selection);
 
