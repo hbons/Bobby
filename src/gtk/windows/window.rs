@@ -28,6 +28,7 @@ use libadwaita::{
     ApplicationWindow,
     HeaderBar,
     ToastOverlay,
+    ToolbarView,
 };
 
 use crate::bobby::prelude::*;
@@ -134,14 +135,17 @@ pub fn window_new(
         .build();
 
     let layout = gtk4::Box::new(Orientation::Vertical, 0);
-    layout.append(&header);
     layout.append(&banner);
     layout.append(&content);
 
     let overlay = ToastOverlay::new();
     overlay.set_child(Some(&layout));
 
-    window.set_content(Some(&overlay));
+    let toolbar_view = ToolbarView::new();
+    toolbar_view.add_top_bar(&header);
+    toolbar_view.set_content(Some(&overlay));
+
+    window.set_content(Some(&toolbar_view));
     window.add_controller(drop_target_new(&window));
     window.set_widget_name(&path.to_string_lossy());
 

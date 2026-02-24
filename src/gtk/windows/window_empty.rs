@@ -7,13 +7,13 @@
 
 use std::error::Error;
 
-use gtk4::Orientation;
 use libadwaita::prelude::*;
 use libadwaita::{
     Application,
     ApplicationWindow,
     HeaderBar,
     StatusPage,
+    ToolbarView,
 };
 
 use crate::gtk::widgets::button::button_open_new;
@@ -48,11 +48,11 @@ pub fn window_empty_new(application: &Application) -> Result<ApplicationWindow, 
         .vexpand(true)
         .build();
 
-    let layout = gtk4::Box::new(Orientation::Vertical, 0);
-    layout.append(&header);
-    layout.append(&page);
+    let toolbar_view = ToolbarView::new();
+    toolbar_view.add_top_bar(&header);
+    toolbar_view.set_content(Some(&page));
 
-    window.set_content(Some(&layout));
+    window.set_content(Some(&toolbar_view));
     window.set_widget_name(IS_EMPTY_WINDOW);
     window.add_controller(drop_target_new(&window));
 
