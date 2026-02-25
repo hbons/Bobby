@@ -35,7 +35,8 @@ pub fn reload_action(app: &Application) -> SimpleAction {
             active_window.destroy();
             let quit_on_close = false;
 
-            if let Ok(window) = window_new(&app_handle, db.unwrap(), None, quit_on_close) {
+            if let Some(db) = db.as_ref() &&
+               let Ok(window) = window_new(&app_handle, db, None, quit_on_close) {
                 // TODO: Scroll to previous row number
                 window.present();
             }
