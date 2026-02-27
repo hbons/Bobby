@@ -31,4 +31,7 @@ sudo ninja install -C build
 Have fun, and don't forget to sanitize your database inputs! :)
 <br>
 <br>
-– Hylke
+<br>
+
+> [!IMPORTANT]
+> Hello! Hylke here. I was recently <a href="https://www.theguardian.com/technology/2025/may/13/microsoft-layoffs" target="_blank">laid off</a>. I'd love to work full-time creating **apps for Linux** and contributing **design for FOSS projects**. I hope to gather enough [monthly sponsors](https://github.com/sponsors/hbons) for a minimum wage. Every little helps. Thank you.
