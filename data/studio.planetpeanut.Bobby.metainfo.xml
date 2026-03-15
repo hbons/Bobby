@@ -2,6 +2,11 @@
 <component type="desktop">
     <name>Bobby</name>
     <summary>Browse SQLite files</summary>
+    <summary xml:lang="de">SQLite-Dateien durchsuchen</summary>
+    <summary xml:lang="es">Explorar archivos SQLite</summary>
+    <summary xml:lang="fr">Parcourir les fichiers SQLite</summary>
+    <summary xml:lang="pt">Navegar em arquivos SQLite</summary>
+
     <id>studio.planetpeanut.Bobby</id>
 
     <launchable type="desktop-id">studio.planetpeanut.Bobby.desktop</launchable>
@@ -56,12 +61,26 @@
             Bobby lets you open SQLite database files (.db, .sqlite) and browse the tables inside.
             Handy for app development or inspecting downloaded databases.
         </p>
+        <ul>
+            <li>Scroll through tables and views of any size</li>
+            <li>Copy rows or cells to the clipboard</li>
+            <li>Made with care by a human</li>
+        </ul>
         <p>
             Don't forget to sanitize your database inputs!
         </p>
     </description>
 
     <releases>
+        <release version="49.0.4" date="2026-03-15">
+            <description>
+                <ul>
+                    <li>Add reload action (Ctrl+R)</li>
+                    <li>Keyboard shortcut for Open Menu (F10)</li>
+                    <li>Remove noisy window title tooltip</li>
+                </ul>
+            </description>
+        </release>
         <release version="49.0.3" date="2026-02-04">
             <description>
                 <ul>
@@ -118,10 +137,24 @@
 
     <keywords>
         <keyword>database</keyword>
+        <keyword xml:lang="de">Datenbank</keyword>
+        <keyword xml:lang="es">base de datos</keyword>
+        <keyword xml:lang="fr">base de données</keyword>
+        <keyword xml:lang="pt">banco de dados</keyword>
+
         <keyword>sqlite</keyword>
+        <keyword xml:lang="de">sqlite</keyword>
+        <keyword xml:lang="es">sqlite</keyword>
+        <keyword xml:lang="fr">sqlite</keyword>
+        <keyword xml:lang="pt">sqlite</keyword>
+
+        <keyword>table</keyword>
+        <keyword xml:lang="de">Tabelle</keyword>
+        <keyword xml:lang="es">tabla</keyword>
+        <keyword xml:lang="pt">tabela</keyword>
+
         <keyword>sql</keyword>
         <keyword>query</keyword>
-        <keyword>table</keyword>
         <keyword>row</keyword>
         <keyword>column</keyword>
         <keyword>cell</keyword>

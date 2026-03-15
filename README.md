@@ -11,6 +11,10 @@ Bobby lets you open `SQLite` database files (`.db`, `.sqlite`) and browse the ta
 
 Designed for *GNOME*. Available on [Flathub](https://flathub.org/en/apps/studio.planetpeanut.Bobby).
 
+```shell
+flatpak install flathub studio.planetpeanut.Bobby
+```
+
 
 ## Build from source
 
