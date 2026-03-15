@@ -12,6 +12,7 @@
 
 ```shell
 git add ./meson.build ./Cargo.lock ./Cargo.toml
+git status
 git commit -m "meta: Bump version to <VERSION>"
 git push
 ```
@@ -22,7 +23,8 @@ git push
 * Edit `./data/<APP_ID>.metainfo.xml`
 
 ```shell
-git add ./data/<APP_ID>.metainfo.xml
+git add ./data/*.metainfo.xml
+git status
 git commit -m "meta: Update release notes for <VERSION>"
 git push
 ```
@@ -50,7 +52,8 @@ shasum -a 256 ./build/meson-dist/*.tar.xz
 * Edit `url` and `sha256` in `./<APP_ID>.yml`
 
 ```shell
-git add ./<APP_ID>.yml
+git add ./*.yml
+git status
 git commit -m "flatpak: Bump manifest to <VERSION>"
 git push
 ```
@@ -67,9 +70,10 @@ git push --tags
 
 ## 6. Publish to Flathub
 
-* Open a Pull Request
+* Open a PR
   * Go to `https://github.com/flathub/<APP_ID>` and update the manifest
   * Commit with message `Bump to <VERSION>`
-
+* Test the automated build
+* Merge the PR
 
 ## 7. Celebrate! 🥳
