@@ -47,7 +47,7 @@ xdg-open ./build/meson-dist
 shasum -a 256 ./build/meson-dist/*.tar.xz
 ```
 
-* Edit `url` and `sha256` in `<APP_ID>.yml`
+* Edit `url` and `sha256` in `./<APP_ID>.yml`
 
 ```shell
 git add ./<APP_ID>.yml
@@ -62,13 +62,13 @@ git tag <VERSION> HEAD
 git push --tags
 ```
 
-* Wait for the release to build in CI and test the `.flatpak`
+* Wait for the tag to build in CI and test the `.flatpak`
 
 
 ## 6. Publish to Flathub
 
 * Open a Pull Request
-  * Go to `https://github.com/flathub/<APP_ID>` and update the manifest.
+  * Go to `https://github.com/flathub/<APP_ID>` and update the manifest
   * Commit with message `Bump to <VERSION>`
 
 
