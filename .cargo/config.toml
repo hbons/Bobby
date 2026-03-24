@@ -1,0 +1,2 @@
+[env]
+GSETTINGS_SCHEMA_DIR = "./data"
