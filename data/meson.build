@@ -20,5 +20,3 @@ install_data(
   ('@0@.gschema.xml').format(application_id),
   install_dir: get_option('datadir') / 'glib-2.0/schemas'
 )
-
-devenv.append('GSETTINGS_SCHEMA_DIR', meson.current_build_dir())
