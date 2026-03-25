@@ -15,3 +15,6 @@ pub mod sqlite {
 }
 
 pub mod prelude;
+
+#[cfg(test)]
+pub mod tests;
