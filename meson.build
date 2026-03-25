@@ -28,12 +28,8 @@ summary(
 
 
 cargo = find_program('cargo', required: true)
-cargo_sources = files(
-  'Cargo.toml',
-  'Cargo.lock',
-)
 
-cargo_build = custom_target(
+custom_target(
   command_name,
   command: [
     'sh', '-c',
@@ -47,6 +43,14 @@ cargo_build = custom_target(
   install: true,
   install_dir: get_option('bindir'),
 )
+
+test('cargo_test',
+  cargo,
+  args: ['test'],
+  workdir: meson.project_source_root(),
+  timeout: 300,
+)
+
 
 gnome.post_install(
     glib_compile_schemas: true,

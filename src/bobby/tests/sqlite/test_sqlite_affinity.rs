@@ -15,5 +15,5 @@ fn test_sqlite_affinity_to_type_string() {
     assert_eq!(Affinity::REAL(None).to_type_string(), "REAL");
     assert_eq!(Affinity::TEXT(None).to_type_string(), "TEXT");
     assert_eq!(Affinity::BLOB(None, None).to_type_string(), "BLOB");
-    assert_eq!(Affinity::REAL(None).to_type_string(), "NULL");
+    assert_eq!(Affinity::NULL.to_type_string(), "NULL");
 }
