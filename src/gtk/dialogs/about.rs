@@ -21,6 +21,7 @@ pub fn show_about_dialog(parent: &Window) {
         .developer_name("Hylke Bons")
         .version(env!["CARGO_PKG_VERSION"])
         .website(env!["CARGO_PKG_HOMEPAGE"])
+        .issue_url("https://github.com/hbons/Bobby/issues") // TODO
         .copyright("Copyright © 2025–2026  Hylke Bons")
         .license_type(License::Gpl30)
         .build();
