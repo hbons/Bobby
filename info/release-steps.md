@@ -71,6 +71,7 @@ git push --tags
 
 * Open a PR
   * Go to `https://github.com/flathub/<APP_ID>` and update the manifest
+    * Bump the runtime if needed
   * Commit with message `Bump to v<VERSION>`
 * Test the automated build
 * Merge the PR
