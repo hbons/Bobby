@@ -231,7 +231,7 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
 
         menu.append(
             Some("Copy Row"),
-            Some(&format!("win.copy-row::{}", row_index))
+            Some("win.copy-row")
         );
 
         // TODO: Also prepend column headers in Markdown mode
