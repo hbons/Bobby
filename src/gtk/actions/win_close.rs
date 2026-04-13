@@ -7,20 +7,20 @@
 
 use gio::SimpleAction;
 use gtk4::prelude::*;
-use libadwaita::Application;
+use libadwaita::ApplicationWindow;
 
 
-pub fn close_action(app: &Application) -> SimpleAction {
-    app.set_accels_for_action("app.close", &["<Primary>w"]);
+pub fn close_action(window: &ApplicationWindow) -> SimpleAction {
+    if let Some(app) = window.application() {
+        app.set_accels_for_action("win.close", &["<Primary>w"]);
+    }
 
     let action = SimpleAction::new("close", None);
-    let app_handle = app.clone();
+    let window_handle = window.clone();
 
     action.connect_activate(move |_, _| {
-        if let Some(window) = app_handle.active_window() {
-            // TODO: Remove database from memory here
-            window.close();
-        }
+        // TODO: Remove database from memory here
+        window_handle.close();
     });
 
     action

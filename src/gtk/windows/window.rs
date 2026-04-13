@@ -149,6 +149,7 @@ pub fn window_new(
     window.add_controller(drop_target_new(&window));
     window.set_widget_name(&path.to_string_lossy());
 
+    window.add_action(&close_action(&window));
     window.add_action(&copy_row_action(&window, &overlay));
     window.add_action(&copy_val_action(&window, &overlay));
     window.add_action(&switch_table_action(&window, layout, table_index, tables, switcher));
