@@ -38,6 +38,8 @@ impl Database {
             "immutable=1", // Docs: https://sqlite.org/uri.html#uriimmutable
         );
 
+        // TODO: Detect encryption here and return Err
+
         let connection = Connection::open_with_flags(
             uri,
             OpenFlags::SQLITE_OPEN_READ_ONLY |

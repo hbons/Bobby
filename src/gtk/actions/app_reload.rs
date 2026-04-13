@@ -15,6 +15,7 @@ use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
 
 
 pub fn reload_action(app: &Application) -> SimpleAction {
+    // TODO: win.reload
     app.set_accels_for_action("app.reload", &["<Primary>r"]);
 
     let action = SimpleAction::new("reload", None);
