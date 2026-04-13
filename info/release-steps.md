@@ -14,7 +14,7 @@
 cargo update
 git add ./meson.build ./Cargo.lock ./Cargo.toml
 git status
-git commit -m "meta: Bump version to <VERSION>"
+git commit -m "meta: Bump version to v<VERSION>"
 git push
 ```
 
@@ -26,25 +26,20 @@ git push
 ```shell
 git add ./data/*.metainfo.xml
 git status
-git commit -m "meta: Update release notes for <VERSION>"
+git commit -m "meta: Update release notes for v<VERSION>"
 git push
 ```
 
 
-## 3. Build and upload release
-
+## 3. Build tarball
 ```shell
 meson setup --wipe ./build
 meson dist -C ./build --allow-dirty
 xdg-open ./build/meson-dist
 ```
 
-* Create a [new release on GitHub](https://github.com/hbons/Bobby/releases/new)
-  * Upload the release tarball
-  * Select the newly pushed tag name and use `<APP_NAME> <VERSION>` as the title
 
-
-## 4. Update Flatpak manifest
+## 5. Update Flatpak manifest
 
 ```shell
 shasum -a 256 ./build/meson-dist/*.tar.xz
@@ -55,26 +50,30 @@ shasum -a 256 ./build/meson-dist/*.tar.xz
 ```shell
 git add ./*.yml
 git status
-git commit -m "flatpak: Bump manifest to <VERSION>"
+git commit -m "flatpak: Bump manifest to v<VERSION>"
 git push
 ```
 
-## 5. Tag release
+  
+## 3. Tag release
 
 ```shell
-git tag <VERSION> HEAD
+git tag v<VERSION> HEAD
 git push --tags
 ```
 
-* Wait for the tag to build in CI and test the `.flatpak`
+* Create a **new release** on [GitHub](https://github.com)
+  * Upload the release tarball
+  * Select the newly pushed tag name and use `<APP_NAME> v<VERSION>` as the title
 
 
 ## 6. Publish to Flathub
 
 * Open a PR
   * Go to `https://github.com/flathub/<APP_ID>` and update the manifest
-  * Commit with message `Bump to <VERSION>`
+  * Commit with message `Bump to v<VERSION>`
 * Test the automated build
 * Merge the PR
+
 
 ## 7. Celebrate! 🥳
