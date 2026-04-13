@@ -28,6 +28,7 @@ use libadwaita::{
     ApplicationWindow,
     HeaderBar,
     ToastOverlay,
+    ToolbarStyle,
     ToolbarView,
 };
 
@@ -141,9 +142,12 @@ pub fn window_new(
     let overlay = ToastOverlay::new();
     overlay.set_child(Some(&layout));
 
-    let toolbar_view = ToolbarView::new();
+    let toolbar_view = ToolbarView::builder()
+        .content(&overlay)
+        .top_bar_style(ToolbarStyle::RaisedBorder)
+        .build();
+
     toolbar_view.add_top_bar(&header);
-    toolbar_view.set_content(Some(&overlay));
 
     window.set_content(Some(&toolbar_view));
     window.add_controller(drop_target_new(&window));
