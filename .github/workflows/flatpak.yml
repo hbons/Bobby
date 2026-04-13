@@ -3,8 +3,8 @@ name: Flatpak
 on:
   push:
     branches: [ main, dev ]
-    tags:
-      - '*'
+  release:
+    types: [ prereleased ]
 
 jobs:
   flatpak:
@@ -29,7 +29,7 @@ jobs:
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: bobby.flatpak
-        manifest-path: ${{ github.ref_type == 'tag'
+        manifest-path: ${{ github.event_name == 'release'
           && 'studio.planetpeanut.Bobby.yml'
           || 'studio.planetpeanut.Bobby.devel.yml' }}
         cache-key: flatpak-builder-${{ github.sha }}
