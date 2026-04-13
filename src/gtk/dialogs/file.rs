@@ -91,6 +91,8 @@ fn handle_files(
         parent.close();
     }
 
+    let quit_on_close = false;
+
     for i in 0..model.n_items() {
         let file = model
             .item(i)
@@ -111,7 +113,7 @@ fn handle_files(
 
         match window {
             Some(w) => w.present(),
-            None => try_window_new(&application, &file, false),
+            None => try_window_new(&application, &file, quit_on_close),
         }
     }
 

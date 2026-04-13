@@ -32,7 +32,8 @@ impl Gui for App {
                 {
                     window.present();
                 } else {
-                    try_window_new(app, file, true);
+                    let quit_on_close = true;
+                    try_window_new(app, file, quit_on_close);
                 }
             }
         });

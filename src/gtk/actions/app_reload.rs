@@ -34,7 +34,7 @@ pub fn reload_action(app: &Application) -> SimpleAction {
             };
 
             active_window.destroy();
-            let quit_on_close = false;
+            let quit_on_close = true;
 
             if let Some(db) = db.as_ref() &&
                let Ok(window) = window_new(&app_handle, db, None, quit_on_close) {

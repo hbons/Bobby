@@ -14,7 +14,7 @@ use gtk4::prelude::*;
 use gtk4::{
     gdk::Display,
     glib::BoxedAnyObject,
-    glib::Propagation,
+    // glib::Propagation,
     ColumnView,
     Orientation,
     ScrolledWindow,
@@ -72,7 +72,7 @@ pub fn window_new(
     application: &Application,
     db: &Database,
     table_name: Option<String>,
-    quit_on_close: bool
+    _quit_on_close: bool
 ) -> Result<ApplicationWindow, Box<dyn Error>>
 {
     let tables = db.tables()?;
@@ -155,20 +155,21 @@ pub fn window_new(
     window.add_action(&switch_table_action(&window, layout, table_index, tables, switcher));
 
 
-    window.connect_close_request({
-        let app = application.clone();
+    // TODO: Wait for GNOME guidance
+    // window.connect_close_request({
+    //     let app = application.clone();
 
-        move |_| {
-            if !quit_on_close && app.windows().len() == 1 {
-                // app.activate(); // TODO: Use activate logic
-                if let Ok(empty_window) = window_empty_new(&app) {
-                    empty_window.present();
-                }
-            }
+    //     move |_| {
+    //         if !quit_on_close && app.windows().len() == 1 {
+    //             // app.activate(); // TODO: Use activate logic
+    //             if let Ok(empty_window) = window_empty_new(&app) {
+    //                 empty_window.present();
+    //             }
+    //         }
 
-            Propagation::Proceed
-        }
-    });
+    //         Propagation::Proceed
+    //     }
+    // });
 
 
     // SAFETY: Window outlives the database
