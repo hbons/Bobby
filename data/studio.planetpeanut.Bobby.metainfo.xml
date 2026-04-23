@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <component type="desktop">
     <name>Bobby</name>
-    <summary>Browse SQLite files</summary>
-    <summary xml:lang="de">SQLite-Dateien durchsuchen</summary>
-    <summary xml:lang="es">Explorar archivos SQLite</summary>
-    <summary xml:lang="fr">Parcourir les fichiers SQLite</summary>
-    <summary xml:lang="pt">Navegar em arquivos SQLite</summary>
+    <summary>View SQLite databases</summary>
+    <summary xml:lang="de">SQLite-Datenbanken anzeigen</summary>
+    <summary xml:lang="es">Ver bases de datos SQLite</summary>
+    <summary xml:lang="fr">Afficher les bases de données SQLite</summary>
+    <summary xml:lang="pt">Visualizar bancos de dados SQLite</summary>
 
     <id>studio.planetpeanut.Bobby</id>
 
