@@ -1,4 +1,4 @@
-# [Bobby](https://planetpeanut.studio/bobby)
+# [Bobby](https://apps.gnome.org/Bobby) ![GNOME Circle](https://circle.gnome.org/assets/button/badge.svg)
 
 *Browse SQLite files*
 

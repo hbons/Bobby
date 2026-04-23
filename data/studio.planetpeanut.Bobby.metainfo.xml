@@ -19,7 +19,7 @@
     <project_group>Planet Peanut Studio</project_group>
     <project_license>GPL-3.0-or-later</project_license>
 
-    <url type="homepage">https://planetpeanut.studio/bobby</url>
+    <url type="homepage">https://apps.gnome.org/Bobby</url>
     <url type="bugtracker">https://github.com/hbons/Bobby/issues</url>
     <url type="donation">https://github.com/sponsors/hbons</url>
     <url type="vcs-browser">https://github.com/hbons/Bobby</url>
@@ -31,8 +31,8 @@
     </developer>
 
     <branding>
-        <color type="primary" scheme_preference="light">#A6D7ED</color>
-        <color type="primary" scheme_preference="dark">#084B82</color>
+        <color type="primary" scheme_preference="light">#99C1F1</color>
+        <color type="primary" scheme_preference="dark">#1A5FB4</color>
     </branding>
 
     <screenshots>

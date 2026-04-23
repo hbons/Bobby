@@ -39,7 +39,7 @@ xdg-open ./build/meson-dist
 ```
 
 
-## 5. Update Flatpak manifest
+## 4. Update Flatpak manifest
 
 ```shell
 shasum -a 256 ./build/meson-dist/*.tar.xz
@@ -55,7 +55,7 @@ git push
 ```
 
   
-## 3. Tag release
+## 5. Tag release
 
 ```shell
 git tag v<VERSION> HEAD
