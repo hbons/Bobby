@@ -13,7 +13,6 @@ use gtk4::{
 };
 
 use libadwaita::ApplicationWindow;
-use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
 
 
 pub fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
@@ -25,18 +24,10 @@ pub fn drop_target_new(window: &ApplicationWindow) -> DropTarget {
     let window_handle = window.clone();
 
     drop_target.connect_drop(move |_, value, _, _| {
-        if window_handle.widget_name() == IS_EMPTY_WINDOW {
-            window_handle.set_visible(false); // Keeps reference alive
-        }
-
         if let Some(application) = window_handle.application() {
             if let Ok(list) = value.get::<FileList>() {
                 application.open(&list.files(), "");
             }
-        }
-
-        if window_handle.widget_name() == IS_EMPTY_WINDOW {
-            window_handle.close(); // Now we can close it
         }
 
         true // Drop accepted

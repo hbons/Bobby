@@ -21,7 +21,6 @@ pub mod actions {
 
 pub mod dialogs {
     pub mod about;
-    // pub mod jump;
     pub mod file;
     pub mod preferences;
     pub mod shortcuts;
@@ -39,8 +38,7 @@ pub mod widgets {
 pub mod windows {
     pub mod prelude;
     pub mod window;
-    pub mod window_empty;
-    pub mod window_error;
 }
 
 pub mod lib;
+pub mod util;

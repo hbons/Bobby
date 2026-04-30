@@ -49,7 +49,7 @@ impl Database {
         )?;
 
         if Database::journal_mode(&connection).is_none() {
-            return Err("File is not a <b>SQLite database</b>".into());
+            return Err("File is not a <b>SQLite database</b> or encrypted".into());
         }
 
         connection.busy_timeout(Duration::from_secs(3))?;

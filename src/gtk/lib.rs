@@ -32,8 +32,7 @@ impl Gui for App {
                 {
                     window.present();
                 } else {
-                    let quit_on_close = true;
-                    try_window_new(app, file, quit_on_close);
+                    _ = window_handle_open(app, file, None);
                 }
             }
         });
@@ -41,7 +40,7 @@ impl Gui for App {
         app.connect_activate(|app| {
             if let Some(window) = app.active_window() {
                 window.present();
-            } else if let Ok(window) = window_empty_new(app) {
+            } else if let Ok(window) = window_new(app, None, None) {
                 window.present();
             }
         });

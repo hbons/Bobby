@@ -20,8 +20,7 @@ use gtk4::{
     Window,
 };
 
-use crate::gtk::windows::window::try_window_new;
-use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
+use crate::gtk::windows::window::window_handle_open;
 
 
 pub fn show_file_dialog(parent: &Window) {
@@ -87,34 +86,13 @@ fn handle_files(
         .downcast::<libadwaita::Application>()
         .map_err(|_| "Not a libadwaita::Application")?;
 
-    if parent.widget_name() == IS_EMPTY_WINDOW {
-        parent.close();
-    }
-
-    let quit_on_close = false;
-
     for i in 0..model.n_items() {
         let file = model
             .item(i)
             .and_then(|obj| obj.downcast::<File>().ok())
             .ok_or("ListModel item is not a gio::File")?;
 
-        let path = file
-            .path()
-            .ok_or("Selected file has no local path")?;
-
-        let windows = application.windows();
-
-        let window = windows
-            .iter()
-            .find(|w|
-                w.widget_name().to_string() == path.to_string_lossy()
-            );
-
-        match window {
-            Some(w) => w.present(),
-            None => try_window_new(&application, &file, quit_on_close),
-        }
+        window_handle_open(&application, &file, None)?;
     }
 
     Ok(())

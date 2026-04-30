@@ -11,7 +11,7 @@ use libadwaita::Application;
 
 use crate::bobby::prelude::*;
 use crate::gtk::windows::window::window_new;
-use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
+use crate::gtk::windows::window::IS_EMPTY_WINDOW;
 
 
 pub fn reload_action(app: &Application) -> SimpleAction {
@@ -34,10 +34,9 @@ pub fn reload_action(app: &Application) -> SimpleAction {
             };
 
             active_window.destroy();
-            let quit_on_close = true;
 
             if let Some(db) = db.as_ref() &&
-               let Ok(window) = window_new(&app_handle, db, None, quit_on_close) {
+               let Ok(window) = window_new(&app_handle, Some(&db.file), None) {
                 // TODO: Scroll to previous row number
                 window.present();
             }

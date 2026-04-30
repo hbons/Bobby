@@ -9,12 +9,11 @@ use gtk4::prelude::*;
 use gtk4::{
     Align,
     Button,
+    Window,
 };
 
-use libadwaita::ApplicationWindow;
 
-
-pub fn button_open_new(window: &ApplicationWindow) -> Button {
+pub fn button_open_new(window: &Window) -> Button {
     let button = Button::builder()
         .label("Open...")
         .css_classes(["pill", "suggested-action"])

@@ -19,10 +19,11 @@ use libadwaita::{
 };
 
 use crate::bobby::prelude::*;
-use crate::gtk::windows::window::{
+
+use crate::gtk::widgets::content::get_row;
+use crate::gtk::util::{
     copy_to_clipboard,
     find_column_view,
-    get_row,
 };
 
 

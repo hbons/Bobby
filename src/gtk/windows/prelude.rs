@@ -5,10 +5,6 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-pub use crate::gtk::windows::window::try_window_new;
+pub use crate::gtk::windows::window::window_handle_open;
 pub use crate::gtk::windows::window::window_new;
-
-pub use crate::gtk::windows::window_empty::IS_EMPTY_WINDOW;
-pub use crate::gtk::windows::window_empty::window_empty_new;
-
-pub use crate::gtk::windows::window_error::window_error_new;
+pub use crate::gtk::windows::window::IS_EMPTY_WINDOW;

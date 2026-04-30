@@ -5,6 +5,7 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use std::cell::Ref;
 use std::error::Error;
 
 use gio::{
@@ -16,6 +17,7 @@ use gtk4::prelude::*;
 use gtk4::{
     gdk::BUTTON_SECONDARY,
     gdk::Rectangle,
+    glib::BoxedAnyObject,
     ColumnView,
     ColumnViewColumn,
     GestureClick,
@@ -250,4 +252,19 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
         popover.set_parent(&widget);
         popover.popup();
     }
+}
+
+
+pub fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
+    let model = column_view.model()?;
+    let selection = model.downcast_ref::<SingleSelection>()?;
+
+    let item = selection
+        .item(position as u32)
+        .and_then(|o| o.downcast::<BoxedAnyObject>().ok())?;
+
+    let row: Ref<Row> = item.borrow();
+    let row = row.clone();
+
+    Some(row)
 }

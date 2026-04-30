@@ -12,6 +12,8 @@ use gtk4::MenuButton;
 use crate::bobby::prelude::*;
 
 
+const WIDGET_NAME: &str = "switcher";
+
 pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     let menu = Menu::new();
     let button = MenuButton::builder()
@@ -48,6 +50,7 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
 
     // button.set_action_name(Some("win.open-table-menu")); // TODO
 
+    button.set_widget_name(WIDGET_NAME);
     button.set_menu_model(Some(&menu));
     button.set_tooltip_text(Some("Tables"));
     button
