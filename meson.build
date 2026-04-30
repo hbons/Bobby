@@ -1,7 +1,7 @@
 project(
   'Bobby',
   'rust',
-  version: '50.0.0',
+  version: '50.0.1',
   meson_version: '>=1.1'
 )
 
