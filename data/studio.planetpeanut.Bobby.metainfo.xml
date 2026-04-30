@@ -72,6 +72,15 @@
     </description>
 
     <releases>
+        <release version="50.0.1" date="2026-04-30">
+            <description>
+                <ul>
+                    <li>Update app icon and symbolic icon</li>
+                    <li>Use the same window when opening from the empty page</li>
+                    <li>Mention possible encryption on file open errors</li>
+                </ul>
+            </description>
+        </release>
         <release version="50.0.0" date="2026-04-13">
             <description>
                 <ul>
