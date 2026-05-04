@@ -64,6 +64,7 @@ pub fn show_preferences_dialog(parent: &Window) {
 fn row_numbers(settings: &Settings) -> SwitchRow {
     let switch = SwitchRow::builder()
         .title("Row Numbers")
+        .subtitle("Requires reopen")
         .build();
 
     settings.bind(
@@ -80,7 +81,7 @@ fn row_order(settings: &Settings) -> ComboRow {
         settings,
         "row-order",
         "Row Order",
-        None,
+        Some("Requires reopen"),
         &["Newest First",
         "Oldest First"],
     )
@@ -100,6 +101,7 @@ fn row_separator(settings: &Settings) -> ComboRow {
 fn row_monospace(settings: &Settings) -> SwitchRow {
     let switch = SwitchRow::builder()
         .title("Monospace Font")
+        .subtitle("Requires reopen")
         .build();
 
     settings.bind(
