@@ -11,6 +11,7 @@ use gio::File;
 
 use gtk4::prelude::*;
 use gtk4::{
+    MenuButton,
     Orientation,
     ScrolledWindow,
     Widget,
@@ -62,19 +63,9 @@ pub fn window_handle_open(
         return Ok(());
     }
 
-
-    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
-
-    let row_order = match settings.string("row-order").as_str() {
-        "newest-first" => Some(RowOrder::Descending),
-        "oldest-first" => Some(RowOrder::Ascending),
-        _ => None,
-    };
-
-
     for window in application.windows() {
         if window.widget_name() == IS_EMPTY_WINDOW {
-            match Database::from_file(file, row_order) {
+            match Database::from_file(file, row_order_from_settings()) {
                 Ok(db) => window_show_content_state(&window, &db, table_name.clone())?,
                 Err(e) => window_show_error_state(&window, file, e)?,
             }
@@ -89,6 +80,46 @@ pub fn window_handle_open(
 
     Ok(())
 }
+
+
+pub fn window_reload(
+    application: &Application,
+    file: &File,
+    table_name: Option<String>,
+) -> Result<(), Box<dyn Error>>
+{
+    let path = file
+        .path()
+        .ok_or("Selected file has no local path")?
+        .to_string_lossy()
+        .to_string();
+
+    for window in application.windows() {
+        if window.widget_name() == path {
+            match Database::from_file(file, row_order_from_settings()) {
+                Ok(db) => window_show_content_state(&window, &db, table_name.clone())?,
+                Err(e) => window_show_error_state(&window, file, e)?,
+            }
+
+            window.present();
+            return Ok(());
+        }
+    }
+
+    Ok(())
+}
+
+
+fn row_order_from_settings() -> Option<RowOrder> {
+    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+    match settings.string("row-order").as_str() {
+        "newest-first" => Some(RowOrder::Descending),
+        "oldest-first" => Some(RowOrder::Ascending),
+        _ => None,
+    }
+}
+
 
 
 pub const IS_EMPTY_WINDOW: &str = "1";
@@ -275,9 +306,6 @@ fn window_show_content_state(
     overlay.set_child(Some(&layout));
 
 
-    let switcher = table_switcher_new(&tables);
-    switcher.set_label(&table.name());
-
     let widget = widget_by_name(
         "header_bar",
         window.upcast_ref::<Widget>(),
@@ -291,7 +319,31 @@ fn window_show_content_state(
             )
         )?;
 
-    header.pack_start(&switcher);
+
+    let widget = widget_by_name(
+        "switcher", // TODO
+        window.upcast_ref::<Widget>(),
+    );
+
+    let switcher = match widget {
+        Some(w) => {
+            // Reuse existing switcher
+            w.downcast::<MenuButton>()
+                .map_err(|w|
+                    format!(
+                        "Expected MenuButton, but got {}",
+                        w.type_().name()
+                    )
+                )?
+        },
+        None => {
+            let switcher = table_switcher_new(&tables);
+            header.pack_start(&switcher);
+            switcher
+        },
+    };
+
+    switcher.set_label(&table.name());
 
 
     let widget = widget_by_name(
@@ -319,6 +371,7 @@ fn window_show_content_state(
 
     window.add_action(&copy_row_action(window, &overlay));
     window.add_action(&copy_val_action(window, &overlay));
+    window.add_action(&reload_action(window));
     window.add_action(&switch_table_action(window, layout, table_index, tables, switcher)); // TODO: Ugly
 
     Ok(())

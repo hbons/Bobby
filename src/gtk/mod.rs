@@ -11,11 +11,11 @@ pub mod actions {
     pub mod app_open;
     pub mod app_preferences;
     pub mod app_quit;
-    pub mod app_reload;
     pub mod app_shortcuts;
     pub mod win_close;
     pub mod win_copy_val;
     pub mod win_copy_row;
+    pub mod win_reload;
     pub mod win_switch_table;
 }
 
