@@ -72,6 +72,15 @@
     </description>
 
     <releases>
+        <release version="50.0.2" date="2026-05-09">
+            <description>
+                <ul>
+                    <li>Instant apply for all preferences</li>
+                    <li>Reload content in the same window</li>
+                    <li>Fix row number column render glitch</li>
+                </ul>
+            </description>
+        </release>
         <release version="50.0.1" date="2026-04-30">
             <description>
                 <ul>
