@@ -38,7 +38,7 @@ pub fn reload_action(window: &ApplicationWindow) -> SimpleAction {
         if let Some(app) = window_handle.application() &&
            let Ok(app) = app.downcast::<libadwaita::Application>() &&
            let Some(db) = db.as_ref() {
-            _ = window_reload(&app, &db.file, None);
+            _ = window_reload(&app, &db.file);
         }
     });
 

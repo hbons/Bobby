@@ -180,6 +180,7 @@ pub fn content_new(
 
     let scrolled_window = ScrolledWindow::new();
     scrolled_window.set_child(Some(&column_view));
+    scrolled_window.set_widget_name("content");
     scrolled_window.set_vexpand(true);
     // scrolled_window.set_sensitive(false); // TODO: Disable when file changed
 
@@ -267,4 +268,30 @@ pub fn get_row(column_view: ColumnView, position: usize) -> Option<Row> {
     let row = row.clone();
 
     Some(row)
+}
+
+
+/// HACK: Force a redraw of all columns to prevent separator glitch
+pub fn content_force_redraw(column_view: &ColumnView) {
+    let columns_model = column_view.columns();
+    let num_cols = columns_model.n_items();
+    let mut cols: Vec<gtk4::ColumnViewColumn> = Vec::new();
+
+    for i in 0..num_cols {
+        if let Some(obj) = columns_model.item(i) {
+            if let Some(c) = obj.downcast_ref::<ColumnViewColumn>() {
+                cols.push(c.clone());
+            }
+        }
+    }
+
+    for c in &cols {
+        c.set_visible(false);
+    }
+
+    // column_view.queue_resize();
+
+    for c in &cols {
+        c.set_visible(true);
+    }
 }

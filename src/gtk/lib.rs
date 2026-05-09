@@ -14,6 +14,9 @@ use libadwaita::Application;
 use crate::app::App;
 use crate::gtk::actions::prelude::*;
 use crate::gtk::windows::prelude::*;
+use crate::gtk::windows::window::window_toggle_row_numbers;
+use crate::gtk::windows::window::window_toggle_row_order;
+use crate::gtk::windows::window::window_toggle_monospace_font;
 use crate::gui::Gui;
 
 
@@ -44,6 +47,31 @@ impl Gui for App {
                 window.present();
             }
         });
+
+
+        let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+        let app_handle = app.clone();
+        let _ = settings.connect_changed(Some("row-numbers"), move |_settings, _key| {
+            if let Some(window) = app_handle.active_window() {
+                _ = window_toggle_row_numbers(&window);
+            }
+        });
+
+        let app_handle = app.clone();
+        let _ = settings.connect_changed(Some("row-order"), move |_settings, _key| {
+            if let Some(window) = app_handle.active_window() {
+                _ = window_toggle_row_order(&window);
+            }
+        });
+
+        let app_handle = app.clone();
+        let _ = settings.connect_changed(Some("monospace-font"), move |_settings, _key| {
+            if let Some(window) = app_handle.active_window() {
+                _ = window_toggle_monospace_font(&window);
+            }
+        });
+
 
         app.add_action(&about_action(&app));
         app.add_action(&open_action(&app));

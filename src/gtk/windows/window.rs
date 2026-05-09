@@ -9,7 +9,6 @@ use std::error::Error;
 
 use gio::File;
 
-use gtk4::prelude::*;
 use gtk4::{
     MenuButton,
     Orientation,
@@ -34,7 +33,7 @@ use crate::bobby::prelude::*;
 use crate::gtk::actions::prelude::*;
 use crate::gtk::util::widget_by_name;
 use crate::gtk::widgets::button::button_open_new;
-use crate::gtk::widgets::content::content_new;
+use crate::gtk::widgets::content::{ content_new, content_force_redraw };
 use crate::gtk::widgets::drop_target::drop_target_new;
 use crate::gtk::widgets::menu::main_menu_new;
 use crate::gtk::widgets::switcher::table_switcher_new;
@@ -85,7 +84,6 @@ pub fn window_handle_open(
 pub fn window_reload(
     application: &Application,
     file: &File,
-    table_name: Option<String>,
 ) -> Result<(), Box<dyn Error>>
 {
     let path = file
@@ -94,14 +92,69 @@ pub fn window_reload(
         .to_string_lossy()
         .to_string();
 
+    let window = application.active_window().ok_or("Missing active window")?;
+
+
+    let widget = widget_by_name(
+        "switcher", // TODO
+        window.upcast_ref::<Widget>(),
+    ).ok_or("Missing widget named 'switcher'")?;
+
+    let switcher = widget.downcast::<MenuButton>()
+        .map_err(|w|
+            format!(
+                "Expected MenuButton, but got {}",
+                w.type_().name()
+            )
+        )?;
+
+    let table_name: Option<String> = switcher.label()
+        .map(|g| g.into());
+
+
+    // Remember the scroll position
+    let widget = widget_by_name(
+        "content", // TODO
+        window.upcast_ref::<gtk4::Widget>(),
+    ).ok_or("Missing widget named 'content'")?;
+
+    let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
+        .map_err(|w|
+            format!(
+                "Expected ScrolledWindow, but got {}",
+                w.type_().name()
+            )
+        )?;
+
+    let h_value = scrolled_window.hadjustment().value();
+    let v_value = scrolled_window.vadjustment().value();
+
     for window in application.windows() {
         if window.widget_name() == path {
             match Database::from_file(file, row_order_from_settings()) {
-                Ok(db) => window_show_content_state(&window, &db, table_name.clone())?,
+                Ok(db) => window_show_content_state(&window, &db, table_name)?,
                 Err(e) => window_show_error_state(&window, file, e)?,
             }
 
-            window.present();
+            // Reapply scroll position
+            let widget = widget_by_name(
+                "content", // TODO
+                window.upcast_ref::<gtk4::Widget>(),
+            ).ok_or("Missing widget named 'content'")?;
+
+            let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
+                .map_err(|w|
+                    format!(
+                        "Expected ScrolledWindow, but got {}",
+                        w.type_().name()
+                    )
+                )?;
+
+            gtk4::glib::idle_add_local_once(move || {
+                scrolled_window.hadjustment().set_value(h_value);
+                scrolled_window.vadjustment().set_value(v_value);
+            });
+
             return Ok(());
         }
     }
@@ -290,6 +343,7 @@ fn window_show_content_state(
 
     let content = content_new(db, &table)?;
 
+
     let banner = libadwaita::Banner::builder()
         .title("File has changed")
         .button_label("Reload")
@@ -393,6 +447,63 @@ fn window_set_child(
             Some(child)
         );
     }
+
+    Ok(())
+}
+
+
+pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> {
+    let widget = widget_by_name(
+        "content", // TODO
+        window.upcast_ref::<gtk4::Widget>(),
+    ).ok_or("Missing widget named 'content'")?;
+
+    let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
+        .map_err(|w|
+            format!(
+                "Expected ScrolledWindow, but got {}",
+                w.type_().name()
+            )
+        )?;
+
+    let widget = scrolled_window
+        .clone()
+        .child()
+        .ok_or("err")?;
+
+    let column_view = widget.downcast::<gtk4::ColumnView>()
+        .map_err(|w|
+            format!(
+                "Expected ColumnView, but got {}",
+                w.type_().name()
+            )
+        )?;
+
+    content_force_redraw(&column_view);
+
+
+    let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
+
+    if let Some(obj) = column_view.columns().item(0) {
+        if let Some(first_col) = obj.downcast_ref::<gtk4::ColumnViewColumn>() {
+            first_col.set_visible(
+                settings.boolean("row-numbers")
+            );
+        }
+    }
+
+    Ok(())
+}
+
+
+pub fn window_toggle_row_order(window: &Window) -> Result<(), Box<dyn Error>> {
+    _ = window.activate_action("win.reload", None);
+
+    Ok(())
+}
+
+pub fn window_toggle_monospace_font(window: &Window) -> Result<(), Box<dyn Error>> {
+    _ = window.activate_action("win.reload", None);
 
     Ok(())
 }
