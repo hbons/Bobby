@@ -1,0 +1,30 @@
+# Swiss German translation for Bobby.
+# Copyright (C) 2026 Hylke Bons
+# This file is distributed under the same license as the bobby package.
+# Samuel Rüegger <samuel@rueegger.me>, 2026.
+#
+# This catalogue is sparse on purpose: it only contains the strings that
+# differ from de.po (Swiss German uses 'ss' instead of 'ß'). Anything not
+# listed here falls back to de.po automatically, then to English.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: bobby\n"
+"Report-Msgid-Bugs-To: https://github.com/hbons/Bobby/issues\n"
+"POT-Creation-Date: 2026-05-16 19:39+0200\n"
+"PO-Revision-Date: 2026-05-16 00:00+0000\n"
+"Last-Translator: Samuel Rüegger <samuel@rueegger.me>\n"
+"Language-Team: Swiss German\n"
+"Language: de_CH\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:61
+msgid "Scroll through tables and views of any size"
+msgstr "Durch Tabellen und Ansichten beliebiger Grösse blättern"
+
+#: src/gtk/dialogs/shortcuts.rs:35
+msgid "Close Window"
+msgstr "Fenster schliessen"

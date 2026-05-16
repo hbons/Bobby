@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Copyright (C) YEAR Hylke Bons
 # This file is distributed under the same license as the bobby package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: bobby\n"
+"Project-Id-Version: bobby 50.0.2\n"
 "Report-Msgid-Bugs-To: https://github.com/hbons/Bobby/issues\n"
-"POT-Creation-Date: 2026-05-16 00:00+0000\n"
+"POT-Creation-Date: 2026-05-16 19:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,3 +16,360 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: data/studio.planetpeanut.Bobby.desktop.in:2
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:3
+msgid "Bobby"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.desktop.in:3
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:4
+msgid "View SQLite databases"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.desktop.in:8
+msgid "database;sqlite;table;sql;query;row;column;cell;"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:24
+msgid "Hylke Bons"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:39
+msgid "Browse SQLite files"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:45
+msgid "Preferences dialog"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:51
+msgid "Empty page"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:56
+msgid ""
+"Bobby lets you open SQLite database files (.db, .sqlite) and browse the "
+"tables inside. Handy for app development or inspecting downloaded databases."
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:61
+msgid "Scroll through tables and views of any size"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:62
+msgid "Copy rows or cells to the clipboard"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:63
+msgid "Made with care by a human"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:65
+msgid "Don't forget to sanitize your database inputs!"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:74
+msgid "Instant apply for all preferences"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:75
+msgid "Reload content in the same window"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:76
+msgid "Fix row number column render glitch"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:83
+msgid "Update app icon and symbolic icon"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:84
+msgid "Use the same window when opening from the empty page"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:85
+msgid "Mention possible encryption on file open errors"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:92
+msgid "Use GNOME 50"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:93
+msgid "Keyboard shortcut for Copy Row (Ctrl+C)"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:94
+msgid "Fix missing border between title and table"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:101
+msgid "Add reload action (Ctrl+R)"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:102
+msgid "Keyboard shortcut for Open Menu (F10)"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:103
+msgid "Remove noisy window title tooltip"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:110
+msgid "Support opening databases that are in WAL-mode"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:111
+msgid "Show error message on opening unsupported files"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:112
+msgid "Toast notifications on copy to clipboard"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:119
+msgid "Expand cell labels for larger context menu targets"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:120
+msgid "Fix Quit keyboard shortcut"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:121
+msgid "Fix start page opening after every close"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:128
+msgid "Fix display of tables without a rowid"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:129
+msgid "Keyboard shortcuts for Open/Close/Quit"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:130
+msgid "Return to start page after close if it was used"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:137
+msgid "First release!"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:138
+msgid "Designed for GNOME"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:139
+msgid "Made by a human using Rust"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:162
+msgid "database"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:163
+msgid "sqlite"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:164
+msgid "table"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:165
+msgid "sql"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:166
+msgid "query"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:167
+msgid "row"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:168
+msgid "column"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:169
+msgid "cell"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:170
+msgid "gnome"
+msgstr ""
+
+#: data/studio.planetpeanut.Bobby.metainfo.xml.in:171
+msgid "gtk"
+msgstr ""
+
+#: src/cli.rs:31
+msgid "Usage: bobby [file]..."
+msgstr ""
+
+#: src/cli.rs:33
+msgid "Options:"
+msgstr ""
+
+#: src/gtk/actions/win_copy_row.rs:62
+msgid "Row {n} copied to clipboard"
+msgstr ""
+
+#: src/gtk/actions/win_copy_val.rs:52
+msgid "<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>"
+msgstr ""
+
+#: src/gtk/actions/win_copy_val.rs:55
+msgid "Copied to clipboard"
+msgstr ""
+
+#: src/gtk/dialogs/file.rs:58
+msgid "SQLite Databases"
+msgstr ""
+
+#: src/gtk/dialogs/file.rs:73
+msgid "All Files"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:35 src/gtk/widgets/menu.rs:41
+msgid "Preferences"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:41
+msgid "Rows &amp; Columns"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:50
+msgid "Appearance"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:68
+msgid "Row Numbers"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:84
+msgid "Row Order"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:86
+msgid "Newest First"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:87
+msgid "Oldest First"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:95
+msgid "Column Separator"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:96
+msgid "Used when copying rows to the clipboard"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:97
+msgid "Tabs"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:98
+msgid "Spaces"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:99
+msgid "Commas"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:100
+msgid "Markdown"
+msgstr ""
+
+#: src/gtk/dialogs/preferences.rs:107
+msgid "Monospace Font"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:31
+msgid "General"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:33
+msgid "Open File"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:34
+msgid "Open Menu"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:35
+msgid "Reload Window"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:36
+msgid "Close Window"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:37
+msgid "Quit"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:50 src/gtk/widgets/switcher.rs:64
+msgid "Tables"
+msgstr ""
+
+#: src/gtk/dialogs/shortcuts.rs:52 src/gtk/widgets/content.rs:238
+msgid "Copy Row"
+msgstr ""
+
+#: src/gtk/widgets/button.rs:20
+msgid "Open..."
+msgstr ""
+
+#: src/gtk/widgets/content.rs:233
+msgid "Copy"
+msgstr ""
+
+#: src/gtk/widgets/menu.rs:27
+msgid "Main Menu"
+msgstr ""
+
+#: src/gtk/widgets/menu.rs:42
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: src/gtk/widgets/menu.rs:43
+msgid "About Bobby"
+msgstr ""
+
+#: src/gtk/widgets/switcher.rs:47
+msgid "View – {n}"
+msgid_plural "Views – {n}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/gtk/widgets/switcher.rs:50
+msgid "Table – {n}"
+msgid_plural "Tables – {n}"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/gtk/windows/window.rs:246
+msgid "Browse Databases"
+msgstr ""
+
+#: src/gtk/windows/window.rs:247
+msgid "Drag and drop <b>SQLite files</b> here"
+msgstr ""
+
+#: src/gtk/windows/window.rs:277
+msgid "Unable to Open File"
+msgstr ""
+
+#: src/gtk/windows/window.rs:350
+msgid "File has changed"
+msgstr ""
+
+#: src/gtk/windows/window.rs:351
+msgid "Reload"
+msgstr ""
