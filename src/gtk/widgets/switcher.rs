@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::{ gettext, ngettext };
+
 use gtk4::prelude::*;
 use gtk4::gio::Menu;
 use gtk4::MenuButton;
@@ -23,8 +25,8 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
     let table_section = Menu::new();
     let view_section  = Menu::new();
 
-    let view_count  = tables.iter().filter(|t| t.is_view()).count();
-    let table_count = tables.iter().filter(|t| !t.is_view()).count();
+    let view_count  = tables.iter().filter(|t|  t.is_view()).count() as u32;
+    let table_count = tables.iter().filter(|t| !t.is_view()).count() as u32;
 
     for (i, table) in tables.iter().enumerate() {
         let name = table.name().replace("_", "__"); // Avoid mnemonics
@@ -41,8 +43,15 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
         );
     }
 
-    menu.append_section(Some(&format!("Views – {view_count}")), &view_section);
-    menu.append_section(Some(&format!("Tables – {table_count}")), &table_section);
+    let views_label =
+        ngettext("View – {n}", "Views – {n}", view_count)
+            .replace("{n}", &view_count.to_string());
+    let tables_label =
+        ngettext("Table – {n}", "Tables – {n}", table_count)
+            .replace("{n}", &table_count.to_string());
+
+    menu.append_section(Some(&views_label),  &view_section);
+    menu.append_section(Some(&tables_label), &table_section);
 
     if let Some(table) = tables.first() {
         button.set_label(&table.name());
@@ -52,6 +61,6 @@ pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
 
     button.set_widget_name(WIDGET_NAME);
     button.set_menu_model(Some(&menu));
-    button.set_tooltip_text(Some("Tables"));
+    button.set_tooltip_text(Some(&gettext("Tables")));
     button
 }

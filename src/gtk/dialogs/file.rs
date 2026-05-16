@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gio::{
     glib::Error,
     Cancellable,
@@ -53,7 +55,7 @@ fn filters() -> ListStore {
 
 fn filter_sqlite_files() -> FileFilter {
     let filter = FileFilter::new();
-    filter.set_name(Some("SQLite Databases"));
+    filter.set_name(Some(&gettext("SQLite Databases")));
 
     filter.add_mime_type("application/x-sqlite3");
     filter.add_mime_type("application/vnd-sqlite3");
@@ -68,7 +70,7 @@ fn filter_sqlite_files() -> FileFilter {
 
 fn filter_all_files() -> FileFilter {
     let filter = FileFilter::new();
-    filter.set_name(Some("All Files"));
+    filter.set_name(Some(&gettext("All Files")));
     filter.add_pattern("*");
     filter
 }

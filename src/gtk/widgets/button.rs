@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gtk4::prelude::*;
 use gtk4::{
     Align,
@@ -15,7 +17,7 @@ use gtk4::{
 
 pub fn button_open_new(window: &Window) -> Button {
     let button = Button::builder()
-        .label("Open...")
+        .label(gettext("Open..."))
         .css_classes(["pill", "suggested-action"])
         .halign(Align::Center)
         .build();

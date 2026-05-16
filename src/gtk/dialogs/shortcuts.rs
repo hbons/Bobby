@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gtk4::Window;
 
 use libadwaita::prelude::*;
@@ -26,13 +28,13 @@ pub fn show_shortcuts_dialog(parent: &Window){
 
 
 fn section_general() -> ShortcutsSection {
-    let section = ShortcutsSection::new(Some("General"));
+    let section = ShortcutsSection::new(Some(&gettext("General")));
 
-    let item_open   = ShortcutsItem::new("Open File", "<Primary>o");
-    let item_menu   = ShortcutsItem::new("Open Menu", "F10");
-    let item_reload = ShortcutsItem::new("Reload Window", "<Primary>r");
-    let item_close  = ShortcutsItem::new("Close Window", "<Primary>w");
-    let item_quit   = ShortcutsItem::new("Quit", "<Primary>q");
+    let item_open   = ShortcutsItem::new(&gettext("Open File"),     "<Primary>o");
+    let item_menu   = ShortcutsItem::new(&gettext("Open Menu"),     "F10");
+    let item_reload = ShortcutsItem::new(&gettext("Reload Window"), "<Primary>r");
+    let item_close  = ShortcutsItem::new(&gettext("Close Window"),  "<Primary>w");
+    let item_quit   = ShortcutsItem::new(&gettext("Quit"),          "<Primary>q");
 
     section.add(item_open);
     section.add(item_menu);
@@ -45,9 +47,9 @@ fn section_general() -> ShortcutsSection {
 
 
 fn section_table() -> ShortcutsSection {
-    let section = ShortcutsSection::new(Some("Tables"));
+    let section = ShortcutsSection::new(Some(&gettext("Tables")));
 
-    let item_copy = ShortcutsItem::new("Copy Row", "<Primary>c");
+    let item_copy = ShortcutsItem::new(&gettext("Copy Row"), "<Primary>c");
     // let item_jump = ShortcutsItem::new("Jump To Row", "<Primary>l"); // TODO
 
     section.add(item_copy);

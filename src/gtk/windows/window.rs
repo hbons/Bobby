@@ -7,6 +7,8 @@
 
 use std::error::Error;
 
+use gettextrs::gettext;
+
 use gio::File;
 
 use gtk4::{
@@ -241,8 +243,8 @@ pub fn window_show_empty_state(
 
     let page = StatusPage::builder()
         .icon_name("studio.planetpeanut.Bobby-symbolic")
-        .title("Browse Databases")
-        .description("Drag and drop <b>SQLite files</b> here")
+        .title(gettext("Browse Databases"))
+        .description(gettext("Drag and drop <b>SQLite files</b> here"))
         .child(&button_open_new(window))
         .hexpand(true)
         .vexpand(true)
@@ -272,7 +274,7 @@ fn window_show_error_state(
 
     let page = StatusPage::builder()
         .icon_name("dialog-error-symbolic")
-        .title("Unable to Open File")
+        .title(gettext("Unable to Open File"))
         .description(error.to_string())
         .child(&button_open_new(window))
         .hexpand(true)
@@ -345,8 +347,8 @@ fn window_show_content_state(
 
 
     let banner = libadwaita::Banner::builder()
-        .title("File has changed")
-        .button_label("Reload")
+        .title(gettext("File has changed"))
+        .button_label(gettext("Reload"))
         .action_name("app.reload")
         .button_style(libadwaita::BannerButtonStyle::Suggested)
         // .revealed(true) // TODO: Reveal on file changes

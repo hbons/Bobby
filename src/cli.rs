@@ -8,6 +8,8 @@
 use std::error::Error;
 use std::process::exit;
 
+use gettextrs::gettext;
+
 use crate::app::{ app_deps, app_version, App };
 
 
@@ -26,9 +28,9 @@ impl App {
 
 
     pub fn cli_option_help(&self) {
-        println!("Usage: bobby [file]...");
+        println!("{}", gettext("Usage: bobby [file]..."));
         println!();
-        println!("Options:");
+        println!("{}", gettext("Options:"));
         println!("    --help, --version, --deps, --env");
         println!();
     }

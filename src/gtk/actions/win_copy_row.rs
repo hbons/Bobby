@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gio::SimpleAction;
 
 use gtk4::prelude::*;
@@ -57,10 +59,13 @@ pub fn copy_row_action(
                     &row.format_with(separator.unwrap_or_default())
                 );
 
+                let title = gettext("Row {n} copied to clipboard")
+                    .replace("{n}", &(row_index + 1).to_string());
+
                 overlay_handle.dismiss_all();
                 overlay_handle.add_toast(
                     Toast::builder()
-                        .title(format!("Row {} copied to clipboard", row_index + 1))
+                        .title(title)
                         .timeout(2)
                         .build()
                 );

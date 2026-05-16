@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gio::SimpleAction;
 use gtk4::prelude::*;
 use gtk4::glib::VariantTy;
@@ -47,9 +49,10 @@ pub fn copy_val_action(
                     _ = copy_to_clipboard(selection);
 
                     let title = if selection.len() < 96 {
-                        &format!("<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>")
+                        gettext("<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>")
+                            .replace("{selection}", selection)
                     } else {
-                        "Copied to clipboard"
+                        gettext("Copied to clipboard")
                     };
 
                     if selection.len() < 96 {

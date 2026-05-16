@@ -5,6 +5,8 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
+use gettextrs::gettext;
+
 use gio::{
     Settings,
     SettingsSchemaSource
@@ -30,13 +32,13 @@ pub fn show_preferences_dialog(parent: &Window) {
     let settings = Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     let page = PreferencesPage::builder()
-        .title("Preferences")
+        .title(gettext("Preferences"))
         .icon_name("org.gnome.Settings-system-symbolic")
         .build();
 
 
     let group_rows_columns = PreferencesGroup::builder()
-        .title("Rows &amp; Columns")
+        .title(gettext("Rows &amp; Columns"))
         .build();
 
     group_rows_columns.add(&row_numbers(&settings));
@@ -45,7 +47,7 @@ pub fn show_preferences_dialog(parent: &Window) {
 
 
     let group_appearance = PreferencesGroup::builder()
-        .title("Appearance")
+        .title(gettext("Appearance"))
         .build();
 
     group_appearance.add(&row_monospace(&settings));
@@ -63,7 +65,7 @@ pub fn show_preferences_dialog(parent: &Window) {
 
 fn row_numbers(settings: &Settings) -> SwitchRow {
     let switch = SwitchRow::builder()
-        .title("Row Numbers")
+        .title(gettext("Row Numbers"))
         .build();
 
     settings.bind(
@@ -79,10 +81,10 @@ fn row_order(settings: &Settings) -> ComboRow {
     combo_row_with_binding(
         settings,
         "row-order",
-        "Row Order",
+        &gettext("Row Order"),
         None,
-        &["Newest First",
-        "Oldest First"],
+        &[gettext("Newest First"),
+          gettext("Oldest First")],
     )
 }
 
@@ -90,16 +92,19 @@ fn row_separator(settings: &Settings) -> ComboRow {
     combo_row_with_binding(
         settings,
         "column-separator",
-        "Column Separator",
-        Some("Used when copying rows to the clipboard"),
-        &["Tabs", "Spaces", "Commas", "Markdown"],
+        &gettext("Column Separator"),
+        Some(&gettext("Used when copying rows to the clipboard")),
+        &[gettext("Tabs"),
+          gettext("Spaces"),
+          gettext("Commas"),
+          gettext("Markdown")],
     )
 }
 
 
 fn row_monospace(settings: &Settings) -> SwitchRow {
     let switch = SwitchRow::builder()
-        .title("Monospace Font")
+        .title(gettext("Monospace Font"))
         .build();
 
     settings.bind(
@@ -117,16 +122,18 @@ fn combo_row_with_binding(
     key: &str,
     title: &str,
     subtitle: Option<&str>,
-    choices: &[&str],
+    choices: &[String],
 ) -> ComboRow
 {
     let value = settings.string(key).to_string();
     let index = value_to_index(settings, key, &value);
 
+    let choice_refs: Vec<&str> = choices.iter().map(|s| s.as_str()).collect();
+
     let combo = ComboRow::builder()
         .title(title)
         .subtitle(subtitle.unwrap_or(""))
-        .model(&StringList::new(choices))
+        .model(&StringList::new(&choice_refs))
         .build();
 
     if let Some(i) = index {

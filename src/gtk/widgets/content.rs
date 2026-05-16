@@ -8,6 +8,8 @@
 use std::cell::Ref;
 use std::error::Error;
 
+use gettextrs::gettext;
+
 use gio::{
     Menu,
     Settings,
@@ -228,12 +230,12 @@ fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize,
         let menu = Menu::new();
 
         menu.append(
-            Some("Copy"),
+            Some(&gettext("Copy")),
             Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
         );
 
         menu.append(
-            Some("Copy Row"),
+            Some(&gettext("Copy Row")),
             Some("win.copy-row")
         );
 
