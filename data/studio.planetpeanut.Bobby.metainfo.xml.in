@@ -2,10 +2,6 @@
 <component type="desktop">
     <name>Bobby</name>
     <summary>View SQLite databases</summary>
-    <summary xml:lang="de">SQLite-Datenbanken anzeigen</summary>
-    <summary xml:lang="es">Ver bases de datos SQLite</summary>
-    <summary xml:lang="fr">Afficher les bases de données SQLite</summary>
-    <summary xml:lang="pt">Visualizar bancos de dados SQLite</summary>
 
     <id>studio.planetpeanut.Bobby</id>
 
@@ -164,22 +160,8 @@
 
     <keywords>
         <keyword>database</keyword>
-        <keyword xml:lang="de">Datenbank</keyword>
-        <keyword xml:lang="es">base de datos</keyword>
-        <keyword xml:lang="fr">base de données</keyword>
-        <keyword xml:lang="pt">banco de dados</keyword>
-
         <keyword>sqlite</keyword>
-        <keyword xml:lang="de">sqlite</keyword>
-        <keyword xml:lang="es">sqlite</keyword>
-        <keyword xml:lang="fr">sqlite</keyword>
-        <keyword xml:lang="pt">sqlite</keyword>
-
         <keyword>table</keyword>
-        <keyword xml:lang="de">Tabelle</keyword>
-        <keyword xml:lang="es">tabla</keyword>
-        <keyword xml:lang="pt">tabela</keyword>
-
         <keyword>sql</keyword>
         <keyword>query</keyword>
         <keyword>row</keyword>

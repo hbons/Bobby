@@ -1,16 +1,28 @@
+desktop_file = '@0@.desktop'.format(application_id)
+metainfo_file = '@0@.metainfo.xml'.format(application_id)
+
+
 # .desktop
 
-install_data(
-  ('@0@.desktop').format(application_id),
-  install_dir: get_option('prefix') / 'share/applications'
+i18n.merge_file(
+  input:       desktop_file + '.in',
+  output:      desktop_file,
+  type:        'desktop',
+  po_dir:      meson.project_source_root() / 'po',
+  install:     true,
+  install_dir: get_option('prefix') / 'share/applications',
 )
 
 
 # .metainfo.xml
 
-install_data(
-  ('@0@.metainfo.xml').format(application_id),
-  install_dir: get_option('datadir') / 'metainfo'
+i18n.merge_file(
+  input:       metainfo_file + '.in',
+  output:      metainfo_file,
+  type:        'xml',
+  po_dir:      meson.project_source_root() / 'po',
+  install:     true,
+  install_dir: get_option('datadir') / 'metainfo',
 )
 
 

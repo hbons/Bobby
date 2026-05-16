@@ -1,6 +1,8 @@
 # List of source files containing translatable strings.
 # Please keep this list sorted alphabetically.
 
+data/studio.planetpeanut.Bobby.desktop.in
+data/studio.planetpeanut.Bobby.metainfo.xml.in
 src/cli.rs
 src/gtk/actions/win_copy_row.rs
 src/gtk/actions/win_copy_val.rs

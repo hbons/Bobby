@@ -1,7 +1,9 @@
 [Desktop Entry]
 Name=Bobby
+Comment=View SQLite databases
 Type=Application
 Exec=bobby %f
 Icon=studio.planetpeanut.Bobby
 Categories=Utility;
+Keywords=database;sqlite;table;sql;query;row;column;cell;
 MimeType=application/vnd.sqlite3;application/x-sqlite3;
