@@ -1,0 +1,14 @@
+# List of source files containing translatable strings.
+# Please keep this list sorted alphabetically.
+
+src/cli.rs
+src/gtk/actions/win_copy_row.rs
+src/gtk/actions/win_copy_val.rs
+src/gtk/dialogs/file.rs
+src/gtk/dialogs/preferences.rs
+src/gtk/dialogs/shortcuts.rs
+src/gtk/widgets/button.rs
+src/gtk/widgets/content.rs
+src/gtk/widgets/menu.rs
+src/gtk/widgets/switcher.rs
+src/gtk/windows/window.rs

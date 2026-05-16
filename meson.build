@@ -7,9 +7,12 @@ project(
 
 command_name = 'bobby'
 application_id = 'studio.planetpeanut.Bobby'
+gettext_package = command_name
+localedir = get_option('prefix') / get_option('localedir')
 
 
 gnome = import('gnome')
+i18n  = import('i18n')
 dependency('glib-2.0')
 dependency('gtk4')
 dependency('libadwaita-1')
@@ -17,6 +20,7 @@ dependency('libadwaita-1')
 
 subdir('data')
 subdir('data/icons')
+subdir('po')
 
 summary(
   {
@@ -34,6 +38,8 @@ custom_target(
   command: [
     'sh', '-c',
     'cd ' + meson.project_source_root() + ' && ' +
+    'GETTEXT_PACKAGE=' + gettext_package + ' ' +
+    'LOCALEDIR=' + localedir + ' ' +
     'cargo build --release && ' +
     'cp target/release/' + command_name + ' ' + meson.project_build_root() + '/' + command_name
   ],

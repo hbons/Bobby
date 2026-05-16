@@ -26,12 +26,28 @@ pub mod bobby;
 use std::env::args;
 use std::error::Error;
 
+use gettextrs::{ bindtextdomain, setlocale, textdomain, LocaleCategory };
+
 use crate::app::app_version;
 use crate::app::{ App, app_runs_as_root, app_runs_in_terminal };
 use crate::gui::Gui;
 
 
+const GETTEXT_PACKAGE: &str = match option_env!("GETTEXT_PACKAGE") {
+    Some(v) => v,
+    None    => "bobby",
+};
+const LOCALEDIR: &str = match option_env!("LOCALEDIR") {
+    Some(v) => v,
+    None    => "/usr/share/locale",
+};
+
+
 fn main() -> Result<(), Box<dyn Error>> {
+    setlocale(LocaleCategory::LcAll, "");
+    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR)?;
+    textdomain(GETTEXT_PACKAGE)?;
+
     log::debug_base(&app_version());
 
     if app_runs_as_root() {
