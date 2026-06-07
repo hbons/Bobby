@@ -1,4 +1,4 @@
-# [Bobby](https://apps.gnome.org/Bobby)
+# [Bobby](https://apps.gnome.org/Bobby) ![GNOME Circle](https://circle.gnome.org/assets/button/badge.svg)
 
 *Browse SQLite files*
 
@@ -30,6 +30,7 @@ sudo ninja install -C build
 
 * [@hbons@mastodon.social](https://mastodon.social/@hbons)
 * [planetpeanut.studio](https://planetpeanut.studio)
+* [GNOME Circle](https://apps.gnome.org/#circle)
 
 <br>
 Have fun, and don't forget to sanitize your database inputs! :)
