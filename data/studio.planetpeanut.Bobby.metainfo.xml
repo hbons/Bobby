@@ -146,9 +146,13 @@
         </release>
     </releases>
 
+    <requires>
+        <display_length compare="ge">640</display_length>
+    </requires>
+
     <recommends>
-      <control>keyboard</control>
-      <control>pointing</control>
+        <control>keyboard</control>
+        <control>pointing</control>
     </recommends>
 
     <content_rating type="oars-1.1">
