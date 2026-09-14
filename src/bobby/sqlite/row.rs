@@ -10,8 +10,9 @@ use std::fmt;
 
 use rusqlite::types::ValueRef;
 
+
 use super::affinity::Affinity;
-use super::column::ColumnSeparator;
+use super::column::{ ColumnSeparator, as_filter_statement };
 use super::database::Database;
 use super::table::Table;
 
@@ -37,12 +38,24 @@ impl Database {
         let row_order = self.row_order.unwrap_or_default();
         let table_name = table.name();
 
+        let filter = match table.filter() {
+            Some(f) =>
+                as_filter_statement(
+                    &self.columns(table).unwrap_or_default(),
+                    f.into(),
+                ),
+            None => "TRUE".to_string(),
+        };
+
+        dbg!(&filter);
+
         let sql =
             if table.has_row_id() == Some(true) {
                 &format!("
                     SELECT *
                     FROM {table_name}
                     WHERE rowid >= {offset}
+                      AND {filter}
                     ORDER BY rowid {row_order}
                     LIMIT {limit};
                 ")
@@ -50,6 +63,7 @@ impl Database {
                 &format!("
                     SELECT *
                     FROM {table_name}
+                    WHERE {filter}
                     LIMIT {limit}
                     OFFSET {offset};
                 ")
