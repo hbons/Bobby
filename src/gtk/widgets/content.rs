@@ -118,7 +118,7 @@ pub fn content_new(
             .build();
 
         if column.primary_key {
-            let title = format!("{} {}", &column.name, SYMBOL_KEY);
+            let title = format!("{} {}", column.name, SYMBOL_KEY);
             view_column.set_title(Some(&title));
         }
 
