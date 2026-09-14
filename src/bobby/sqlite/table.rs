@@ -9,6 +9,7 @@ use std::error::Error;
 use std::fmt;
 use std::str;
 
+use super::column::as_filter_statement;
 use super::database::Database;
 
 
@@ -31,6 +32,10 @@ impl Table {
 
     pub fn is_view(&self) -> bool {
         self.is_view
+    }
+
+    pub fn filter(&self) -> Option<String> {
+        self.filter.clone()
     }
 }
 
@@ -79,18 +84,18 @@ impl Database {
     pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
 
-        let sql = match &table.filter {
+        let filter = match table.filter() {
             Some(f) =>
-                format!("SELECT COUNT(*) FROM {} WHERE {} MATCH {}",
-                    table.name(),
-                    table.name(),
-                    f,
+                as_filter_statement(
+                    &self.columns(table).unwrap_or_default(),
+                    f.into(),
                 ),
-            None =>
-                format!("SELECT COUNT(*) FROM {}",
-                    table.name(),
-                ),
+            None => "TRUE".to_string(),
         };
+
+        let sql = format!("SELECT COUNT(*) FROM {} WHERE {filter}",
+            table.name(),
+        );
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
