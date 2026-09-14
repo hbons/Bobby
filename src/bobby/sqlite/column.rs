@@ -58,6 +58,44 @@ impl Database {
 }
 
 
+pub fn as_filter_statement(
+    columns: &[Column],
+    filter: String,
+) -> String
+{
+    let mut sql = vec![];
+
+    // TODO: Convert non-ascii numbers to ascii
+    let filter_not_numeric = filter
+        .parse::<f64>()
+        .is_err();
+
+    for column in columns {
+        let part = format!("{} LIKE '%{}%'",
+            column.name,
+            filter
+        );
+
+        match column.affinity {
+            Affinity::NULL => continue,
+            Affinity::BLOB(_, _) => continue,
+            Affinity::INTEGER(_) |
+            Affinity::NUMERIC(_) |
+            Affinity::REAL(_) => {
+                if filter_not_numeric {
+                    continue;
+                }
+
+                sql.push(part);
+            },
+            Affinity::TEXT(_) => sql.push(part),
+        };
+    }
+
+    sql.join(" OR ")
+}
+
+
 #[derive(Debug, Default)]
 pub enum ColumnSeparator {
     #[default]
