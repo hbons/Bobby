@@ -6,6 +6,11 @@
 
 Bobby lets you open `SQLite` database files (`.db`, `.sqlite`) and browse the tables inside. Handy for app development or inspecting downloaded databases.
 
+<br>
+
+[![Flatpak](https://github.com/hbons/Bobby/actions/workflows/tests.yml/badge.svg)](https://github.com/hbons/Twinkle/actions/workflows/tests.yml)
+
+<br>
 
 ## Install on Linux
 
