@@ -17,6 +17,7 @@ pub struct Table {
     name: TableName,
     has_row_id: Option<bool>,
     is_view: bool,
+    filter: Option<String>,
 }
 
 impl Table {
@@ -66,6 +67,7 @@ impl Database {
                     name,
                     has_row_id: has_row_id.map(|v| v != 0),
                     is_view: type_str == "view",
+                    filter: None,
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?;
@@ -77,7 +79,19 @@ impl Database {
     pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
 
-        let sql = format!("SELECT COUNT(*) FROM {}", table.name());
+        let sql = match &table.filter {
+            Some(f) =>
+                format!("SELECT COUNT(*) FROM {} WHERE {} MATCH {}",
+                    table.name(),
+                    table.name(),
+                    f,
+                ),
+            None =>
+                format!("SELECT COUNT(*) FROM {}",
+                    table.name(),
+                ),
+        };
+
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
 }
