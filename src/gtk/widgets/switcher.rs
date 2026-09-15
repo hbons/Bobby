@@ -14,7 +14,7 @@ use crate::bobby::prelude::*;
 
 const WIDGET_NAME: &str = "switcher";
 
-pub fn table_switcher_new(tables: &Vec<Table>) -> MenuButton {
+pub fn table_switcher_new(tables: &[Table]) -> MenuButton {
     let menu = Menu::new();
     let button = MenuButton::builder()
         .menu_model(&menu)

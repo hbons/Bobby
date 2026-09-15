@@ -13,6 +13,8 @@ use gtk4::{
     MenuButton,
     Orientation,
     ScrolledWindow,
+    SearchBar,
+    SearchEntry,
     Widget,
     Window,
 };
@@ -32,7 +34,7 @@ use crate::bobby::prelude::*;
 
 use crate::gtk::actions::prelude::*;
 use crate::gtk::util::widget_by_name;
-use crate::gtk::widgets::button::button_open_new;
+use crate::gtk::widgets::button::{button_open_new, button_search_new};
 use crate::gtk::widgets::content::{ content_new, content_force_redraw };
 use crate::gtk::widgets::drop_target::drop_target_new;
 use crate::gtk::widgets::menu::main_menu_new;
@@ -193,15 +195,18 @@ pub fn window_new(
     header.set_widget_name("header_bar");
     header.pack_end(&main_menu_new(application));
 
+
     let toolbar_view = ToolbarView::new();
     toolbar_view.set_widget_name("toolbar_view");
     toolbar_view.add_top_bar(&header);
+    // toolbar_view.add_top_bar(&bar);
     toolbar_view.set_top_bar_style(ToolbarStyle::Flat);
     window.add_css_class("flat");
 
     window.set_content(Some(&toolbar_view));
     window.add_controller(drop_target_new(&window));
     window.add_action(&close_action(&window));
+    // window.add_action(&search_action(&window));
 
 
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
@@ -416,6 +421,36 @@ fn window_show_content_state(
     toolbar_view.set_top_bar_style(ToolbarStyle::RaisedBorder);
 
 
+    let search_button = button_search_new(
+        &window.upcast_ref::<gtk4::Window>()
+    );
+
+    let bar = SearchBar::new();
+    let entry = SearchEntry::new();
+    entry.set_widget_name("search_entry");
+    bar.set_child(Some(&entry));
+    // bar.set_key_capture_widget(Some(&window)); // TODO
+
+    let bar2 = bar.clone();
+    let window2 = window.clone();
+
+    search_button.connect_toggled(move |button| {
+        bar2.set_search_mode(button.is_active());
+    });
+    use gtk4::glib::Variant;
+
+    entry.connect_search_changed(move |_| {
+        let window = window2.upcast_ref::<gtk4::Window>();
+        _ = window.activate_action(
+            "win.search",
+            Some(&Variant::from("0")), // TODO: real selected table number
+        );
+    });
+
+
+    header.pack_end(&search_button);
+    toolbar_view.add_top_bar(&bar);
+
     window.set_title(Some(&title));
     window.set_widget_name(&path);
     window_set_child(window, &overlay)?;
@@ -426,7 +461,8 @@ fn window_show_content_state(
     window.add_action(&copy_row_action(window, &overlay));
     window.add_action(&copy_val_action(window, &overlay));
     window.add_action(&reload_action(window));
-    window.add_action(&switch_table_action(window, layout, table_index, tables, switcher)); // TODO: Ugly
+    window.add_action(&switch_table_action(window, &layout, &table_index, &tables, &switcher)); // TODO: Ugly
+    window.add_action(&search_table_action(window, &layout, &table_index, &tables, &entry)); // TODO: Ugly
 
     Ok(())
 }
@@ -498,13 +534,11 @@ pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> 
 
 pub fn window_toggle_row_order(window: &Window) -> Result<(), Box<dyn Error>> {
     _ = window.activate_action("win.reload", None);
-
     Ok(())
 }
 
 pub fn window_toggle_monospace_font(window: &Window) -> Result<(), Box<dyn Error>> {
     _ = window.activate_action("win.reload", None);
-
     Ok(())
 }
 

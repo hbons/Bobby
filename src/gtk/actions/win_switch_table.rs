@@ -8,10 +8,9 @@
 use gio::SimpleAction;
 
 use gtk4::prelude::*;
-use gtk4::{
-    glib::Variant,
-    MenuButton,
-};
+use gtk4::MenuButton;
+use gtk4::glib::Variant;
+
 
 use libadwaita::ApplicationWindow;
 
@@ -21,10 +20,10 @@ use crate::gtk::windows::window::window_change_content;
 
 pub fn switch_table_action(
     window: &ApplicationWindow,
-    layout: gtk4::Box,
-    table_index: String,
-    tables: Vec<Table>,
-    switcher: MenuButton,
+    layout: &gtk4::Box,
+    table_index: &str,
+    tables: &[Table],
+    switcher: &MenuButton,
 ) -> SimpleAction
 {
     let action = SimpleAction::new_stateful(
@@ -36,6 +35,7 @@ pub fn switch_table_action(
     let window_handle = window.clone();
     let layout_handle = layout.clone();
     let switcher_handle = switcher.clone();
+    let tables = tables.to_owned().clone();
 
     action.connect_change_state(move |action, value| {
         if let Some(v) = value {
@@ -49,7 +49,7 @@ pub fn switch_table_action(
         {
             switcher_handle.set_label(&table.name());
 
-            match window_change_content(&window_handle, table) {
+            match window_change_content(&window_handle, &table) {
                 Ok(new_content) => {
                     if let Some(old_content) = layout_handle.last_child() {
                         layout_handle.remove(&old_content);

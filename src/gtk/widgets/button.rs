@@ -9,6 +9,7 @@ use gtk4::prelude::*;
 use gtk4::{
     Align,
     Button,
+    ToggleButton,
     Window,
 };
 
@@ -31,4 +32,13 @@ pub fn button_open_new(window: &Window) -> Button {
     });
 
     button
+}
+
+
+pub fn button_search_new(_window: &Window) -> ToggleButton {
+    ToggleButton::builder()
+        .icon_name("edit-find-symbolic")
+        .tooltip_text("Search")
+        // .widget_name("search-button")
+        .build()
 }

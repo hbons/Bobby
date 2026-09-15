@@ -47,8 +47,6 @@ impl Database {
             None => "TRUE".to_string(),
         };
 
-        dbg!(&filter);
-
         let sql =
             if table.has_row_id() == Some(true) {
                 &format!("
