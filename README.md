@@ -1,6 +1,6 @@
 # [Bobby](https://apps.gnome.org/Bobby) ![GNOME Circle](https://circle.gnome.org/assets/button/badge.svg)
 
-*Browse SQLite files*
+*View SQLite databases*
 
 <img src="data/screenshots/screenshot-readme.png">
 
