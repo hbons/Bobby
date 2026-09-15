@@ -48,9 +48,11 @@ fn section_table() -> ShortcutsSection {
     let section = ShortcutsSection::new(Some("Tables"));
 
     let item_copy = ShortcutsItem::new("Copy Row", "<Primary>c");
+    let item_search = ShortcutsItem::new("Search", "<Primary>f");
     // let item_jump = ShortcutsItem::new("Jump To Row", "<Primary>l"); // TODO
 
     section.add(item_copy);
+    section.add(item_search);
     // section.add(item_jump);
 
     section

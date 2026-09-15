@@ -16,4 +16,5 @@ pub use crate::gtk::actions::win_close::close_action;
 pub use crate::gtk::actions::win_copy_row::copy_row_action;
 pub use crate::gtk::actions::win_copy_val::copy_val_action;
 pub use crate::gtk::actions::win_reload::reload_action;
+pub use crate::gtk::actions::win_search_table::search_table_action;
 pub use crate::gtk::actions::win_switch_table::switch_table_action;
