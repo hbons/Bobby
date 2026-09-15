@@ -6,6 +6,12 @@
 
 Bobby lets you open `SQLite` database files (`.db`, `.sqlite`) and browse the tables inside. Handy for app development or inspecting downloaded databases.
 
+* Scroll and search tables and views of any size
+* Copy rows or cells to the clipboard
+* Made with care by a human
+
+Have fun, and don't forget to sanitize your database inputs! :)
+
 <br>
 
 [![Flatpak](https://github.com/hbons/Bobby/actions/workflows/tests.yml/badge.svg)](https://github.com/hbons/Twinkle/actions/workflows/tests.yml)
@@ -37,8 +43,6 @@ sudo ninja install -C build
 * [planetpeanut.studio](https://planetpeanut.studio)
 * [GNOME Circle](https://apps.gnome.org/#circle)
 
-<br>
-Have fun, and don't forget to sanitize your database inputs! :)
 <br>
 <br>
 <br>
