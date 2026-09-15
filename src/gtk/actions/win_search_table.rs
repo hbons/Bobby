@@ -8,9 +8,8 @@
 use gio::SimpleAction;
 
 use gtk4::prelude::*;
-use gtk4::MenuButton;
+use gtk4::SearchEntry;
 use gtk4::glib::Variant;
-
 
 use libadwaita::ApplicationWindow;
 
@@ -18,23 +17,23 @@ use crate::bobby::prelude::*;
 use crate::gtk::windows::window::window_change_content;
 
 
-pub fn switch_table_action(
+pub fn search_table_action(
     window: &ApplicationWindow,
     layout: &gtk4::Box,
     table_index: &str,
     tables: &[Table],
-    switcher: &MenuButton,
+    entry: &SearchEntry,
 ) -> SimpleAction
 {
     let action = SimpleAction::new_stateful(
-        "table",
+        "search",
         Some(&String::static_variant_type()),
         &Variant::from(table_index),
     );
 
     let window_handle = window.clone();
     let layout_handle = layout.clone();
-    let switcher_handle = switcher.clone();
+    let entry_handle = entry.clone();
     let tables = tables.to_owned().clone();
 
     action.connect_change_state(move |action, value| {
@@ -47,7 +46,13 @@ pub fn switch_table_action(
             .and_then(|s| s.parse::<usize>().ok())
             .and_then(|i| tables.get(i))
         {
-            switcher_handle.set_label(&table.name());
+            let mut table = table.clone();
+            let text = entry_handle.text();
+
+            table.filter = match text.as_str() {
+                "" => None,
+                _  => Some(text.to_string()),
+            };
 
             match window_change_content(&window_handle, &table) {
                 Ok(new_content) => {

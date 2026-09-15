@@ -18,7 +18,7 @@ pub struct Table {
     name: TableName,
     has_row_id: Option<bool>,
     is_view: bool,
-    filter: Option<String>,
+    pub filter: Option<String>,
 }
 
 impl Table {
