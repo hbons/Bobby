@@ -20,7 +20,7 @@ pub fn info(message: &str) {
 
 
 pub fn debug(message: &str) {
-    debug_base(&message);
+    debug_base(message);
 }
 
 pub fn debug_struct(s: &impl Debug) {
