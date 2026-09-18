@@ -17,6 +17,7 @@ use gtk4::prelude::*;
 use gtk4::{
     gdk::BUTTON_SECONDARY,
     gdk::Rectangle,
+    glib,
     glib::BoxedAnyObject,
     ColumnView,
     ColumnViewColumn,
@@ -166,16 +167,18 @@ pub fn content_new(
         .button(BUTTON_SECONDARY)
         .build();
 
-    let column_view_handle = column_view.clone();
-
-    click.connect_pressed(move |gesture, _n_presses, x, y| {
-        if let Err(e) = content_clicked(gesture, x, y, &column_view_handle) {
-            eprintln!("Failed to open context menu: {e}");
+    click.connect_pressed(glib::clone!(
+        #[weak] column_view,
+        move |gesture, _n_clicks, x, y| {
+            if let Err(e) = content_clicked(gesture, x, y, &column_view) {
+                eprintln!("Failed to open context menu: {e}");
+            }
         }
-    });
-
+    ));
 
     column_view.add_controller(click);
+
+
     column_view.grab_focus();
 
     let scrolled_window = ScrolledWindow::new();
