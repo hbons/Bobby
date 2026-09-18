@@ -13,10 +13,10 @@ use gtk4::{
     MenuButton,
     Orientation,
     ScrolledWindow,
-    SearchBar,
     SearchEntry,
     Widget,
     Window,
+    glib::Variant,
 };
 
 use libadwaita::prelude::*;
@@ -425,31 +425,35 @@ fn window_show_content_state(
         &window.upcast_ref::<gtk4::Window>()
     );
 
-    let bar = SearchBar::new();
     let entry = SearchEntry::new();
     entry.set_widget_name("search_entry");
-    bar.set_child(Some(&entry));
-    // bar.set_key_capture_widget(Some(&window)); // TODO
 
-    let bar2 = bar.clone();
     let window2 = window.clone();
 
-    search_button.connect_toggled(move |button| {
-        bar2.set_search_mode(button.is_active());
-    });
-    use gtk4::glib::Variant;
 
-    entry.connect_search_changed(move |_| {
-        // let window = window2.upcast_ref::<gtk4::Window>();
+    let entry2 = entry.clone();
+    let header2 = header.clone();
+
+    search_button.connect_toggled(move |_button| {
+        // TODO: <Primary>f shortcut
+
+        if header2.title_widget().is_none() {
+            header2.set_title_widget(Some(&entry2));
+            entry2.grab_focus();
+        } else {
+            header2.set_title_widget(None::<&Widget>);
+        }
+    });
+
+    entry.connect_search_changed(move |_entry| {
         _ = window2.activate_action(
             "win.search",
-            Some(&Variant::from("0")), // TODO: real selected table number
+            Some(&Variant::from("0")), // TODO: get the real table index somehow
         );
     });
 
 
     header.pack_end(&search_button);
-    toolbar_view.add_top_bar(&bar);
 
     window.set_title(Some(&title));
     window.set_widget_name(&path);
