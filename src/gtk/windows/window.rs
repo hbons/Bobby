@@ -14,6 +14,7 @@ use gtk4::{
     Orientation,
     ScrolledWindow,
     SearchEntry,
+    ToggleButton,
     Widget,
     Window,
     glib::Variant,
@@ -421,11 +422,31 @@ fn window_show_content_state(
     toolbar_view.set_top_bar_style(ToolbarStyle::RaisedBorder);
 
 
-    let search_button = button_search_new(
-        &window.upcast_ref::<gtk4::Window>()
+
+    let widget = widget_by_name(
+        "search_button", // TODO
+        window.upcast_ref::<Widget>(),
     );
 
-    let entry = SearchEntry::new();
+    let search_button = match widget {
+        Some(w) => {
+            // Reuse existing button
+            w.downcast::<ToggleButton>()
+                .map_err(|w|
+                    format!(
+                        "Expected ToggleButton, but got {}",
+                        w.type_().name()
+                    )
+                )?
+        },
+        None => {
+            button_search_new(
+                window.upcast_ref::<gtk4::Window>()
+            )
+        },
+    };
+
+    let entry = SearchEntry::new(); // TODO: ESC to close search.
     entry.set_widget_name("search_entry");
 
     let window2 = window.clone();
@@ -442,6 +463,7 @@ fn window_show_content_state(
             entry2.grab_focus();
         } else {
             header2.set_title_widget(None::<&Widget>);
+            entry2.set_text("");
         }
     });
 
@@ -449,11 +471,12 @@ fn window_show_content_state(
         _ = window2.activate_action(
             "win.search",
             Some(&Variant::from("0")), // TODO: get the real table index somehow
-        );
+        ); // TODO: async search to fix UI blocking
     });
 
-
-    header.pack_end(&search_button);
+    if search_button.parent().is_none() {
+        header.pack_end(&search_button);
+    }
 
     window.set_title(Some(&title));
     window.set_widget_name(&path);

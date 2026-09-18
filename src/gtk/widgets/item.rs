@@ -113,6 +113,7 @@ pub fn bind_list_item(
     obj: &Object,
     column_index: usize,
     primary_key: bool,
+    filter: &Option<String>,
 ) -> Result<(), Box<dyn Error>>
 {
     let list_item = obj
@@ -138,17 +139,31 @@ pub fn bind_list_item(
     let text = cell.to_string();
 
     // Possible cell reuse
-    if label.text() != text {
+    // if label.text() != text {
         label.set_text(&text);
-    }
+    // }
+
+        if let Some(f) = filter {
+            if text.to_lowercase().contains(&f.to_lowercase()) {
+                label.add_css_class("accent");
+                label.add_css_class("heading");
+            } else {
+                label.remove_css_class("accent");
+                label.remove_css_class("heading");
+            }
+        } else {
+            label.remove_css_class("accent");
+            label.remove_css_class("heading");
+        }
+
 
 
     let name = column_index.to_string();
 
     // Possible cell reuse
-    if label.widget_name() != name {
+    // if label.widget_name() != name {
         label.set_widget_name(&name);
-    }
+    // }
 
 
     let dimmed = matches!(cell,
@@ -185,9 +200,9 @@ pub fn bind_list_item(
         };
 
         // Possible cell reuse
-        if parent.tooltip_text().as_deref() != Some(&tooltip_text) {
+        // if parent.tooltip_text().as_deref() != Some(&tooltip_text) {
             parent.set_tooltip_text(Some(&tooltip_text));
-        }
+        // }
     }
 
     Ok(())

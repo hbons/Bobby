@@ -36,9 +36,11 @@ pub fn button_open_new(window: &Window) -> Button {
 
 
 pub fn button_search_new(_window: &Window) -> ToggleButton {
-    ToggleButton::builder()
+    let button = ToggleButton::builder()
         .icon_name("edit-find-symbolic")
         .tooltip_text("Search")
-        // .widget_name("search-button")
-        .build()
+        .build();
+
+    button.set_widget_name("search_button");
+    button
 }

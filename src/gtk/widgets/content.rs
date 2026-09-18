@@ -30,6 +30,7 @@ use gtk4::{
     SignalListItemFactory,
     SingleSelection,
 };
+use libadwaita::StatusPage;
 
 use crate::bobby::prelude::*;
 use crate::bobby::sqlite::cache::DatabaseCacheModel;
@@ -91,9 +92,16 @@ pub fn content_new(
     let mut columns = columns.clone();
     columns.insert(0, Column::default()); // Reserve for row numbers
 
+        use std::rc::Rc;
+        use std::cell::RefCell;
+
+    let filter = Rc::new(RefCell::new(table.filter.clone()));  // Shared, mutable state
+
     for (column_index, column) in columns.iter().enumerate() {
         let is_index_column = column_index == 0;
         let is_last_column = column_index == columns.len() - 1;
+
+        let filter_clone = filter.clone();
 
         let factory = SignalListItemFactory::new();
 
@@ -122,8 +130,11 @@ pub fn content_new(
                 }
             });
 
+
+
             factory.connect_bind(move |_factory, obj| {
-                if let Err(e) = bind_list_item(obj, column_index, primary_key) {
+                let filter = filter_clone.borrow().clone();
+                if let Err(e) = bind_list_item(obj, column_index, primary_key, &filter) {
                     eprintln!("Failed to bind index list item: {e}");
                 }
             });
@@ -206,6 +217,7 @@ pub fn content_new(
     scrolled_window.set_vexpand(true);
     // scrolled_window.set_sensitive(false); // TODO: Disable when file changed
 
+    // TODO: if no rows, return a "No Results" status page wrapped in ScrolledWindow
     Ok(scrolled_window)
 }
 
