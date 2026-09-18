@@ -53,6 +53,7 @@ pub fn switch_table_action(
                 Ok(new_content) => {
                     if let Some(old_content) = layout_handle.last_child() {
                         layout_handle.remove(&old_content);
+                        drop(old_content);
                         layout_handle.append(&new_content);
                     }
                 },
