@@ -67,6 +67,25 @@ pub fn content_new(
         .build();
 
     let row_count = database.row_count_no_filter(table)?;
+    let row_count_total = database.row_count(table)?;
+
+    if let Some(f) = table.filter() {
+        if row_count_total == 0 {
+            let status = StatusPage::builder()
+                .icon_name("edit-find-symbolic")
+                .title("No Results")
+                .description(format!("Nothing matches <b>“{f}”</b>"))
+                .build();
+
+            let scrolled_window = ScrolledWindow::new();
+            scrolled_window.set_child(Some(&status));
+            scrolled_window.set_widget_name("content");
+            scrolled_window.set_vexpand(true);
+
+            return Ok(scrolled_window);
+        };
+    }
+
     let columns = database.columns(table)?;
 
     let mut columns = columns.clone();
@@ -90,7 +109,7 @@ pub fn content_new(
             });
 
             factory.connect_bind(move |_factory, obj| {
-                if let Err(e) = bind_index_list_item(obj, row_count) {
+                if let Err(e) = bind_index_list_item(obj, row_count_total) {
                     eprintln!("Failed to bind index list item: {e}");
                 }
             });
