@@ -66,7 +66,7 @@ pub fn content_new(
         .tab_behavior(ListTabBehavior::Cell)
         .build();
 
-    let row_count = database.row_count(table)?;
+    let row_count = database.row_count_no_filter(table)?;
     let columns = database.columns(table)?;
 
     let mut columns = columns.clone();

@@ -79,8 +79,10 @@ impl Database {
 
         Ok(tables)
     }
+}
 
 
+impl Database {
     pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
 
@@ -96,6 +98,14 @@ impl Database {
         let sql = format!("SELECT COUNT(*) FROM {} WHERE {filter}",
             table.name(),
         );
+
+        Ok(connection.query_row(&sql, [], |row| row.get(0))?)
+    }
+
+
+    pub fn row_count_no_filter(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
+        let connection = self.connection.borrow();
+        let sql = format!("SELECT COUNT(*) FROM {}", table.name());
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
