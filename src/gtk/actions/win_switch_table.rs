@@ -11,7 +11,6 @@ use gtk4::prelude::*;
 use gtk4::MenuButton;
 use gtk4::glib::Variant;
 
-
 use libadwaita::ApplicationWindow;
 
 use crate::bobby::prelude::*;
@@ -49,7 +48,7 @@ pub fn switch_table_action(
         {
             switcher_handle.set_label(&table.name());
 
-            match window_change_content(&window_handle, &table) {
+            match window_change_content(&window_handle, table) {
                 Ok(new_content) => {
                     if let Some(old_content) = layout_handle.last_child() {
                         layout_handle.remove(&old_content);

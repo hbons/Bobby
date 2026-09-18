@@ -90,7 +90,7 @@ impl Database {
             Some(f) =>
                 as_filter_statement(
                     &self.columns(table).unwrap_or_default(),
-                    f.into(),
+                    f,
                 ),
             None => "TRUE".to_string(),
         };
