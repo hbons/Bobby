@@ -14,10 +14,18 @@ use gtk4::{
 };
 
 
-// TODO: Use generics and return Option<T>
-pub fn widget_by_name(name: &str, parent: &Widget) -> Option<Widget> {
-    if parent.widget_name() == name {
-        return Some(parent.clone());
+pub fn widget_by_name<T>(
+    name: &str,
+    parent: &impl IsA<Widget>,
+) -> Option<T>
+where
+    T: IsA<Widget>,
+{
+    let widget = parent.upcast_ref::<Widget>();
+
+    if widget.widget_name() == name {
+        return widget.downcast_ref::<T>()
+            .map(|w| w.clone());
     }
 
     let mut child = parent.first_child();
