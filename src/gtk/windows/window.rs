@@ -94,39 +94,23 @@ pub fn window_reload(
         .to_string_lossy()
         .to_string();
 
-    let window = application.active_window().ok_or("Missing active window")?;
+    let window = &application.active_window().ok_or("Missing active window")?;
 
-
-    let widget = widget_by_name(
-        "switcher", // TODO
-        window.upcast_ref::<Widget>(),
-    ).ok_or("Missing widget named 'switcher'")?;
-
-    let switcher = widget.downcast::<MenuButton>()
-        .map_err(|w|
-            format!(
-                "Expected MenuButton, but got {}",
-                w.type_().name()
-            )
-        )?;
+    let switcher =
+        widget_by_name::<MenuButton>(
+            "switcher",
+            window,
+        ).ok_or("Missing MenuButton named 'switcher'")?;
 
     let table_name: Option<String> = switcher.label()
         .map(|g| g.into());
 
 
     // Remember the scroll position
-    let widget = widget_by_name(
-        "content", // TODO
-        window.upcast_ref::<gtk4::Widget>(),
+    let scrolled_window = widget_by_name::<ScrolledWindow>(
+        "content",
+        window,
     ).ok_or("Missing widget named 'content'")?;
-
-    let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
-        .map_err(|w|
-            format!(
-                "Expected ScrolledWindow, but got {}",
-                w.type_().name()
-            )
-        )?;
 
     let h_value = scrolled_window.hadjustment().value();
     let v_value = scrolled_window.vadjustment().value();
@@ -139,18 +123,11 @@ pub fn window_reload(
             }
 
             // Reapply scroll position
-            let widget = widget_by_name(
-                "content", // TODO
-                window.upcast_ref::<gtk4::Widget>(),
-            ).ok_or("Missing widget named 'content'")?;
-
-            let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
-                .map_err(|w|
-                    format!(
-                        "Expected ScrolledWindow, but got {}",
-                        w.type_().name()
-                    )
-                )?;
+            let scrolled_window =
+                widget_by_name::<ScrolledWindow>(
+                    "content",
+                    &window,
+                ).ok_or("Missing widget named 'content'")?;
 
             gtk4::glib::idle_add_local_once(move || {
                 scrolled_window.hadjustment().set_value(h_value);
@@ -365,65 +342,42 @@ fn window_show_content_state(
     overlay.set_child(Some(&layout));
 
 
-    let widget = widget_by_name(
-        "header_bar",
-        window.upcast_ref::<Widget>(),
-    ).ok_or("Missing widget named 'header_bar'")?;
+    let header =
+        widget_by_name::<HeaderBar>(
+            "header_bar",
+            window,
+        ).ok_or("Missing HeaderBar named 'header_bar'")?;
 
-    let header = widget.downcast::<HeaderBar>()
-        .map_err(|w|
-            format!(
-                "Expected HeaderBar, but got {}",
-                w.type_().name()
-            )
-        )?;
-
-
-    let widget = widget_by_name(
-        "switcher", // TODO
-        window.upcast_ref::<Widget>(),
-    );
-
-    let switcher = match widget {
-        Some(w) => {
-            // Reuse existing switcher
-            w.downcast::<MenuButton>()
-                .map_err(|w|
-                    format!(
-                        "Expected MenuButton, but got {}",
-                        w.type_().name()
-                    )
-                )?
-        },
-        None => {
-            let switcher = table_switcher_new(&tables);
-            header.pack_start(&switcher);
-            switcher
-        },
-    };
+    let switcher =
+        widget_by_name::<MenuButton>(
+            "switcher",
+            window,
+        ).unwrap_or_else(|| {
+                let switcher = table_switcher_new(&tables);
+                header.pack_start(&switcher);
+                switcher
+            }
+        );
 
     switcher.set_label(&table.name());
 
 
-    let widget = widget_by_name(
-        "toolbar_view",
-        window.upcast_ref::<Widget>(),
-    ).ok_or("Missing widget named 'toolbar_view'")?;
-
-    let toolbar_view = widget.downcast::<ToolbarView>()
-        .map_err(|w|
-            format!(
-                "Expected ToolbarView, but got {}",
-                w.type_().name()
-            )
-        )?;
+    let toolbar_view =
+        widget_by_name::<ToolbarView>(
+            "toolbar_view",
+            window,
+        ).ok_or("Missing ToolbarView named 'toolbar_view'")?;
 
     toolbar_view.set_top_bar_style(ToolbarStyle::RaisedBorder);
 
 
-    let search_button = button_search_new(
-        &window.upcast_ref::<gtk4::Window>()
-    );
+    let search_button =
+        widget_by_name::<ToggleButton>(
+            "search_button",
+            window,
+        ).unwrap_or(
+            button_search_new(window.upcast_ref::<Window>())
+        );
 
     let entry = SearchEntry::new();
     entry.set_widget_name("search_entry");
@@ -477,41 +431,30 @@ fn window_set_child(
     child: &impl IsA<Widget>,
 ) -> Result<(), Box<dyn Error>>
 {
-    let widget = widget_by_name(
-        "toolbar_view",
-        window.upcast_ref::<Widget>()
-    ).ok_or("Missing widget named 'toolbar_view'")?;
+    let toolbar_view =
+        widget_by_name::<ToolbarView>(
+            "toolbar_view",
+            window,
+        ).ok_or("Missing ToolbarView named 'toolbar_view'")?;
 
-    if let Ok(toolbar_view) = widget.downcast::<ToolbarView>() {
-        toolbar_view.set_content(
-            Some(child)
-        );
-    }
+    toolbar_view.set_content(Some(child));
 
     Ok(())
 }
 
 
 pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> {
-    let widget = widget_by_name(
-        "content", // TODO
-        window.upcast_ref::<gtk4::Widget>(),
-    ).ok_or("Missing widget named 'content'")?;
-
-    let scrolled_window = widget.downcast::<gtk4::ScrolledWindow>()
-        .map_err(|w|
-            format!(
-                "Expected ScrolledWindow, but got {}",
-                w.type_().name()
-            )
-        )?;
+    let scrolled_window =
+        widget_by_name::<ScrolledWindow>(
+            "content",
+            window,
+        ).ok_or("Missing ScrolledWindow named 'content'")?;
 
     let widget = scrolled_window
-        .clone()
         .child()
-        .ok_or("err")?;
+        .ok_or("Missing ScrolledWindow child")?;
 
-    let column_view = widget.downcast::<gtk4::ColumnView>()
+    let column_view = widget.downcast::<ColumnView>()
         .map_err(|w|
             format!(
                 "Expected ColumnView, but got {}",
@@ -521,11 +464,10 @@ pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> 
 
     content_force_redraw(&column_view);
 
-
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
     if let Some(obj) = column_view.columns().item(0) {
-        if let Some(first_col) = obj.downcast_ref::<gtk4::ColumnViewColumn>() {
+        if let Some(first_col) = obj.downcast_ref::<ColumnViewColumn>() {
             first_col.set_visible(
                 settings.boolean("row-numbers")
             );
