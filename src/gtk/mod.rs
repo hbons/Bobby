@@ -17,6 +17,7 @@ pub mod actions {
     pub mod win_copy_row;
     pub mod win_reload;
     pub mod win_search_table;
+    pub mod win_search_toggle;
     pub mod win_switch_table;
 }
 
