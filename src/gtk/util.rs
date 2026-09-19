@@ -51,23 +51,3 @@ pub fn copy_to_clipboard(s: &str) -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-
-
-// TODO: Use widget_by_name() everywhere
-pub fn find_column_view(root: &Widget) -> Option<gtk4::ColumnView> {
-    if let Ok(column_view) = root.clone().downcast::<gtk4::ColumnView>() {
-        return Some(column_view);
-    }
-
-    let mut child = root.first_child();
-
-    while let Some(widget) = child {
-        if let Some(found) = find_column_view(&widget) {
-            return Some(found);
-        }
-
-        child = widget.next_sibling();
-    }
-
-    None
-}

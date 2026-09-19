@@ -6,7 +6,7 @@
 
 
 use gio::SimpleAction;
-use gtk4::prelude::*;
+use gtk4::ColumnView;
 use gtk4::glib::VariantTy;
 
 use libadwaita::{
@@ -18,7 +18,7 @@ use libadwaita::{
 use crate::gtk::widgets::content::get_row;
 use crate::gtk::util::{
     copy_to_clipboard,
-    find_column_view,
+    widget_by_name,
 };
 
 
@@ -33,7 +33,7 @@ pub fn copy_val_action(
     let overlay_handle = overlay.clone();
 
     action.connect_activate(move |_, row_col_index| {
-        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) {
+        if let Some(column_view) = widget_by_name::<ColumnView>("column_view", &window_handle) {
             if let Some((row_index, col_index)) = row_col_index
                 .and_then(|v| v.str())
                 .and_then(|s| s.split_once(':'))
@@ -44,7 +44,9 @@ pub fn copy_val_action(
                 if let Some(row) = get_row(column_view, row_index) &&
                     let Some(cell) = row.cells.get(col_index) {
                     let selection = &cell.to_string();
-                    _ = copy_to_clipboard(selection);
+                    let r = copy_to_clipboard(selection);
+
+                    dbg!(&r);
 
                     let title = if selection.len() < 96 {
                         &format!("<span font_features='tnum=1'>‘{selection}’  copied to clipboard</span>")

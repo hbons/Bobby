@@ -9,6 +9,7 @@ use gio::SimpleAction;
 
 use gtk4::prelude::*;
 use gtk4::{
+    ColumnView,
     SingleSelection,
 };
 
@@ -23,7 +24,7 @@ use crate::bobby::prelude::*;
 use crate::gtk::widgets::content::get_row;
 use crate::gtk::util::{
     copy_to_clipboard,
-    find_column_view,
+    widget_by_name,
 };
 
 
@@ -33,7 +34,10 @@ pub fn copy_row_action(
 ) -> SimpleAction
 {
     if let Some(app) = window.application() {
-        app.set_accels_for_action("win.copy-row", &["<Primary>c"]);
+        app.set_accels_for_action(
+            "win.copy-row",
+            &["<Primary>c"],
+        );
     }
 
     let action = SimpleAction::new("copy-row", None);
@@ -42,7 +46,7 @@ pub fn copy_row_action(
     let overlay_handle = overlay.clone();
 
     action.connect_activate(move |_, _| {
-        if let Some(column_view) = find_column_view(window_handle.upcast_ref()) &&
+        if let Some(column_view) = widget_by_name::<ColumnView>("column_view", &window_handle) &&
            let Some(model) = column_view.model() &&
            let Some(selection) = model.downcast::<SingleSelection>().ok()
         {
