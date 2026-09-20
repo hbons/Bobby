@@ -42,6 +42,12 @@
             </image>
             <caption>Browse SQLite files</caption>
         </screenshot>
+        <!-- <screenshot>
+            <image>
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-3.png
+            </image>
+            <caption>Search and highlight cells</caption>
+        </screenshot> -->
         <screenshot>
             <image>
                 https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-1.png
@@ -62,7 +68,7 @@
             Handy for app development or inspecting downloaded databases.
         </p>
         <ul>
-            <li>Scroll through tables and views of any size</li>
+            <li>Scroll and search tables and views of any size</li>
             <li>Copy rows or cells to the clipboard</li>
             <li>Made with care by a human</li>
         </ul>
@@ -72,6 +78,24 @@
     </description>
 
     <releases>
+        <!-- <release version="51.0.0" date="2026-09-21">
+            <description>
+                <ul>
+                    <li>Use GNOME 51</li>
+                    <li>Add search (Ctrl+F)</li>
+                    <li>Fix memory leak reloading tables</li>
+                </ul>
+            </description>
+        </release> -->
+        <release version="50.0.2" date="2026-05-09">
+            <description>
+                <ul>
+                    <li>Instant apply for all preferences</li>
+                    <li>Reload content in the same window</li>
+                    <li>Fix row number column render glitch</li>
+                </ul>
+            </description>
+        </release>
         <release version="50.0.1" date="2026-04-30">
             <description>
                 <ul>
@@ -137,9 +161,13 @@
         </release>
     </releases>
 
+    <requires>
+        <display_length compare="ge">640</display_length>
+    </requires>
+
     <recommends>
-      <control>keyboard</control>
-      <control>pointing</control>
+        <control>keyboard</control>
+        <control>pointing</control>
     </recommends>
 
     <content_rating type="oars-1.1">
