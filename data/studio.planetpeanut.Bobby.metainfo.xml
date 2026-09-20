@@ -42,6 +42,12 @@
             </image>
             <caption>Browse SQLite files</caption>
         </screenshot>
+        <!-- <screenshot>
+            <image>
+                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-3.png
+            </image>
+            <caption>Search and highlight cells</caption>
+        </screenshot> -->
         <screenshot>
             <image>
                 https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-1.png
@@ -62,7 +68,7 @@
             Handy for app development or inspecting downloaded databases.
         </p>
         <ul>
-            <li>Scroll through tables and views of any size</li>
+            <li>Scroll and search tables and views of any size</li>
             <li>Copy rows or cells to the clipboard</li>
             <li>Made with care by a human</li>
         </ul>
