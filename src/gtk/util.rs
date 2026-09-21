@@ -25,7 +25,7 @@ where
 
     if widget.widget_name() == name {
         return widget.downcast_ref::<T>()
-            .map(|w| w.clone());
+            .cloned();
     }
 
     let mut child = parent.first_child();

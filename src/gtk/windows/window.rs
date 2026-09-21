@@ -472,12 +472,14 @@ pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
 
         if let Some(entry) = &entry_option {
             entry.set_text("");
-            let table_index = window_selected_table_index(&window);
+            let table_index = window_selected_table_index(window);
 
-            _ = window.activate_action(
-                "win.search",
-                Some(&Variant::from(table_index.to_string())),
-            );
+            if let Some(i) = table_index {
+                _ = window.activate_action(
+                    "win.search",
+                    Some(&Variant::from(i.to_string())),
+                );
+            }
         }
     }
 
@@ -519,10 +521,12 @@ pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
         entry.connect_search_changed(move |_entry| {
             let table_index = window_selected_table_index(&window_clone);
 
-            _ = window_clone.activate_action(
-                "win.search",
-                Some(&Variant::from(table_index.to_string())),
-            ); // TODO: async search to fix UI blocking
+            if let Some(i) = table_index {
+                _ = window_clone.activate_action(
+                    "win.search",
+                    Some(&Variant::from(i.to_string())),
+                ); // TODO: async search to fix UI blocking
+            }
         });
 
         header.set_title_widget(Some(&entry));
@@ -539,8 +543,8 @@ pub fn window_search_text(window: &ApplicationWindow) -> Option<String> {
 }
 
 
-pub fn window_selected_table_index(window: &Window) -> usize {
-    let switcher = widget_by_name::<MenuButton>("switcher", window).unwrap();
+pub fn window_selected_table_index(window: &Window) -> Option<usize> {
+    let switcher = widget_by_name::<MenuButton>("switcher", window)?;
     let table_name = switcher.label();
 
     let db = unsafe {
@@ -549,7 +553,7 @@ pub fn window_selected_table_index(window: &Window) -> usize {
             .map(|db| db.as_ref())
     };
 
-    let tables = db.unwrap().tables().unwrap();
+    let tables = db?.tables().ok()?;
 
     let table =
         if let Some(name) = table_name {
@@ -561,15 +565,12 @@ pub fn window_selected_table_index(window: &Window) -> usize {
         } else {
             tables
                 .first()
-                .cloned()
-                .ok_or("Table list empty")
-                .unwrap()
+                .cloned()?
         };
 
     tables
         .iter()
         .position(|t| t.name() == table.name())
-        .unwrap_or(0)
 }
 
 
@@ -604,7 +605,7 @@ pub fn window_change_content(
 
     let content = content_new(
         db.ok_or("Database not found on window")?,
-        &table
+        table
     )?;
 
     // TODO: Swap the content here. Need to get the layout box somehow...
