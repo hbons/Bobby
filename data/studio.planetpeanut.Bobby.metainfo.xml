@@ -40,14 +40,8 @@
             <image>
                 https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-default.png
             </image>
-            <caption>Browse SQLite files</caption>
+            <caption>Browse and search SQLite files</caption>
         </screenshot>
-        <!-- <screenshot>
-            <image>
-                https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-3.png
-            </image>
-            <caption>Search and highlight cells</caption>
-        </screenshot> -->
         <screenshot>
             <image>
                 https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-extra-1.png
