@@ -5,8 +5,9 @@
 //   under the terms of the GNU General Public License v3 or any later version.
 
 
-use std::cell::Ref;
+use std::cell::{ Ref, RefCell };
 use std::error::Error;
+use std::rc::Rc;
 
 use gio::{
     Menu,
@@ -93,6 +94,8 @@ pub fn content_new(
     let mut columns = columns.clone();
     columns.insert(0, Column::default()); // Reserve for row numbers
 
+    let filter = Rc::new(RefCell::new(table.filter.clone()));
+
     for (column_index, column) in columns.iter().enumerate() {
         let is_index_column = column_index == 0;
         let is_last_column = column_index == columns.len() - 1;
@@ -102,6 +105,8 @@ pub fn content_new(
         unsafe {
             factory.set_data("column", column_index);
         }
+
+        let filter_clone = filter.clone();
 
         if is_index_column {
             factory.connect_setup(move |_factory, obj| {
@@ -125,7 +130,8 @@ pub fn content_new(
             });
 
             factory.connect_bind(move |_factory, obj| {
-                if let Err(e) = bind_list_item(obj, column_index, primary_key) {
+                let filter = filter_clone.borrow();
+                if let Err(e) = bind_list_item(obj, column_index, primary_key, &filter) {
                     eprintln!("Failed to bind index list item: {e}");
                 }
             });

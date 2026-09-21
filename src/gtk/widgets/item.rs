@@ -113,6 +113,7 @@ pub fn bind_list_item(
     obj: &Object,
     column_index: usize,
     primary_key: bool,
+    filter: &Option<String>,
 ) -> Result<(), Box<dyn Error>>
 {
     let list_item = obj
@@ -140,6 +141,17 @@ pub fn bind_list_item(
     // Possible cell reuse
     if label.text() != text {
         label.set_text(&text);
+
+        // TODO: Use a separate list item binding for search results
+        label.remove_css_class("accent");
+        label.remove_css_class("heading");
+
+        if let Some(f) = filter { // TODO: should return None on empty strings
+            if f != "" && text.to_lowercase().contains(&f.to_lowercase()) {
+                label.add_css_class("accent");
+                label.add_css_class("heading");
+            }
+        }
     }
 
 
@@ -185,9 +197,9 @@ pub fn bind_list_item(
         };
 
         // Possible cell reuse
-        if parent.tooltip_text().as_deref() != Some(&tooltip_text) {
+        // if parent.tooltip_text().as_deref() != Some(&tooltip_text) {
             parent.set_tooltip_text(Some(&tooltip_text));
-        }
+        // }
     }
 
     Ok(())
