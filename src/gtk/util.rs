@@ -15,7 +15,7 @@ use gtk4::{
 
 
 pub fn widget_by_name<T>(
-    name: &str,
+    name: &str, // TODO: swap order
     parent: &impl IsA<Widget>,
 ) -> Option<T>
 where
