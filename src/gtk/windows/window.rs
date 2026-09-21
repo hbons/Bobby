@@ -10,13 +10,19 @@ use std::error::Error;
 use gio::File;
 
 use gtk4::{
+    glib::Propagation,
+    glib::Variant,
+    gdk::Key,
+    ColumnView,
+    ColumnViewColumn,
+    EventControllerKey,
     MenuButton,
     Orientation,
     ScrolledWindow,
     SearchEntry,
+    ToggleButton,
     Widget,
     Window,
-    glib::Variant,
 };
 
 use libadwaita::prelude::*;
@@ -34,7 +40,7 @@ use crate::bobby::prelude::*;
 
 use crate::gtk::actions::prelude::*;
 use crate::gtk::util::widget_by_name;
-use crate::gtk::widgets::button::{button_open_new, button_search_new};
+use crate::gtk::widgets::button::{ button_open_new, button_search_new };
 use crate::gtk::widgets::content::{ content_new, content_force_redraw };
 use crate::gtk::widgets::drop_target::drop_target_new;
 use crate::gtk::widgets::menu::main_menu_new;
@@ -376,38 +382,12 @@ fn window_show_content_state(
             "search_button",
             window,
         ).unwrap_or(
-            button_search_new(window.upcast_ref::<Window>())
+            button_search_new(window)
         );
 
-    let entry = SearchEntry::new();
-    entry.set_widget_name("search_entry");
-
-    let window2 = window.clone();
-
-
-    let entry2 = entry.clone();
-    let header2 = header.clone();
-
-    search_button.connect_toggled(move |_button| {
-        // TODO: <Primary>f shortcut
-
-        if header2.title_widget().is_none() {
-            header2.set_title_widget(Some(&entry2));
-            entry2.grab_focus();
-        } else {
-            header2.set_title_widget(None::<&Widget>);
-        }
-    });
-
-    entry.connect_search_changed(move |_entry| {
-        _ = window2.activate_action(
-            "win.search",
-            Some(&Variant::from("0")), // TODO: get the real table index somehow
-        );
-    });
-
-
-    header.pack_end(&search_button);
+    if search_button.parent().is_none() {
+        header.pack_end(&search_button);
+    }
 
     window.set_title(Some(&title));
     window.set_widget_name(&path);
@@ -420,7 +400,8 @@ fn window_show_content_state(
     window.add_action(&copy_val_action(window, &overlay));
     window.add_action(&reload_action(window));
     window.add_action(&switch_table_action(window, &layout, &table_index, &tables, &switcher)); // TODO: Ugly
-    window.add_action(&search_table_action(window, &layout, &table_index, &tables, &entry)); // TODO: Ugly
+    // window.add_action(&search_table_action(window, &layout, &table_index, &tables, &entry)); // TODO: Ugly
+    window.add_action(&search_toggle_action(window));
 
     Ok(())
 }
@@ -476,6 +457,76 @@ pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> 
 
     Ok(())
 }
+
+
+pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
+    let header =
+        widget_by_name::<HeaderBar>(
+            "header_bar",
+            window,
+        ).ok_or("Missing HeaderBar named 'header_bar'")?;
+
+    let button =
+        widget_by_name::<ToggleButton>(
+            "search_button",
+            window,
+        ).ok_or("Missing ToggleButton named 'search_button'")?;
+
+    let entry_option =
+        widget_by_name::<SearchEntry>(
+            "search_entry", window,
+        );
+
+    if let Some(entry) = entry_option {
+        entry.grab_focus();
+    } else {
+        let entry = SearchEntry::new();
+        entry.set_widget_name("search_entry");
+
+        let controller = EventControllerKey::new();
+
+        let header_clone = header.clone();
+        let button_clone = button.clone();
+        let entry_clone = entry.clone();
+
+        controller.connect_key_pressed(
+            move |_, key, _, _| {
+                if key == Key::Escape {
+                    // First ESC clears the entry
+                    if entry_clone.text() != "" {
+                        entry_clone.set_text("");
+                        return Propagation::Stop;
+                    }
+
+                    header_clone.set_title_widget(None::<&Widget>);
+                    button_clone.set_active(false);
+                    entry_clone.set_text("");
+
+                    Propagation::Stop
+                } else {
+                    Propagation::Proceed
+                }
+            }
+        );
+
+        let window_clone = window.clone();
+
+        entry.connect_search_changed(move |_entry| {
+            _ = window_clone.activate_action(
+                "win.search",
+                Some(&Variant::from("0")), // TODO: get the real table index somehow
+            ); // TODO: async search to fix UI blocking
+        });
+
+        header.set_title_widget(Some(&entry));
+        button.set_active(true);
+        entry.grab_focus();
+        entry.add_controller(controller);
+    }
+
+    Ok(())
+}
+
 
 
 pub fn window_toggle_row_order(window: &Window) -> Result<(), Box<dyn Error>> {
