@@ -23,7 +23,10 @@ pub fn search_toggle_action(
 ) -> SimpleAction
 {
     if let Some(app) = window.application() {
-        app.set_accels_for_action("win.search_toggle", &["<Primary>f"]);
+        app.set_accels_for_action(
+            "win.search_toggle",
+            &["<Primary>f"],
+        );
     }
 
     let action = SimpleAction::new("search_toggle", None);
