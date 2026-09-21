@@ -78,6 +78,15 @@
     </description>
 
     <releases>
+        <release version="51.0.0" date="2026-09-21">
+            <description>
+                <ul>
+                    <li>Use GNOME 51</li>
+                    <li>Add search (Ctrl+F)</li>
+                    <li>Fix memory leak reloading tables</li>
+                </ul>
+            </description>
+        </release>
         <release version="50.0.2" date="2026-05-09">
             <description>
                 <ul>
