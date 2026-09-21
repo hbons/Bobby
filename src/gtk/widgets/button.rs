@@ -42,7 +42,7 @@ pub fn button_search_new(_window: &Window) -> ToggleButton {
         .name("search_button")
         .build();
 
-    button.set_action_name(Some(&"win.search_toggle"));
+    button.set_action_name(Some("win.search_toggle"));
     button.set_widget_name("search_button");
     button
 }

@@ -147,7 +147,7 @@ pub fn bind_list_item(
         label.remove_css_class("heading");
 
         if let Some(f) = filter { // TODO: should return None on empty strings
-            if f != "" && text.to_lowercase().contains(&f.to_lowercase()) {
+            if !f.is_empty() && text.to_lowercase().contains(&f.to_lowercase()) {
                 label.add_css_class("accent");
                 label.add_css_class("heading");
             }
