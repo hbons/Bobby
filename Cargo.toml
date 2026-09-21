@@ -1,6 +1,6 @@
 [package]
 name = "Bobby"
-version = "50.0.2"
+version = "51.0.0"
 repository = "https://www.github.com/hbons/Bobby"
 authors = ["Hylke Bons <hello@planetpeanut.studio>"]
 license = "GPL-3.0-or-later"
