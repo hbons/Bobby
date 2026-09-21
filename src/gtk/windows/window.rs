@@ -8,7 +8,6 @@
 use std::error::Error;
 
 use gio::File;
-
 use gtk4::{
     glib::Propagation,
     glib::Variant,
@@ -100,13 +99,13 @@ pub fn window_reload(
         .to_string_lossy()
         .to_string();
 
-    let window = &application.active_window().ok_or("Missing active window")?;
+    let window = &application
+        .active_window()
+        .ok_or("Missing active window")?;
 
     let switcher =
-        widget_by_name::<MenuButton>(
-            "switcher",
-            window,
-        ).ok_or("Missing MenuButton named 'switcher'")?;
+        widget_by_name::<MenuButton>("switcher", window)
+            .ok_or("Missing MenuButton named 'switcher'")?;
 
     let table_name: Option<String> = switcher.label()
         .map(|g| g.into());
@@ -159,7 +158,6 @@ fn row_order_from_settings() -> Option<RowOrder> {
 }
 
 
-
 pub const IS_EMPTY_WINDOW: &str = "1";
 
 pub fn window_new(
@@ -189,8 +187,6 @@ pub fn window_new(
     window.set_content(Some(&toolbar_view));
     window.add_controller(drop_target_new(&window));
     window.add_action(&close_action(&window));
-    // window.add_action(&search_action(&window));
-
 
     let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
 
@@ -331,7 +327,6 @@ fn window_show_content_state(
 
     let content = content_new(db, &table)?;
 
-
     let banner = libadwaita::Banner::builder()
         .title("File has changed")
         .button_label("Reload")
@@ -400,7 +395,7 @@ fn window_show_content_state(
     window.add_action(&copy_val_action(window, &overlay));
     window.add_action(&reload_action(window));
     window.add_action(&switch_table_action(window, &layout, &table_index, &tables, &switcher)); // TODO: Ugly
-    // window.add_action(&search_table_action(window, &layout, &table_index, &tables, &entry)); // TODO: Ugly
+    window.add_action(&search_table_action(window, &layout, &table_index, &tables)); // TODO: Ugly
     window.add_action(&search_toggle_action(window));
 
     Ok(())
@@ -460,22 +455,31 @@ pub fn window_toggle_row_numbers(window: &Window) -> Result<(), Box<dyn Error>> 
 
 
 pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
-    let header =
-        widget_by_name::<HeaderBar>(
-            "header_bar",
-            window,
-        ).ok_or("Missing HeaderBar named 'header_bar'")?;
+    let header = widget_by_name::<HeaderBar>("header_bar", window)
+        .ok_or("Missing HeaderBar named 'header_bar'")?;
 
-    let button =
-        widget_by_name::<ToggleButton>(
-            "search_button",
-            window,
-        ).ok_or("Missing ToggleButton named 'search_button'")?;
+    let button = widget_by_name::<ToggleButton>("search_button", window)
+        .ok_or("Missing ToggleButton named 'search_button'")?;
 
-    let entry_option =
-        widget_by_name::<SearchEntry>(
-            "search_entry", window,
-        );
+    let entry_option = widget_by_name::<SearchEntry>("search_entry", window);
+
+
+    if header.title_widget().is_none() {
+        button.set_active(true);
+    } else {
+        button.set_active(false);
+        header.set_title_widget(None::<&Widget>);
+
+        if let Some(entry) = &entry_option {
+            entry.set_text("");
+            let table_index = window_selected_table_index(&window);
+
+            _ = window.activate_action(
+                "win.search",
+                Some(&Variant::from(table_index.to_string())),
+            );
+        }
+    }
 
     if let Some(entry) = entry_option {
         entry.grab_focus();
@@ -511,22 +515,62 @@ pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
 
         let window_clone = window.clone();
 
+        entry.add_controller(controller);
         entry.connect_search_changed(move |_entry| {
+            let table_index = window_selected_table_index(&window_clone);
+
             _ = window_clone.activate_action(
                 "win.search",
-                Some(&Variant::from("0")), // TODO: get the real table index somehow
+                Some(&Variant::from(table_index.to_string())),
             ); // TODO: async search to fix UI blocking
         });
 
         header.set_title_widget(Some(&entry));
-        button.set_active(true);
         entry.grab_focus();
-        entry.add_controller(controller);
     }
 
     Ok(())
 }
 
+
+pub fn window_search_text(window: &ApplicationWindow) -> Option<String> {
+    let entry = widget_by_name::<SearchEntry>("search_entry", window);
+    entry.map(|e| e.text().to_string())
+}
+
+
+pub fn window_selected_table_index(window: &Window) -> usize {
+    let switcher = widget_by_name::<MenuButton>("switcher", window).unwrap();
+    let table_name = switcher.label();
+
+    let db = unsafe {
+        window
+            .data::<Database>("db")
+            .map(|db| db.as_ref())
+    };
+
+    let tables = db.unwrap().tables().unwrap();
+
+    let table =
+        if let Some(name) = table_name {
+            tables
+                .iter()
+                .find(|t| t.name() == name)
+                .cloned()
+                .unwrap_or_default()
+        } else {
+            tables
+                .first()
+                .cloned()
+                .ok_or("Table list empty")
+                .unwrap()
+        };
+
+    tables
+        .iter()
+        .position(|t| t.name() == table.name())
+        .unwrap_or(0)
+}
 
 
 pub fn window_toggle_row_order(window: &Window) -> Result<(), Box<dyn Error>> {
@@ -552,9 +596,15 @@ pub fn window_change_content(
             .map(|db| db.as_ref())
     };
 
+    // TODO: Search should clear before switching tables
+    // if window_search_text(window).is_some() {
+    //     let window = window.clone().upcast::<Window>();
+    //     _ = window.activate_action("win.search_toggle", None);
+    // }
+
     let content = content_new(
         db.ok_or("Database not found on window")?,
-        table
+        &table
     )?;
 
     // TODO: Swap the content here. Need to get the layout box somehow...
