@@ -31,6 +31,8 @@ use gtk4::{
     SingleSelection,
 };
 
+use libadwaita::StatusPage;
+
 use crate::bobby::prelude::*;
 use crate::bobby::sqlite::cache::DatabaseCacheModel;
 
