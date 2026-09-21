@@ -37,7 +37,7 @@ pub fn search_toggle_action(
             return;
         }
 
-        let window = &window_handle
+        let window = window_handle
             .clone()
             .upcast::<Window>();
 

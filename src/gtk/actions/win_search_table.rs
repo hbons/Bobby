@@ -8,13 +8,13 @@
 use gio::SimpleAction;
 
 use gtk4::prelude::*;
-use gtk4::SearchEntry;
 use gtk4::glib::Variant;
 
 use libadwaita::ApplicationWindow;
 
 use crate::bobby::prelude::*;
 use crate::gtk::windows::window::window_change_content;
+use crate::gtk::windows::window::window_search_text;
 
 
 pub fn search_table_action(
@@ -22,7 +22,6 @@ pub fn search_table_action(
     layout: &gtk4::Box,
     table_index: &str,
     tables: &[Table],
-    entry: &SearchEntry,
 ) -> SimpleAction
 {
     let action = SimpleAction::new_stateful(
@@ -33,7 +32,6 @@ pub fn search_table_action(
 
     let window_handle = window.clone();
     let layout_handle = layout.clone();
-    let entry_handle = entry.clone();
     let tables = tables.to_owned().clone();
 
     action.connect_change_state(move |action, value| {
@@ -47,17 +45,15 @@ pub fn search_table_action(
             .and_then(|i| tables.get(i))
         {
             let mut table = table.clone();
-            let text = entry_handle.text();
+            let text = window_search_text(&window_handle);
 
-            table.filter = match text.as_str() {
-                "" => None,
-                _  => Some(text.to_string()),
-            };
+            table.filter = text;
 
             match window_change_content(&window_handle, &table) {
                 Ok(new_content) => {
                     if let Some(old_content) = layout_handle.last_child() {
                         layout_handle.remove(&old_content);
+                        drop(old_content);
                         layout_handle.append(&new_content);
                     }
                 },

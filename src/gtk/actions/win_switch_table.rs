@@ -48,6 +48,11 @@ pub fn switch_table_action(
         {
             switcher_handle.set_label(&table.name());
 
+            // unsafe {
+            //     dbg!("table index on window now: {}", &column_index);
+            //     window_handle.set_data("column", column_index);
+            // }
+
             match window_change_content(&window_handle, table) {
                 Ok(new_content) => {
                     if let Some(old_content) = layout_handle.last_child() {
