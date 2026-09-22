@@ -40,7 +40,7 @@
             <image>
                 https://raw.githubusercontent.com/hbons/Bobby/main/data/screenshots/screenshot-default.png
             </image>
-            <caption>Browse and search SQLite files</caption>
+            <caption>Browse/search SQLite files</caption>
         </screenshot>
         <screenshot>
             <image>
@@ -62,7 +62,7 @@
             Handy for app development or inspecting downloaded databases.
         </p>
         <ul>
-            <li>Scroll and search tables and views of any size</li>
+            <li>Search tables and views of any size</li>
             <li>Copy rows or cells to the clipboard</li>
             <li>Made with care by a human</li>
         </ul>
@@ -72,6 +72,13 @@
     </description>
 
     <releases>
+        <release version="51.0.1" date="2026-09-22">
+            <description>
+                <ul>
+                    <li>Fix copy-to-clipboard regression</li>
+                </ul>
+            </description>
+        </release>
         <release version="51.0.0" date="2026-09-21">
             <description>
                 <ul>
