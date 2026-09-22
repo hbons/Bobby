@@ -204,8 +204,7 @@ pub fn content_new(
     ));
 
     column_view.add_controller(click);
-
-
+    column_view.set_widget_name("column_view");
     column_view.grab_focus();
 
     let scrolled_window = ScrolledWindow::new();
