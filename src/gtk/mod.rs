@@ -8,6 +8,7 @@
 pub mod actions {
     pub mod prelude;
     pub mod app_about;
+    pub mod app_new;
     pub mod app_open;
     pub mod app_preferences;
     pub mod app_quit;

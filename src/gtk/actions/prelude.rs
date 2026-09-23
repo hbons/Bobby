@@ -9,6 +9,7 @@ pub use crate::gtk::actions::app_about::about_action;
 pub use crate::gtk::actions::app_preferences::preferences_action;
 pub use crate::gtk::actions::app_shortcuts::shortcuts_action;
 
+pub use crate::gtk::actions::app_new::new_action;
 pub use crate::gtk::actions::app_open::open_action;
 pub use crate::gtk::actions::app_quit::quit_action;
 

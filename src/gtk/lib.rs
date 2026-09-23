@@ -74,6 +74,7 @@ impl Gui for App {
 
 
         app.add_action(&about_action(&app));
+        app.add_action(&new_action(&app));
         app.add_action(&open_action(&app));
         app.add_action(&preferences_action(&app));
         app.add_action(&quit_action(&app));

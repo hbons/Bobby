@@ -29,15 +29,17 @@ fn section_general() -> ShortcutsSection {
     let section = ShortcutsSection::new(Some("General"));
 
     let item_open   = ShortcutsItem::new("Open File", "<Primary>o");
-    let item_menu   = ShortcutsItem::new("Open Menu", "F10");
+    let item_new   = ShortcutsItem::new("New Window", "<Primary>n");
     let item_reload = ShortcutsItem::new("Reload Window", "<Primary>r");
     let item_close  = ShortcutsItem::new("Close Window", "<Primary>w");
+    let item_menu   = ShortcutsItem::new("Open Menu", "F10");
     let item_quit   = ShortcutsItem::new("Quit", "<Primary>q");
 
     section.add(item_open);
-    section.add(item_menu);
+    section.add(item_new);
     section.add(item_reload);
     section.add(item_close);
+    section.add(item_menu);
     section.add(item_quit);
 
     section
