@@ -538,8 +538,14 @@ pub fn window_toggle_search(window: &Window) -> Result<(), Box<dyn Error>> {
 
 
 pub fn window_search_text(window: &ApplicationWindow) -> Option<String> {
-    let entry = widget_by_name::<SearchEntry>("search_entry", window);
-    entry.map(|e| e.text().to_string())
+    widget_by_name::<SearchEntry>("search_entry", window)
+        .and_then(|entry| {
+            if !entry.text().is_empty() {
+                Some(entry.text().into())
+            } else {
+                None
+            }
+        })
 }
 
 
