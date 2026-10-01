@@ -5,3 +5,4 @@ Exec=bobby %f
 Icon=studio.planetpeanut.Bobby
 Categories=Utility;
 MimeType=application/vnd.sqlite3;application/x-sqlite3;
+Keywords=database;sqlite;sqlite3;db;viewer
