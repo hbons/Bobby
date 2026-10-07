@@ -72,6 +72,15 @@
     </description>
 
     <releases>
+        <release version="51.0.2" date="2026-10-07">
+            <description>
+                <ul>
+                    <li>Add action for New Window (Ctrl+N)</li>
+                    <li>Fix search not clearing in some cases</li>
+                    <li>Fix shadows in screenshots</li>
+                </ul>
+            </description>
+        </release>
         <release version="51.0.1" date="2026-09-22">
             <description>
                 <ul>
