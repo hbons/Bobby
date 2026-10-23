@@ -180,6 +180,15 @@
         <control>pointing</control>
     </recommends>
 
+    <recommends>
+        <display_length compare="ge">768</display_length>
+    </recommends>
+    <supports>
+        <control>keyboard</control>
+        <control>pointing</control>
+        <control>touch</control>
+    </supports>
+
     <content_rating type="oars-1.1">
         <!-- <content_attribute id="money-purchasing">mild</content_attribute> -->
     </content_rating>
