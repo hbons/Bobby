@@ -30,7 +30,7 @@ impl Database {
         let connection = self.connection.borrow();
 
         let mut sql = connection.prepare(
-            &format!("PRAGMA table_info({});", table.name())
+            &format!("PRAGMA table_info({});", table.name)
         )?;
 
         let iter = sql.query_map([], |row| {

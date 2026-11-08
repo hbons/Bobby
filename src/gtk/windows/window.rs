@@ -308,7 +308,7 @@ fn window_show_content_state(
         if let Some(name) = table_name {
             tables
                 .iter()
-                .find(|t| t.name() == name)
+                .find(|t| t.name.to_string() == name)
                 .cloned()
                 .ok_or("Table does not exist")?
         } else {
@@ -320,7 +320,7 @@ fn window_show_content_state(
 
     let table_index = tables
         .iter()
-        .position(|t| t.name() == table.name())
+        .position(|t| t.name == table.name)
         .ok_or("Table does not exist")?
         .to_string();
 
@@ -360,7 +360,7 @@ fn window_show_content_state(
             }
         );
 
-    switcher.set_label(&table.name());
+    switcher.set_label(&table.name.to_string());
 
 
     let toolbar_view =
@@ -565,7 +565,7 @@ pub fn window_selected_table_index(window: &Window) -> Option<usize> {
         if let Some(name) = table_name {
             tables
                 .iter()
-                .find(|t| t.name() == name)
+                .find(|t| t.name.to_string() == name)
                 .cloned()
                 .unwrap_or_default()
         } else {
@@ -576,7 +576,7 @@ pub fn window_selected_table_index(window: &Window) -> Option<usize> {
 
     tables
         .iter()
-        .position(|t| t.name() == table.name())
+        .position(|t| t.name == table.name)
 }
 
 

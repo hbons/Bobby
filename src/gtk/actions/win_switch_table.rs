@@ -46,7 +46,7 @@ pub fn switch_table_action(
             .and_then(|s| s.parse::<usize>().ok())
             .and_then(|i| tables.get(i))
         {
-            switcher_handle.set_label(&table.name());
+            switcher_handle.set_label(&table.name.to_string());
 
             // unsafe {
             //     dbg!("table index on window now: {}", &column_index);

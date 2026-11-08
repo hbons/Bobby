@@ -72,7 +72,7 @@ pub fn content_new(
     let row_count = database.row_count_no_filter(table)?;
     let row_count_total = database.row_count(table)?;
 
-    if let Some(f) = table.filter() {
+    if let Some(ref f) = table.filter {
         if row_count_total == 0 {
             let status = StatusPage::builder()
                 .icon_name("edit-find-symbolic")

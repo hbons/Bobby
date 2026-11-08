@@ -18,28 +18,10 @@ use super::row::Row;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Table {
-    name: TableName,
-    has_row_id: Option<bool>,
-    is_view: bool,
+    pub name: TableName,
+    pub has_row_id: Option<bool>,
+    pub is_view: bool,
     pub filter: Option<String>,
-}
-
-impl Table {
-    pub fn name(&self) -> String {
-        self.name.to_string()
-    }
-
-    pub fn has_row_id(&self) -> Option<bool> {
-        self.has_row_id
-    }
-
-    pub fn is_view(&self) -> bool {
-        self.is_view
-    }
-
-    pub fn filter(&self) -> Option<String> {
-        self.filter.clone()
-    }
 }
 
 
@@ -89,17 +71,17 @@ impl Database {
     pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
 
-        let filter = match table.filter() {
-            Some(f) =>
+        let filter = match table.filter {
+            Some(ref f) =>
                 column::as_filter_statement(
                     &self.columns(table).unwrap_or_default(),
-                    f,
+                    f.into(),
                 ),
             None => "TRUE".to_string(),
         };
 
         let sql = format!("SELECT COUNT(*) FROM {} WHERE {filter}",
-            table.name(),
+            table.name,
         );
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
@@ -108,7 +90,7 @@ impl Database {
 
     pub fn row_count_no_filter(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
-        let sql = format!("SELECT COUNT(*) FROM {}", table.name());
+        let sql = format!("SELECT COUNT(*) FROM {}", table.name);
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
@@ -124,7 +106,7 @@ impl Database {
         value: &str,
     ) -> Result<(), Box<dyn Error>>
     {
-        let primary_key = match table.has_row_id() {
+        let primary_key = match table.has_row_id {
             Some(true) => "ROWID",
             _ => {
                 let columns = &self.columns(table)?;
@@ -138,13 +120,14 @@ impl Database {
             },
         };
 
-        self.connection.borrow()
+        self.connection
+            .borrow()
             .execute(
                 "UPDATE ?1
                  SET ?2 = ?3
                  WHERE ?4 = ?5;",
                 params![
-                    table.name(),
+                    table.name.to_string(),
                     column.name, value,
                     primary_key, row.id,
                 ]

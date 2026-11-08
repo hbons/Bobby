@@ -19,7 +19,9 @@ use super::table::Table;
 
 #[derive(Clone, Debug, Default)]
 pub struct Row {
-    pub id: String, // TODO: Fill in. if no ROW_ID, this is the PRIMARY_KEY value
+    /// ROWID or the row's PRIMARY_KEY value if the
+    /// table was created using WITHOUT_ROWID
+    pub id: String, // TODO: Fill in.
     pub cells: Vec<Affinity>,
 }
 
@@ -37,19 +39,19 @@ impl Database {
         let limit = limit.unwrap_or(u32::MAX); // GTK models are limited to u32
         let offset = offset.unwrap_or(0);
         let row_order = self.row_order.unwrap_or_default();
-        let table_name = table.name();
+        let table_name = table.name.clone();
 
-        let filter = match table.filter() {
-            Some(f) =>
+        let filter = match table.filter {
+            Some(ref f) =>
                 column::as_filter_statement(
                     &self.columns(table).unwrap_or_default(),
-                    f,
+                    f.into(),
                 ),
             None => "TRUE".to_string(),
         };
 
         let sql =
-            if table.has_row_id() == Some(true) {
+            if table.has_row_id == Some(true) {
                 &format!("
                     SELECT *
                     FROM {table_name}

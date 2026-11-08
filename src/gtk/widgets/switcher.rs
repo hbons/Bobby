@@ -23,13 +23,13 @@ pub fn table_switcher_new(tables: &[Table]) -> MenuButton {
     let table_section = Menu::new();
     let view_section  = Menu::new();
 
-    let view_count  = tables.iter().filter(|t| t.is_view()).count();
-    let table_count = tables.iter().filter(|t| !t.is_view()).count();
+    let view_count  = tables.iter().filter(|t| t.is_view).count();
+    let table_count = tables.iter().filter(|t| !t.is_view).count();
 
     for (i, table) in tables.iter().enumerate() {
-        let name = table.name().replace("_", "__"); // Avoid mnemonics
+        let name = table.name.to_string().replace("_", "__"); // Avoid mnemonics
 
-        let section = if table.is_view() {
+        let section = if table.is_view {
             &view_section
         } else {
             &table_section
@@ -45,7 +45,7 @@ pub fn table_switcher_new(tables: &[Table]) -> MenuButton {
     menu.append_section(Some(&format!("Tables – {table_count}")), &table_section);
 
     if let Some(table) = tables.first() {
-        button.set_label(&table.name());
+        button.set_label(&table.name.to_string());
     }
 
     // button.set_action_name(Some("win.open-table-menu")); // TODO
