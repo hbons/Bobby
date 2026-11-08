@@ -9,8 +9,11 @@ use std::error::Error;
 use std::fmt;
 use std::str;
 
-use super::column::as_filter_statement;
+use rusqlite::params;
+
+use super::column::{ self, Column };
 use super::database::Database;
+use super::row::Row;
 
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -88,7 +91,7 @@ impl Database {
 
         let filter = match table.filter() {
             Some(f) =>
-                as_filter_statement(
+                column::as_filter_statement(
                     &self.columns(table).unwrap_or_default(),
                     f,
                 ),
@@ -108,6 +111,46 @@ impl Database {
         let sql = format!("SELECT COUNT(*) FROM {}", table.name());
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
+    }
+}
+
+
+impl Database {
+    pub fn update(
+        &self,
+        table: &Table,
+        row: &Row,
+        column: &Column,
+        value: &str,
+    ) -> Result<(), Box<dyn Error>>
+    {
+        let primary_key = match table.has_row_id() {
+            Some(true) => "ROWID",
+            _ => {
+                let columns = &self.columns(table)?;
+
+                &columns
+                    .iter()
+                    .find(|c| c.primary_key)
+                    .ok_or("err")?
+                    .name
+                    .to_string()
+            },
+        };
+
+        self.connection.borrow()
+            .execute(
+                "UPDATE ?1
+                 SET ?2 = ?3
+                 WHERE ?4 = ?5;",
+                params![
+                    table.name(),
+                    column.name, value,
+                    primary_key, row.id,
+                ]
+            )?;
+
+        Ok(())
     }
 }
 

@@ -12,13 +12,14 @@ use rusqlite::types::ValueRef;
 
 
 use super::affinity::Affinity;
-use super::column::{ ColumnSeparator, as_filter_statement };
+use super::column::{ self, ColumnSeparator };
 use super::database::Database;
 use super::table::Table;
 
 
 #[derive(Clone, Debug, Default)]
 pub struct Row {
+    pub id: String, // TODO: Fill in. if no ROW_ID, this is the PRIMARY_KEY value
     pub cells: Vec<Affinity>,
 }
 
@@ -40,7 +41,7 @@ impl Database {
 
         let filter = match table.filter() {
             Some(f) =>
-                as_filter_statement(
+                column::as_filter_statement(
                     &self.columns(table).unwrap_or_default(),
                     f,
                 ),
@@ -98,12 +99,15 @@ impl Database {
             Ok(values)
         })?;
 
+        let id = "".to_string(); // TODO: Set for every row
+
         Ok(iter
-            .map(|res| res.map(|cells| Row { cells }))
+            .map(|res| res.map(|cells| Row { id: id.clone(), cells }))
             .collect::<Result<Vec<_>, _>>()?
         )
     }
 }
+
 
 impl Row {
     pub fn format_with(&self, separator: ColumnSeparator) -> String {
