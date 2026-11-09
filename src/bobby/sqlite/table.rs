@@ -46,19 +46,24 @@ impl Database {
         let tables = sql.query_map([],
             |row| {
                 let name: String = row.get(0)?;
-                let has_row_id: Option<i64> = row.get(1)?;
-                let type_str: String = row.get(2)?;
-
                 let name = name
                     .parse::<TableName>()
                     .map_err(|_| rusqlite::Error::InvalidQuery)?;
 
-                Ok(Table {
-                    name,
-                    has_row_id: has_row_id.map(|v| v != 0),
-                    is_view: type_str == "view",
-                    filter: None,
-                })
+                let has_row_id: Option<i64> = row.get(1)?;
+                let has_row_id = has_row_id.map(|v| v == 1);
+
+                let is_view: String = row.get(2)?;
+                let is_view = is_view == "view";
+
+                Ok(
+                    Table {
+                        name,
+                        has_row_id,
+                        is_view,
+                        filter: None,
+                    }
+                )
             })?
             .collect::<Result<Vec<_>, _>>()?;
 
@@ -106,34 +111,62 @@ impl Database {
         value: &str,
     ) -> Result<(), Box<dyn Error>>
     {
-        let primary_key = match table.has_row_id {
-            Some(true) => "ROWID",
-            _ => {
-                let columns = &self.columns(table)?;
-
-                &columns
-                    .iter()
-                    .find(|c| c.primary_key)
-                    .ok_or("err")?
-                    .name
-                    .to_string()
-            },
-        };
+        let primary_key = self.get_primary_key(&table)?;
 
         self.connection
             .borrow()
             .execute(
-                "UPDATE ?1
-                 SET ?2 = ?3
-                 WHERE ?4 = ?5;",
-                params![
+                &format!("UPDATE {} SET {} = ?1 WHERE {} = ?2;",
                     table.name.to_string(),
-                    column.name, value,
-                    primary_key, row.id,
-                ]
+                    column.name,
+                    primary_key,
+                ),
+                params![value, row.id]
+            )?; // Can fail on tables created with STRICT typing
+
+        Ok(())
+    }
+
+
+    pub fn delete(
+        &self,
+        table: &Table,
+        row: &Row,
+    ) -> Result<(), Box<dyn Error>>
+    {
+        let primary_key = self.get_primary_key(&table)?;
+
+        self.connection
+            .borrow()
+            .execute(
+                &format!("DELETE FROM {} WHERE {} = ?1;",
+                    table.name.to_string(),
+                    primary_key,
+                ),
+                params![row.id]
             )?;
 
         Ok(())
+    }
+
+
+    fn get_primary_key(
+        &self,
+        table: &Table,
+    ) -> Result<String, Box<dyn Error>>
+    {
+        let primary_key =
+            if let Some(true) = table.has_row_id {
+                "ROWID"
+            } else {
+                &self.columns(table)?
+                    .into_iter()
+                    .find(|c| c.primary_key)
+                    .ok_or("Missing PRIMARY_KEY")?
+                    .name
+            };
+
+        Ok(primary_key.into())
     }
 }
 
@@ -145,7 +178,7 @@ impl str::FromStr for TableName {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.is_empty() || s.starts_with("sqlite_") {
+        if s.is_empty() || s.to_ascii_lowercase().starts_with("sqlite_") {
             return Err("Table name is empty or starts with sqlite_".into());
         }
 

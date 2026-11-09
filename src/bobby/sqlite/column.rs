@@ -16,7 +16,7 @@ use super::table::Table;
 #[derive(Clone, Debug, Default)]
 pub struct Column {
     pub id: u64,
-    pub name: String,
+    pub name: String, // TODO: ColumnName
     pub affinity: Affinity,
     pub primary_key: bool,
     pub not_null: bool,
