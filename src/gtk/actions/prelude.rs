@@ -16,6 +16,8 @@ pub use crate::gtk::actions::app_quit::quit_action;
 pub use crate::gtk::actions::win_close::close_action;
 pub use crate::gtk::actions::win_copy_row::copy_row_action;
 pub use crate::gtk::actions::win_copy_val::copy_val_action;
+pub use crate::gtk::actions::win_delete_row::delete_row_action;
+pub use crate::gtk::actions::win_edit_val::edit_val_action;
 pub use crate::gtk::actions::win_reload::reload_action;
 pub use crate::gtk::actions::win_search_table::search_table_action;
 pub use crate::gtk::actions::win_search_toggle::search_toggle_action;

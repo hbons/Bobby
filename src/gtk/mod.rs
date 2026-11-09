@@ -15,7 +15,9 @@ pub mod actions {
     pub mod app_shortcuts;
     pub mod win_close;
     pub mod win_copy_val;
+    pub mod win_edit_val;
     pub mod win_copy_row;
+    pub mod win_delete_row;
     pub mod win_reload;
     pub mod win_search_table;
     pub mod win_search_toggle;

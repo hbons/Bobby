@@ -392,7 +392,9 @@ fn window_show_content_state(
         .ok_or("Could not cast to ApplicationWindow")?;
 
     window.add_action(&copy_row_action(window, &overlay));
+    window.add_action(&delete_row_action(window, &overlay));
     window.add_action(&copy_val_action(window, &overlay));
+    window.add_action(&edit_val_action(window));
     window.add_action(&reload_action(window));
     window.add_action(&switch_table_action(window, &layout, &table_index, &tables, &switcher)); // TODO: Ugly
     window.add_action(&search_table_action(window, &layout, &table_index, &tables)); // TODO: Ugly
