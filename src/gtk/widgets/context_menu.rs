@@ -32,22 +32,22 @@ pub fn open(
     let delete_section = Menu::new();
 
     edit_section.append(
-        Some("Edit…"),
+        Some("_Edit…"),
         Some(&format!("win.edit-val::{}:{}", row_index, col_index)),
     );
 
     copy_section.append(
-        Some("Copy"),
+        Some("_Copy"),
         Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
     );
 
     copy_section.append(
-        Some("Copy Row"),
+        Some("Copy _Row"),
         Some("win.copy-row"),
     );
 
     delete_section.append(
-        Some("Delete Row"),
+        Some("_Delete Row"),
         Some("win.delete-row"),
     );
 
