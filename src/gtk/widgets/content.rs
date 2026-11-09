@@ -9,15 +9,10 @@ use std::cell::{ Ref, RefCell };
 use std::error::Error;
 use std::rc::Rc;
 
-use gio::{
-    Menu,
-    Settings,
-};
-
+use gio::Settings;
 use gtk4::prelude::*;
 use gtk4::{
     gdk::BUTTON_SECONDARY,
-    gdk::Rectangle,
     glib,
     glib::BoxedAnyObject,
     ColumnView,
@@ -25,7 +20,6 @@ use gtk4::{
     GestureClick,
     Label,
     ListTabBehavior,
-    PopoverMenu,
     PickFlags,
     ScrolledWindow,
     SignalListItemFactory,
@@ -44,6 +38,8 @@ use super::item::{
     setup_list_item,
     SYMBOL_KEY,
 };
+
+use super::context_menu;
 
 
 pub fn content_new(
@@ -245,66 +241,10 @@ fn content_clicked(
     let col = label.widget_name().parse::<usize>()?;
 
     if let Some(col) = col.checked_sub(1) {
-        context_menu_open(gesture, col, row, x, y);
+        context_menu::open(gesture, col, row, x, y);
     }
 
     Ok(())
-}
-
-
-fn context_menu_open(
-    gesture: &GestureClick,
-    col_index: usize,
-    row_index: usize,
-    x: f64,
-    y: f64,
-) {
-    let Some(widget) = gesture.widget() else {
-        return;
-    };
-
-    let edit_section = Menu::new();
-    let copy_section = Menu::new();
-    let delete_section = Menu::new();
-
-    edit_section.append(
-        Some("Edit…"),
-        Some(&format!("win.edit-val::{}:{}", row_index, col_index)),
-    );
-
-    copy_section.append(
-        Some("Copy"),
-        Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
-    );
-
-    copy_section.append(
-        Some("Copy Row"),
-        Some("win.copy-row"),
-    );
-
-    delete_section.append(
-        Some("Delete Row"),
-        Some("win.delete-row"),
-    );
-
-    let menu = Menu::new();
-    menu.append_section(None, &edit_section);
-    menu.append_section(None, &copy_section);
-    menu.append_section(None, &delete_section);
-
-    let popover = PopoverMenu::builder()
-        .has_arrow(false)
-        .menu_model(&menu)
-        .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
-        .build();
-
-    // TODO: GTK warning when switching tables after opening context menu
-    popover.set_parent(&widget);
-
-    // Fix to prevent scrollbars
-    glib::idle_add_local_once(move || {
-        popover.popup();
-    });
 }
 
 

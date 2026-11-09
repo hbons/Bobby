@@ -32,6 +32,7 @@ pub mod dialogs {
 pub mod widgets {
     pub mod button;
     pub mod content;
+    pub mod context_menu;
     pub mod drop_target;
     pub mod item;
     pub mod menu;
