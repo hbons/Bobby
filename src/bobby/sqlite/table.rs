@@ -106,8 +106,8 @@ impl Database {
     pub fn update(
         &self,
         table: &Table,
-        row: &Row,
         column: &Column,
+        row: &Row,
         value: &str,
     ) -> Result<(), Box<dyn Error>>
     {

@@ -252,36 +252,59 @@ fn content_clicked(
 }
 
 
-fn context_menu_open(gesture: &GestureClick, col_index: usize, row_index: usize, x: f64, y: f64) {
-    if let Some(widget) = gesture.widget() {
-        let menu = Menu::new();
+fn context_menu_open(
+    gesture: &GestureClick,
+    col_index: usize,
+    row_index: usize,
+    x: f64,
+    y: f64,
+) {
+    let Some(widget) = gesture.widget() else {
+        return;
+    };
 
-        menu.append(
-            Some("Copy"),
-            Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
-        );
+    let edit_section = Menu::new();
+    let copy_section = Menu::new();
+    let delete_section = Menu::new();
 
-        menu.append(
-            Some("Copy Row"),
-            Some("win.copy-row")
-        );
+    edit_section.append(
+        Some("Edit…"),
+        Some(&format!("win.edit-val::{}:{}", row_index, col_index)),
+    );
 
-        // TODO: Also prepend column headers in Markdown mode
-        // menu.append(
-        //     Some("Copy Rows"),
-        //     Some(&format!("win.copy-rows::{}", row_index))
-        // );
+    copy_section.append(
+        Some("Copy"),
+        Some(&format!("win.copy-val::{}:{}", row_index, col_index)),
+    );
 
-        let popover = PopoverMenu::builder()
-            .has_arrow(false)
-            .menu_model(&menu)
-            .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
-            .build();
+    copy_section.append(
+        Some("Copy Row"),
+        Some("win.copy-row"),
+    );
 
-        // TODO: GTK warning when switching tables after opening context menu
-        popover.set_parent(&widget);
+    delete_section.append(
+        Some("Delete Row"),
+        Some("win.delete-row"),
+    );
+
+    let menu = Menu::new();
+    menu.append_section(None, &edit_section);
+    menu.append_section(None, &copy_section);
+    menu.append_section(None, &delete_section);
+
+    let popover = PopoverMenu::builder()
+        .has_arrow(false)
+        .menu_model(&menu)
+        .pointing_to(&Rectangle::new(x as i32, y as i32, 0, 0))
+        .build();
+
+    // TODO: GTK warning when switching tables after opening context menu
+    popover.set_parent(&widget);
+
+    // Fix to prevent scrollbars
+    glib::idle_add_local_once(move || {
         popover.popup();
-    }
+    });
 }
 
 
