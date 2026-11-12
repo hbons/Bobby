@@ -47,7 +47,7 @@ pub fn delete_row_action(
            let Some(model) = column_view.model() &&
            let Some(selection) = model.downcast::<SingleSelection>().ok()
         {
-//             let row_index = selection.selected() as usize;
+            let row_index = selection.selected() as usize;
 //
 //             if let Some(row) = get_row(column_view, row_index) {
 //                 let settings = gio::Settings::new("studio.planetpeanut.Bobby"); // TODO
@@ -58,13 +58,13 @@ pub fn delete_row_action(
 //                     &row.format_with(separator.unwrap_or_default())
 //                 );
 //
-//                 overlay_handle.dismiss_all();
-//                 overlay_handle.add_toast(
-//                     Toast::builder()
-//                         .title(format!("Row {} copied to clipboard", row_index + 1))
-//                         .timeout(2)
-//                         .build()
-//                 );
+                overlay_handle.dismiss_all();
+                overlay_handle.add_toast(
+                    Toast::builder()
+                        .title(format!("Row {} deleted", row_index + 1))
+                        .timeout(2)
+                        .build()
+                );
 //             }
         }
     });

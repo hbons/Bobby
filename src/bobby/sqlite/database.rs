@@ -33,60 +33,63 @@ pub struct Database {
 /// Database files to test on can be found at:
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-    pub fn from_file(file: &File, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
-        let uri = format!("{}?{}", file.uri(),
+    pub fn from_file(
+        file: &File,
+        row_order: Option<RowOrder>,
+    ) -> Result<Self, Box<dyn Error>>
+    {
+        let uri = format!("{}?{}",
+            file.uri(),
             "immutable=1", // Docs: https://sqlite.org/uri.html#uriimmutable
         );
 
         // TODO: Detect encryption here and return Err
 
-        let connection = Connection::open_with_flags(
-            uri,
-            OpenFlags::SQLITE_OPEN_READ_ONLY |
-            OpenFlags::SQLITE_OPEN_URI
-        ).map_err(|_|
-            Box::<dyn Error>::from("Could not open a database connection")
-        )?;
+        let conn = Connection::open_with_flags(
+                uri,
+                OpenFlags::SQLITE_OPEN_READ_ONLY |
+                OpenFlags::SQLITE_OPEN_URI
+            ).map_err(|_|
+                Box::<dyn Error>::from("Could not open a database connection")
+            )?;
 
-        if Database::journal_mode(&connection).is_none() {
+        if Self::journal_mode(&conn).is_none() {
             return Err("File is not a <b>SQLite database</b> or encrypted".into());
         }
 
-        connection.busy_timeout(Duration::from_secs(3))?;
-        connection.pragma_update(None, "query_only", true)?;
-        connection.pragma_update(None, "foreign_keys", true)?;
+        conn.busy_timeout(Duration::from_secs(3))?;
+        conn.pragma_update(None, "query_only", true)?;
+        conn.pragma_update(None, "foreign_keys", true)?;
 
         Ok(
-            Database {
+            Self {
                 file: file.to_owned(),
-                connection: Rc::new(RefCell::new(connection)),
+                connection: Rc::new(RefCell::new(conn)),
                 row_order,
             }
         )
     }
+}
 
 
+impl Database {
     pub fn data_version(&self) -> Option<i64> {
-        let connection = self.connection.borrow();
-
-        connection.pragma_query_value(
-            None,
-            "data_version",
-            |row| row.get(0)
-        ).ok()
+        self.connection
+            .borrow()
+            .pragma_query_value(
+                None,
+                "data_version",
+                |row| row.get(0)
+            ).ok()
     }
 
 
-    pub fn journal_mode(connection: &Connection) -> Option<String> {
-        let mode: String = connection
-            .query_row(
-                "PRAGMA journal_mode",
-                [],
-                |row| row.get(0)
-            )
-        .ok()?;
-
-        Some(mode)
+    pub fn journal_mode(conn: &Connection) -> Option<String> {
+        conn.query_row(
+            "PRAGMA journal_mode",
+            [],
+            |row| row.get(0)
+        ).ok()
     }
 }
 
@@ -98,7 +101,7 @@ impl Default for Database {
             // This should never happen
             .expect("Failed to create default connection");
 
-        Database {
+        Self {
             file: File::for_path(Path::new("")),
             connection: Rc::new(RefCell::new(connection)),
             row_order: None,

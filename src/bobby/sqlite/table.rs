@@ -19,10 +19,21 @@ use super::row::Row;
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Table {
     pub name: TableName,
-    pub has_row_id: Option<bool>,
+    /// Views don't support UPDATE or DELETE
     pub is_view: bool,
+    /// On views this is None
+    pub has_row_id: Option<bool>,
+    /// If created with WITHOUT_ROWID, there must be a PRIMARY_KEY
+    pub primary_key: Option<Column>,
     pub filter: Option<String>,
 }
+
+
+pub struct View {
+    pub name: TableName,
+    pub filter: Option<String>,
+}
+
 
 
 impl Database {
@@ -59,8 +70,9 @@ impl Database {
                 Ok(
                     Table {
                         name,
-                        has_row_id,
                         is_view,
+                        has_row_id,
+                        primary_key: None, // TODO
                         filter: None,
                     }
                 )
@@ -74,7 +86,7 @@ impl Database {
 
 impl Database {
     pub fn row_count(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
-        let connection = self.connection.borrow();
+        let conn = self.connection.borrow();
 
         let filter = match table.filter {
             Some(ref f) =>
@@ -85,11 +97,12 @@ impl Database {
             None => "TRUE".to_string(),
         };
 
-        let sql = format!("SELECT COUNT(*) FROM {} WHERE {filter}",
-            table.name,
+        let sql = format!(
+            "SELECT COUNT(*) FROM {table} WHERE {filter}",
+            table=table.name,
         );
 
-        Ok(connection.query_row(&sql, [], |row| row.get(0))?)
+        Ok(conn.query_row(&sql, [], |row| row.get(0))?)
     }
 
 
@@ -111,7 +124,7 @@ impl Database {
         value: &str,
     ) -> Result<(), Box<dyn Error>>
     {
-        let primary_key = self.get_primary_key(&table)?;
+        let primary_key = self.primary_key(&table)?; // TODO: ok_or("ROWID")
 
         self.connection
             .borrow()
@@ -134,39 +147,19 @@ impl Database {
         row: &Row,
     ) -> Result<(), Box<dyn Error>>
     {
-        let primary_key = self.get_primary_key(&table)?;
+        let primary_key = self.primary_key(&table)?; // TODO: ok_or("ROWID")
 
         self.connection
             .borrow()
             .execute(
                 &format!("DELETE FROM {} WHERE {} = ?1;",
                     table.name.to_string(),
-                    primary_key,
+                    table.primary_key.ok_or("Missing PRIMARY_KEY")?,
                 ),
                 params![row.id]
             )?;
 
         Ok(())
-    }
-
-
-    fn get_primary_key(
-        &self,
-        table: &Table,
-    ) -> Result<String, Box<dyn Error>>
-    {
-        let primary_key =
-            if let Some(true) = table.has_row_id {
-                "ROWID"
-            } else {
-                &self.columns(table)?
-                    .into_iter()
-                    .find(|c| c.primary_key)
-                    .ok_or("Missing PRIMARY_KEY")?
-                    .name
-            };
-
-        Ok(primary_key.into())
     }
 }
 

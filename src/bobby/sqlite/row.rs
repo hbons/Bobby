@@ -21,12 +21,10 @@ use super::table::Table;
 pub struct Row {
     /// ROWID or the row's PRIMARY_KEY value if the
     /// table was created using WITHOUT_ROWID
-    pub id: String, // TODO: Fill in.
+    pub id: String, // TODO: Fill in. Option?
     pub cells: Vec<Affinity>,
 }
 
-
-const BLOB_PREVIEW_LEN: usize = 8;
 
 impl Database {
     pub fn rows(
@@ -35,7 +33,9 @@ impl Database {
         offset: Option<u32>,
         limit:  Option<u32>,
     ) -> Result<Vec<Row>, Box<dyn Error>>
-{
+    {
+        const BLOB_PREVIEW_LEN: usize = 8;
+
         let limit = limit.unwrap_or(u32::MAX); // GTK models are limited to u32
         let offset = offset.unwrap_or(0);
         let row_order = self.row_order.unwrap_or_default();
@@ -53,7 +53,7 @@ impl Database {
         let sql =
             if table.has_row_id == Some(true) {
                 &format!("
-                    SELECT *
+                    SELECT _rowid_, *
                     FROM {table_name}
                     WHERE rowid >= {offset}
                       AND {filter}
@@ -70,15 +70,29 @@ impl Database {
                 ")
             };
 
-        let connection = self.connection.borrow();
+        let mut sql = self.connection
+            .borrow()
+            .prepare(sql)?;
 
-        let mut sql = connection.prepare(sql)?;
         let n_columns = sql.column_count();
 
         let iter = sql.query_map([], |row| {
-            let mut values = Vec::new();
+            let mut r = Row::default();
 
-            for i in 0..n_columns {
+            let mut first_column = 0;
+
+            r.id = if let Some(true) = table.has_row_id {
+                    first_column = 1;
+                    row.get::<_, i64>(0)?.to_string()
+                } else {
+                    // need the primary key index here. use table.primary_key.id
+                    row.get(table.primary_key
+                        .clone()
+                        .unwrap()
+                        .name)
+                };
+
+            for i in first_column..n_columns {
                 let value = match row.get_ref(i)? {
                     ValueRef::Null       => Affinity::NULL,
                     ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
@@ -95,18 +109,13 @@ impl Database {
                     ),
                 };
 
-                values.push(value);
+                r.cells.push(value);
             }
 
-            Ok(values)
+            Ok(r)
         })?;
 
-        let id = "".to_string(); // TODO: Set for every row
-
-        Ok(iter
-            .map(|res| res.map(|cells| Row { id: id.clone(), cells }))
-            .collect::<Result<Vec<_>, _>>()?
-        )
+        Ok(iter.collect::<Result<Vec<_>, _>>()?)
     }
 }
 
@@ -128,10 +137,23 @@ impl Row {
 }
 
 
+fn hex_preview(
+    blob: &[u8],
+    len: usize,
+) -> String
+{
+    blob
+        .iter()
+        .take(len)
+        .map(|b| format!("{:02X}", b))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+
 #[derive(Clone, Copy, Debug, Default)]
 pub enum RowOrder {
-    #[default]
-    Descending,
+    #[default] Descending,
     Ascending,
 }
 
@@ -144,14 +166,4 @@ impl fmt::Display for RowOrder {
 
         write!(f, "{}", s)
     }
-}
-
-
-fn hex_preview(blob: &[u8], length: usize) -> String {
-    blob
-        .iter()
-        .take(length)
-        .map(|b| format!("{:02X}", b))
-        .collect::<Vec<_>>()
-        .join(" ")
 }
