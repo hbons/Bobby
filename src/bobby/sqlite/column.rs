@@ -16,7 +16,7 @@ use super::table::Table;
 #[derive(Clone, Debug, Default)]
 pub struct Column {
     pub id: u64,
-    pub name: String,
+    pub name: ColumnName,
     pub affinity: Affinity,
     pub primary_key: bool,
     pub not_null: bool,
@@ -34,22 +34,25 @@ impl Database {
         )?;
 
         let iter = sql.query_map([], |row| {
+            let cell1: String = row.get(1)?;
             let cell2: String = row.get(2)?;
+
+            let name = cell1
+                .parse::<ColumnName>()
+                .unwrap_or_default();
 
             let affinity = cell2
                 .parse::<Affinity>()
                 .unwrap_or_default();
 
-            let unique = false; // TODO
-
             Ok(Column {
-                id:          row.get(0)?,
-                name:        row.get(1)?,
+                id: row.get(0)?,
+                name,
                 affinity,
-                not_null:    row.get(3)?,
-                default:     row.get(4)?,
+                not_null: row.get(3)?,
+                default: row.get(4)?,
                 primary_key: row.get(5)?,
-                unique
+                unique: false, // TODO
             })
         })?;
 
@@ -72,7 +75,7 @@ pub fn as_filter_statement(
 
     for column in columns {
         let part = format!("{} LIKE '%{}%'",
-            column.name,
+            column.name.quoted(),
             filter
         );
 
@@ -119,13 +122,17 @@ impl str::FromStr for ColumnSeparator {
 }
 
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct ColumnName(String);
 
 impl str::FromStr for ColumnName {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.is_empty() {
+            return Err("Column name is empty".into());
+        }
+
         Ok(Self(s.to_string()))
     }
 }
@@ -133,7 +140,8 @@ impl str::FromStr for ColumnName {
 impl ColumnName {
     /// For use in queries
     pub fn quoted(&self) -> String {
-        format!("\"{}\"", self.0) // TODO: escape inline "s. " -> ""
+        let s = self.0.replace("\"", "\"\"");
+        format!("\"{s}\"")
     }
 
     /// For use in user interface controls

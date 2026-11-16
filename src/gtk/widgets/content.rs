@@ -138,7 +138,7 @@ pub fn content_new(
         }
 
         let view_column = ColumnViewColumn::builder()
-            .title(&column.name)
+            .title(column.name.unquoted())
             .id(column_index.to_string())
             .factory(&factory)
             .resizable(true)
@@ -146,7 +146,7 @@ pub fn content_new(
             .build();
 
         if column.primary_key {
-            let title = format!("{} {}", column.name, SYMBOL_KEY);
+            let title = format!("{} {}", column.name.unquoted(), SYMBOL_KEY);
             view_column.set_title(Some(&title));
         }
 
