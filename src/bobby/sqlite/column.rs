@@ -6,6 +6,7 @@
 
 
 use std::error::Error;
+use std::fmt;
 use std::str;
 
 use super::affinity::Affinity;
@@ -98,11 +99,10 @@ pub fn as_filter_statement(
 
 #[derive(Debug, Default)]
 pub enum ColumnSeparator {
-    #[default]
-    Tabs,
+    #[default] Tabs,
     Spaces,
     Commas,
-    Markdown
+    Markdown,
 }
 
 impl str::FromStr for ColumnSeparator {
@@ -116,5 +116,23 @@ impl str::FromStr for ColumnSeparator {
             "markdown"      => Ok(Self::Markdown),
             _ => Err("Invalid column separator".into())
         }
+    }
+}
+
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ColumnName(String);
+
+impl str::FromStr for ColumnName {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(s.to_string()))
+    }
+}
+
+impl fmt::Display for ColumnName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
