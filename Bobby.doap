@@ -5,26 +5,35 @@
     xmlns:gnome="http://api.gnome.org/doap-extensions#"
     xmlns="http://usefulinc.com/ns/doap#"
 >
+    <name xml:lang="en">Bobby</name>
+    <shortdesc xml:lang="en">Browse SQLite files</shortdesc>
+    <homepage rdf:resource="https://apps.gnome.org/Bobby" />
+    <bug-database rdf:resource="https://github.com/hbons/Bobby/issues" />
 
-  <name xml:lang="en">Bobby</name>
-  <shortdesc xml:lang="en">Browse SQLite files</shortdesc>
-  <homepage rdf:resource="https://planetpeanut.studio/bobby" />
-  <bug-database rdf:resource="https://github.com/hbons/Bobby/issues" />
+    <programming-language>Rust</programming-language>
+    <platform>GTK 4</platform>
+    <platform>Libadwaita</platform>
 
-  <programming-language>Rust</programming-language>
-  <platform>GTK 4</platform>
-  <platform>Libadwaita</platform>
+    <maintainer>
+        <foaf:Person>
+            <foaf:name>Hylke Bons</foaf:name>
+            <foaf:mbox rdf:resource="mailto:hello@planetpeanut.studio" />
 
-  <maintainer>
-    <foaf:Person>
-      <foaf:name>Hylke Bons</foaf:name>
-      <foaf:mbox rdf:resource="mailto:hello@planetpeanut.studio" />
-      <foaf:account>
-        <foaf:OnlineAccount>
-          <foaf:accountServiceHomepage rdf:resource="https://github.com/hbons/Bobby" />
-          <foaf:accountName>hbons</foaf:accountName>
-        </foaf:OnlineAccount>
-      </foaf:account>
-    </foaf:Person>
-  </maintainer>
+            <foaf:account>
+                <!-- Mastodon -->
+                <foaf:OnlineAccount>
+                    <foaf:accountName>@hbons@mastodon.social</foaf:accountName>
+                    <foaf:accountServiceHomepage rdf:resource="https://mastodon.social" />
+                    <foaf:name>Mastodon</foaf:name> <!-- Optional display name for the account -->
+                    <foaf:homepage rdf:resource="https://mastodon.social/@hbons" />
+                </foaf:OnlineAccount>
+
+                <!-- GitHub -->
+                <foaf:OnlineAccount>
+                    <foaf:accountName>hbons</foaf:accountName>
+                    <foaf:accountServiceHomepage rdf:resource="https://github.com/hbons/Bobby" />
+                </foaf:OnlineAccount>
+            </foaf:account>
+        </foaf:Person>
+    </maintainer>
 </Project>
