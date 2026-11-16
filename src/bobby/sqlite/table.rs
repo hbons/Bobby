@@ -6,7 +6,6 @@
 
 
 use std::error::Error;
-use std::fmt;
 use std::str;
 
 use super::column::as_filter_statement;
@@ -15,17 +14,13 @@ use super::database::Database;
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Table {
-    name: TableName,
-    has_row_id: Option<bool>,
-    is_view: bool,
+    pub name: TableName,
     pub filter: Option<String>,
+    is_view: bool,
+    has_row_id: Option<bool>,
 }
 
 impl Table {
-    pub fn name(&self) -> String {
-        self.name.to_string()
-    }
-
     pub fn has_row_id(&self) -> Option<bool> {
         self.has_row_id
     }
@@ -70,9 +65,9 @@ impl Database {
 
                 Ok(Table {
                     name,
-                    has_row_id: has_row_id.map(|v| v != 0),
-                    is_view: type_str == "view",
                     filter: None,
+                    is_view: type_str == "view",
+                    has_row_id: has_row_id.map(|v| v != 0),
                 })
             })?
             .collect::<Result<Vec<_>, _>>()?;
@@ -96,7 +91,7 @@ impl Database {
         };
 
         let sql = format!("SELECT COUNT(*) FROM {} WHERE {filter}",
-            table.name(),
+            table.name.quoted(),
         );
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
@@ -105,7 +100,7 @@ impl Database {
 
     pub fn row_count_no_filter(&self, table: &Table) -> Result<u32, Box<dyn Error>> {
         let connection = self.connection.borrow();
-        let sql = format!("SELECT COUNT(*) FROM {}", table.name());
+        let sql = format!("SELECT COUNT(*) FROM {}", table.name.quoted());
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
     }
@@ -127,9 +122,15 @@ impl str::FromStr for TableName {
     }
 }
 
-impl fmt::Display for TableName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+impl TableName {
+    /// For use in queries
+    pub fn quoted(&self) -> String {
+        format!("\"{}\"", self.0) // TODO: escape inline "s. " -> ""
+    }
+
+    /// For use in user interface controls
+    pub fn unquoted(&self) -> String {
+        self.0.clone()
     }
 }
 

@@ -6,7 +6,6 @@
 
 
 use std::error::Error;
-use std::fmt;
 use std::str;
 
 use super::affinity::Affinity;
@@ -31,7 +30,7 @@ impl Database {
         let connection = self.connection.borrow();
 
         let mut sql = connection.prepare(
-            &format!("PRAGMA table_info({});", table.name())
+            &format!("PRAGMA table_info({});", table.name.quoted())
         )?;
 
         let iter = sql.query_map([], |row| {
@@ -131,8 +130,14 @@ impl str::FromStr for ColumnName {
     }
 }
 
-impl fmt::Display for ColumnName {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+impl ColumnName {
+    /// For use in queries
+    pub fn quoted(&self) -> String {
+        format!("\"{}\"", self.0) // TODO: escape inline "s. " -> ""
+    }
+
+    /// For use in user interface controls
+    pub fn unquoted(&self) -> String {
+        self.0.clone()
     }
 }

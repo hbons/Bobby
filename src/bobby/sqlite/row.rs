@@ -36,7 +36,7 @@ impl Database {
         let limit = limit.unwrap_or(u32::MAX); // GTK models are limited to u32
         let offset = offset.unwrap_or(0);
         let row_order = self.row_order.unwrap_or_default();
-        let table_name = table.name();
+        let table_name = table.name.quoted();
 
         let filter = match table.filter() {
             Some(f) =>
