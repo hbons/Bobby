@@ -123,10 +123,6 @@ impl str::FromStr for TableName {
             return Err("Table name is empty or starts with sqlite_".into());
         }
 
-        if !s.chars().all(|c| c.is_alphanumeric() || c == '_') {
-            return Err("Table name contains invalid characters".into());
-        }
-
         Ok(Self(s.to_string()))
     }
 }
