@@ -33,23 +33,24 @@ pub struct Database {
 /// Database files to test on can be found at:
 /// http://2016.padjo.org/tutorials/sqlite-data-starterpacks
 impl Database {
-    pub fn from_file(file: &File, row_order: Option<RowOrder>) -> Result<Self, Box<dyn Error>> {
-        let uri = format!("{}?{}", file.uri(),
-            "immutable=1", // Docs: https://sqlite.org/uri.html#uriimmutable
-        );
+    pub fn from_file(
+        file: &File,
+        row_order: Option<RowOrder>,
+    ) -> Result<Self, Box<dyn Error>>
+    {
+        // Docs: https://sqlite.org/uri.html#uriimmutable
+        let uri = format!("{}?immutable=1", file.uri());
 
-        // TODO: Detect encryption here and return Err
+        let Ok(connection) =
+            Connection::open_with_flags(uri,
+                OpenFlags::SQLITE_OPEN_READ_ONLY |
+                OpenFlags::SQLITE_OPEN_URI
+            ) else {
+                return Err("Could not open a <b>SQLite database</b> connection".into());
+            };
 
-        let connection = Connection::open_with_flags(
-            uri,
-            OpenFlags::SQLITE_OPEN_READ_ONLY |
-            OpenFlags::SQLITE_OPEN_URI
-        ).map_err(|_|
-            Box::<dyn Error>::from("Could not open a database connection")
-        )?;
-
-        if Database::journal_mode(&connection).is_none() {
-            return Err("File is not a <b>SQLite database</b> or encrypted".into());
+        if Self::journal_mode(&connection).is_none() {
+            return Err("File is not a <b>SQLite database</b> or is encrypted".into());
         }
 
         connection.busy_timeout(Duration::from_secs(3))?;
@@ -91,6 +92,17 @@ impl Database {
 }
 
 
+impl Clone for Database {
+    fn clone(&self) -> Self {
+        Self {
+            file: self.file.clone(),
+            connection: Rc::clone(&self.connection),
+            row_order: self.row_order,
+        }
+    }
+}
+
+
 impl Default for Database {
     #[allow(clippy::expect_used)]
     fn default() -> Self {
@@ -102,17 +114,6 @@ impl Default for Database {
             file: File::for_path(Path::new("")),
             connection: Rc::new(RefCell::new(connection)),
             row_order: None,
-        }
-    }
-}
-
-
-impl Clone for Database {
-    fn clone(&self) -> Self {
-        Self {
-            file: self.file.clone(),
-            connection: Rc::clone(&self.connection),
-            row_order: self.row_order,
         }
     }
 }
