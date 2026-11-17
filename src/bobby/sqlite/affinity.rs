@@ -17,6 +17,7 @@ pub enum Affinity {
     REAL(Option<f64>),
     TEXT(Option<String>),
     BLOB(Option<i32>, Option<String>),
+    ANY, // Only used for columns, not cells
     #[default] NULL,
 }
 
@@ -37,6 +38,7 @@ impl str::FromStr for Affinity {
             _ if s.contains("TEXT") || s.contains("CHAR") || s.contains("CLOB") => Ok(Self::TEXT(None)),
             _ if s.contains("BLOB") || s.is_empty() => Ok(Self::BLOB(None, None)),
             _ if s.contains("REAL") || s.contains("FLOA") || s.contains("DOUB") => Ok(Self::REAL(None)),
+            _ if s.contains("ANY") => Ok(Self::ANY),
             _ => Ok(Self::NUMERIC(None)),
         }
     }
@@ -51,7 +53,7 @@ impl fmt::Display for Affinity {
             Self::REAL(Some(f)) => f.to_string(),
             Self::TEXT(Some(s)) => s.to_string(),
             Self::BLOB(Some(length), _) => format!("{length} BYTES"),
-            Self::NULL | Self::NUMERIC(None) => "—".to_string(),
+            Self::NULL | Self::ANY | Self::NUMERIC(None) => "—".to_string(),
             _ => "???".to_string(),
         };
 
@@ -68,6 +70,7 @@ impl Affinity {
             Self::REAL(_) => "REAL",
             Self::TEXT(_) => "TEXT",
             Self::BLOB(_, _) => "BLOB",
+            Self::ANY => "ANY",
             Self::NULL => "NULL",
         }
     }

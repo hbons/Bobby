@@ -46,6 +46,10 @@ impl Database {
                 .parse::<Affinity>()
                 .unwrap_or_default();
 
+            dbg!(cell2);
+            dbg!(&affinity);
+            dbg!("");
+
             Ok(Column {
                 id: row.get(0)?,
                 name,
@@ -82,6 +86,7 @@ pub fn as_filter_statement(
 
         match column.affinity {
             Affinity::NULL => continue,
+            Affinity::ANY => continue,
             Affinity::BLOB(_, _) => continue,
             Affinity::INTEGER(_) |
             Affinity::NUMERIC(_) |
