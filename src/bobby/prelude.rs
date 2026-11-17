@@ -8,7 +8,9 @@
 pub use crate::bobby::sqlite::affinity::Affinity;
 pub use crate::bobby::sqlite::column::Column;
 pub use crate::bobby::sqlite::column::ColumnSeparator;
+pub use crate::bobby::sqlite::column_name::ColumnName;
 pub use crate::bobby::sqlite::database::Database;
 pub use crate::bobby::sqlite::row::Row;
 pub use crate::bobby::sqlite::row::RowOrder;
 pub use crate::bobby::sqlite::table::Table;
+pub use crate::bobby::sqlite::table_name::TableName;

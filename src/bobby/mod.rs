@@ -9,9 +9,11 @@ pub mod sqlite {
     pub mod affinity;
     pub mod cache;
     pub mod column;
+    pub mod column_name;
     pub mod database;
     pub mod row;
     pub mod table;
+    pub mod table_name;
 }
 
 pub mod prelude;

@@ -5,7 +5,7 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use crate::bobby::sqlite::table::TableName;
+use crate::bobby::sqlite::table_name::TableName;
 
 
 #[test]

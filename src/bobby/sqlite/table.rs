@@ -6,10 +6,10 @@
 
 
 use std::error::Error;
-use std::str;
 
 use super::column::as_filter_statement;
 use super::database::Database;
+use super::table_name::TableName;
 
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -103,42 +103,5 @@ impl Database {
         let sql = format!("SELECT COUNT(*) FROM {}", table.name.quoted());
 
         Ok(connection.query_row(&sql, [], |row| row.get(0))?)
-    }
-}
-
-
-#[derive(Clone, Debug, PartialEq)]
-pub struct TableName(String);
-
-impl str::FromStr for TableName {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.is_empty() || s.starts_with("sqlite_") {
-            return Err("Table name is empty or starts with sqlite_".into());
-        }
-
-        Ok(Self(s.to_string()))
-    }
-}
-
-impl TableName {
-    /// For use in queries
-    pub fn quoted(&self) -> String {
-        let s = self.0.replace("\"", "\"\"");
-        format!("\"{s}\"")
-    }
-
-    /// For use in user interface controls
-    pub fn unquoted(&self) -> String {
-        self.0.clone()
-    }
-}
-
-
-
-impl Default for TableName {
-    fn default() -> Self {
-        Self("table".into())
     }
 }

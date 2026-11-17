@@ -6,7 +6,8 @@
 
 
 use crate::bobby::sqlite::affinity::Affinity;
-use crate::bobby::sqlite::column::{ self, Column, ColumnName };
+use crate::bobby::sqlite::column::{ self, Column };
+use crate::bobby::sqlite::column_name::ColumnName;
 
 
 #[test]
