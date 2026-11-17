@@ -165,6 +165,7 @@ pub fn content_new(
 
             view_column.set_fixed_width(width);
             view_column.set_resizable(false);
+            view_column.set_title(None);
 
             view_column.set_visible(
                 settings.boolean("row-numbers")
