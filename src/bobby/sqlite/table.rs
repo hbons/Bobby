@@ -107,7 +107,7 @@ impl Database {
 }
 
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct TableName(String);
 
 impl str::FromStr for TableName {
@@ -132,5 +132,13 @@ impl TableName {
     /// For use in user interface controls
     pub fn unquoted(&self) -> String {
         self.0.clone()
+    }
+}
+
+
+
+impl Default for TableName {
+    fn default() -> Self {
+        Self("table".into())
     }
 }

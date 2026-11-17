@@ -122,7 +122,7 @@ impl str::FromStr for ColumnSeparator {
 }
 
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct ColumnName(String);
 
 impl str::FromStr for ColumnName {
@@ -147,5 +147,11 @@ impl ColumnName {
     /// For use in user interface controls
     pub fn unquoted(&self) -> String {
         self.0.clone()
+    }
+}
+
+impl Default for ColumnName {
+    fn default() -> Self {
+        Self("column".into())
     }
 }
