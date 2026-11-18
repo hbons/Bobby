@@ -57,16 +57,22 @@ impl Database {
         connection.pragma_update(None, "query_only", true)?;
         connection.pragma_update(None, "foreign_keys", true)?;
 
-        Ok(
-            Database {
-                file: file.to_owned(),
-                connection: Rc::new(RefCell::new(connection)),
-                row_order,
-            }
-        )
+        let db = Self {
+            file: file.clone(),
+            connection: Rc::new(RefCell::new(connection)),
+            row_order,
+        };
+
+        if db.tables().is_none() {
+            return Err("<b>SQLite database</b> does not contain any tables".into());
+        }
+
+        Ok(db)
     }
+}
 
 
+impl Database {
     pub fn data_version(&self) -> Option<i64> {
         let connection = self.connection.borrow();
 
@@ -110,7 +116,7 @@ impl Default for Database {
             // This should never happen
             .expect("Failed to create default connection");
 
-        Database {
+        Self {
             file: File::for_path(Path::new("")),
             connection: Rc::new(RefCell::new(connection)),
             row_order: None,
