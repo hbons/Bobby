@@ -19,7 +19,7 @@ use rusqlite::{
     OpenFlags,
 };
 
-use super::row::RowOrder;
+use super::row_order::RowOrder;
 
 
 #[derive(Debug)]

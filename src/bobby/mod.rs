@@ -12,6 +12,7 @@ pub mod sqlite {
     pub mod column_name;
     pub mod database;
     pub mod row;
+    pub mod row_order;
     pub mod table;
     pub mod table_name;
 }

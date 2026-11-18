@@ -122,25 +122,6 @@ impl Row {
 }
 
 
-#[derive(Clone, Copy, Debug, Default)]
-pub enum RowOrder {
-    #[default]
-    Descending,
-    Ascending,
-}
-
-impl fmt::Display for RowOrder {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let s = match self {
-            Self::Descending => "DESC",
-            Self::Ascending  => "ASC",
-        };
-
-        write!(f, "{}", s)
-    }
-}
-
-
 fn hex_preview(blob: &[u8], length: usize) -> String {
     blob
         .iter()
