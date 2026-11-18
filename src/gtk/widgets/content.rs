@@ -89,7 +89,7 @@ pub fn content_new(
         };
     }
 
-    let columns = database.columns(table)?;
+    let columns = database.columns(table).ok_or("Missing columns")?;
 
     let mut columns = columns.clone();
     columns.insert(0, Column::default()); // Reserve for row numbers

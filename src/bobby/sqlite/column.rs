@@ -5,7 +5,6 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use std::error::Error;
 use std::str;
 
 use super::affinity::Affinity;
@@ -27,41 +26,44 @@ pub struct Column {
 
 
 impl Database {
-    pub fn columns(&self, table: &Table) -> Result<Vec<Column>, Box<dyn Error>> {
+    pub fn columns(&self, table: &Table) -> Option<Vec<Column>> {
         let connection = self.connection.borrow();
 
         let mut sql = connection.prepare(
             &format!("PRAGMA table_info({});", table.name.quoted())
-        )?;
+        ).ok()?;
 
-        let iter = sql.query_map([], |row| {
-            let cell1: String = row.get(1)?;
-            let cell2: String = row.get(2)?;
+        let columns = sql.query_map([], |row| {
+                let cell1: String = row.get(1)?;
+                let cell2: String = row.get(2)?;
 
-            let name = cell1
-                .parse::<ColumnName>()
-                .unwrap_or_default();
+                let name = cell1
+                    .parse::<ColumnName>()
+                    .unwrap_or_default();
 
-            let affinity = cell2
-                .parse::<Affinity>()
-                .unwrap_or_default();
+                let affinity = cell2
+                    .parse::<Affinity>()
+                    .unwrap_or_default();
 
-            dbg!(cell2);
-            dbg!(&affinity);
-            dbg!("");
-
-            Ok(Column {
-                id: row.get(0)?,
-                name,
-                affinity,
-                not_null: row.get(3)?,
-                default: row.get(4)?,
-                primary_key: row.get(5)?,
-                unique: false, // TODO
+                Ok(Column {
+                    id: row.get(0)?,
+                    name,
+                    affinity,
+                    not_null: row.get(3)?,
+                    default: row.get(4)?,
+                    primary_key: row.get(5)?,
+                    unique: false, // TODO
+                })
             })
-        })?;
+            .ok()?
+            .collect::<Result<Vec<_>, _>>()
+            .ok()?;
 
-        Ok(iter.collect::<Result<Vec<_>, _>>()?)
+        if columns.is_empty() {
+            None
+        } else {
+            Some(columns)
+        }
     }
 }
 

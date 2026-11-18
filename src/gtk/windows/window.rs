@@ -302,7 +302,7 @@ fn window_show_content_state(
         .to_string();
 
 
-    let tables = db.tables()?;
+    let tables = db.tables().ok_or("Missing tables")?;
 
     let table =
         if let Some(name) = table_name {
@@ -559,7 +559,7 @@ pub fn window_selected_table_index(window: &Window) -> Option<usize> {
             .map(|db| db.as_ref())
     };
 
-    let tables = db?.tables().ok()?;
+    let tables = db?.tables()?;
 
     let table =
         if let Some(name) = table_name {

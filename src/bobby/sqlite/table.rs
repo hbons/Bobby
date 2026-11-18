@@ -36,7 +36,7 @@ impl Table {
 
 
 impl Database {
-    pub fn tables(&self) -> Result<Vec<Table>, Box<dyn Error>> {
+    pub fn tables(&self) -> Option<Vec<Table>> {
         let connection = self.connection.borrow();
 
         let mut sql = connection.prepare(
@@ -51,10 +51,9 @@ impl Database {
              WHERE type IN ('table', 'view')
                AND name NOT LIKE 'sqlite_%'
              ORDER BY name;"
-        )?;
+        ).ok()?;
 
-        let tables = sql.query_map([],
-            |row| {
+        let tables = sql.query_map([], |row| {
                 let name: String = row.get(0)?;
                 let has_row_id: Option<i64> = row.get(1)?;
                 let type_str: String = row.get(2)?;
@@ -69,10 +68,16 @@ impl Database {
                     is_view: type_str == "view",
                     has_row_id: has_row_id.map(|v| v != 0),
                 })
-            })?
-            .collect::<Result<Vec<_>, _>>()?;
+            })
+            .ok()?
+            .collect::<Result<Vec<_>, _>>()
+            .ok()?;
 
-        Ok(tables)
+        if tables.is_empty() {
+            None
+        } else {
+            Some(tables)
+        }
     }
 }
 

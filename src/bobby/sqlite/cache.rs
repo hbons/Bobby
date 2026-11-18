@@ -93,7 +93,7 @@ mod imp {
                     &table,
                     Some(offset),
                     Some(CACHE_PAGE_SIZE),
-                ).ok()?;
+                )?;
 
                 {
                     let mut cached_rows = self.cached_rows.borrow_mut();

@@ -5,11 +5,7 @@
 //   the terms of the GNU General Public License v3 or any later version.
 
 
-use std::error::Error;
-use std::fmt;
-
 use rusqlite::types::ValueRef;
-
 
 use super::affinity::Affinity;
 use super::column::{ ColumnSeparator, as_filter_statement };
@@ -31,7 +27,7 @@ impl Database {
         table: &Table,
         offset: Option<u32>,
         limit:  Option<u32>,
-    ) -> Result<Vec<Row>, Box<dyn Error>>
+    ) -> Option<Vec<Row>>
 {
         let limit = limit.unwrap_or(u32::MAX); // GTK models are limited to u32
         let offset = offset.unwrap_or(0);
@@ -69,41 +65,47 @@ impl Database {
 
         let connection = self.connection.borrow();
 
-        let mut sql = connection.prepare(sql)?;
+        let mut sql = connection.prepare(sql).ok()?;
         let n_columns = sql.column_count();
 
-        let iter = sql.query_map([], |row| {
-            let mut values = Vec::new();
+        let rows = sql.query_map([], |row| {
+                let mut values = Vec::new();
 
-            for i in 0..n_columns {
-                let value = match row.get_ref(i)? {
-                    ValueRef::Null       => Affinity::NULL,
-                    ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
-                    ValueRef::Real(f)    => Affinity::REAL(Some(f)),
-                    ValueRef::Text(t) =>
-                        Affinity::TEXT(
-                            Some(String::from_utf8_lossy(t).into())
+                for i in 0..n_columns {
+                    let value = match row.get_ref(i)? {
+                        ValueRef::Null       => Affinity::NULL,
+                        ValueRef::Integer(i) => Affinity::INTEGER(Some(i)),
+                        ValueRef::Real(f)    => Affinity::REAL(Some(f)),
+                        ValueRef::Text(t) =>
+                            Affinity::TEXT(
+                                Some(String::from_utf8_lossy(t).into())
+                            ),
+                        ValueRef::Blob(b) =>
+                            Affinity::BLOB(
+                                Some(b.len() as i32),
+                                Some(hex_preview(b, BLOB_PREVIEW_LEN)
+                            ),
                         ),
-                    ValueRef::Blob(b) =>
-                        Affinity::BLOB(
-                            Some(b.len() as i32),
-                            Some(hex_preview(b, BLOB_PREVIEW_LEN)
-                        ),
-                    ),
-                };
+                    };
 
-                values.push(value);
-            }
+                    values.push(value);
+                }
 
-            Ok(values)
-        })?;
-
-        Ok(iter
+                Ok(values)
+            })
+            .ok()?
             .map(|res| res.map(|cells| Row { cells }))
-            .collect::<Result<Vec<_>, _>>()?
-        )
+            .collect::<Result<Vec<_>, _>>()
+            .ok()?;
+
+        if rows.is_empty() {
+            None
+        } else {
+            Some(rows)
+        }
     }
 }
+
 
 impl Row {
     pub fn format_with(&self, separator: ColumnSeparator) -> String {
